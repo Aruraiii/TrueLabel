@@ -405,3 +405,29 @@
 - **Verification**:
   - `npm test`: 14 passed test suites, 107 unit tests passing (100%).
   - `npm run build`: Compiled with exit code 0.
+
+---
+
+### Entry 021 | 2026-11-15 19:51:50 +06:00 | Public Standard Pages & Comprehensive Footer Sitemapping
+- **Action**: Authored standard statutory public policy pages (Terms & Conditions, Privacy Policy, Cache & Storage Policy, About / Public Standards, Contact & Regulatory Inquiries) and updated the global footer sitemap.
+- **Specific Remediation**:
+  1. **Public Endpoints in `HomeController` (`src/areas/home/controllers/home.controller.ts`)**:
+     - `GET /terms`: Renders `areas/home/views/terms`.
+     - `GET /privacy`: Renders `areas/home/views/privacy`.
+     - `GET /cache-policy`: Renders `areas/home/views/cache-policy`.
+     - `GET /about`: Renders `areas/home/views/about`.
+     - `GET /contact`: Renders `areas/home/views/contact`.
+  2. **Authored High-Authority Public Views (`src/areas/home/views/`)**:
+     - `terms.hbs`: Binding legal platform terms, clinical allergy disclaimers, manufacturer declaration obligations under BSTI/BFSA/FDA, scoring methodology caveats, and fair usage.
+     - `privacy.hbs`: Personal health data sovereignty (zero ad-broker sale guarantee), bcrypt password hashing, session protection, CSRF verification, audit logging, and consumer profile rectification/erasure rights.
+     - `cache-policy.hbs`: Essential cookie classification (`connect.sid`, `_csrf`), HTTP cache headers, static asset caching rules, real-time cache invalidation triggers, and zero marketing tracker policy.
+     - `about.hbs`: TrueLabel mission, 3 core architectural pillars (Forensic Ingredient Decoding, Explainable 0–100 Scoring, Regulatory Licence Verification), and 4-stakeholder ecosystem overview.
+     - `contact.hbs`: Communication desks (Public Health, Manufacturer Compliance, Regulatory/Inspector), emergency medical notice, and public inquiry/mislabeled packaging dispatch form.
+  3. **Global Footer Sitemapping (`src/shared/views/partials/footer.hbs`)**:
+     - Structured 4 sitemap columns: Food Discovery, Safety & Standards, Legal & Governance, and Brand Mission.
+     - Integrated statutory health notice and bottom quick-links bar (Terms, Privacy, Cache Policy, About, Contact).
+  4. **Unit Testing (`src/areas/home/controllers/home.controller.spec.ts`)**:
+     - Added 5 unit tests for `getTermsPage`, `getPrivacyPage`, `getCachePolicyPage`, `getAboutPage`, and `getContactPage`.
+- **Verification**:
+  - `npm test`: 14 passed test suites, 112 unit tests passing (100%).
+  - `npm run build`: Compiled with exit code 0.

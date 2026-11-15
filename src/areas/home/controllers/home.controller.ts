@@ -84,4 +84,69 @@ export class HomeController {
       userProfile,
     };
   }
+
+  /**
+   * Terms & Conditions Page
+   */
+  @Get('terms')
+  @Render('areas/home/views/terms')
+  getTermsPage(@Req() req: Request) {
+    return {
+      title: 'Terms of Service & Regulatory Compliance — TrueLabel',
+      activeNav: 'terms',
+      user: req.session?.user || null,
+    };
+  }
+
+  /**
+   * Privacy Policy & Personal Health Data Protection Page
+   */
+  @Get('privacy')
+  @Render('areas/home/views/privacy')
+  getPrivacyPage(@Req() req: Request) {
+    return {
+      title: 'Privacy Policy & Health Data Protection — TrueLabel',
+      activeNav: 'privacy',
+      user: req.session?.user || null,
+    };
+  }
+
+  /**
+   * Cache, Cookie & Storage Policy Page
+   */
+  @Get('cache-policy')
+  @Render('areas/home/views/cache-policy')
+  getCachePolicyPage(@Req() req: Request) {
+    return {
+      title: 'Cache, Cookies & Data Storage Policy — TrueLabel',
+      activeNav: 'cache-policy',
+      user: req.session?.user || null,
+    };
+  }
+
+  /**
+   * About TrueLabel & Public Standards Page
+   */
+  @Get('about')
+  @Render('areas/home/views/about')
+  getAboutPage(@Req() req: Request) {
+    return {
+      title: 'About TrueLabel & Public Quality Standards — TrueLabel',
+      activeNav: 'about',
+      user: req.session?.user || null,
+    };
+  }
+
+  /**
+   * Contact & Regulatory Inquiries Page
+   */
+  @Get('contact')
+  @Render('areas/home/views/contact')
+  getContactPage(@Req() req: Request) {
+    return {
+      title: 'Contact & Regulatory Inquiries — TrueLabel',
+      activeNav: 'contact',
+      user: req.session?.user || null,
+    };
+  }
 }

@@ -13,8 +13,12 @@
         <p class="text-xs text-slate-500 leading-relaxed">
           National food transparency, forensic ingredient analysis, explainable quality scoring, and regulatory accreditation verification platform.
         </p>
-        <div class="text-[11px] font-mono text-slate-400">
-          Standards Release v1.0
+        <div class="flex items-center gap-2 pt-1">
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+            Platform Live
+          </span>
+          <span class="text-[11px] font-mono text-slate-400">Release v1.0</span>
         </div>
       </div>
 
@@ -33,6 +37,9 @@
           </li>
           <li>
             <a href="/catalog?tag=Gluten-Free" class="hover:text-emerald-700 transition-colors">Gluten-Free Verification</a>
+          </li>
+          <li>
+            <a href="/catalog?category=Dairy%20%26%20Plant%20Milks" class="hover:text-emerald-700 transition-colors">Dairy & Plant Milks</a>
           </li>
         </ul>
       </div>
@@ -53,28 +60,31 @@
           <li>
             <a href="/safety/documents?status=pending" class="hover:text-amber-800 transition-colors">Inspector Audit Queue</a>
           </li>
+          <li>
+            <a href="/about" class="hover:text-emerald-700 transition-colors">About Our Standards</a>
+          </li>
         </ul>
       </div>
 
-      <!-- Column 3: Personalization & Auth -->
+      <!-- Column 3: Legal & Public Policies -->
       <div class="space-y-2.5">
-        <div class="text-xs font-bold uppercase tracking-wider text-slate-900">Account & Health</div>
+        <div class="text-xs font-bold uppercase tracking-wider text-slate-900">Legal & Governance</div>
         <ul class="space-y-1.5 text-xs">
+          <li>
+            <a href="/terms" class="hover:text-emerald-700 transition-colors">Terms of Service</a>
+          </li>
+          <li>
+            <a href="/privacy" class="hover:text-emerald-700 transition-colors">Privacy & Health Data Policy</a>
+          </li>
+          <li>
+            <a href="/cache-policy" class="hover:text-emerald-700 transition-colors">Cache, Cookies & Storage</a>
+          </li>
           <li>
             <a href="/personal/profile" class="hover:text-emerald-700 transition-colors">My Dietary & Allergen Profile</a>
           </li>
-          {{#if user}}
-            <li>
-              <span class="text-slate-400">Signed in as <strong class="text-slate-700">{{user.name}}</strong></span>
-            </li>
-          {{else}}
-            <li>
-              <a href="/auth/login" class="hover:text-emerald-700 transition-colors">Sign In</a>
-            </li>
-            <li>
-              <a href="/auth/register" class="hover:text-emerald-700 transition-colors">Create Account</a>
-            </li>
-          {{/if}}
+          <li>
+            <a href="/contact" class="hover:text-emerald-700 transition-colors">Contact & Regulatory Desk</a>
+          </li>
         </ul>
       </div>
 
@@ -91,10 +101,20 @@
       </p>
     </div>
 
-    <!-- Copyright Bar -->
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-400">
-      <div>&copy; 2026 TrueLabel Platform · Open Standards Food Safety Architecture.</div>
-      <div>CSE470 Advanced Software Engineering Project</div>
+    <!-- Bottom Copyright & Quick Links Bar -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-400">
+      <div>&copy; 2026 TrueLabel Platform · National Food Quality, Safety & Diet Intelligence Architecture.</div>
+      <div class="flex flex-wrap items-center gap-3">
+        <a href="/terms" class="hover:text-slate-700 transition-colors">Terms</a>
+        <span>·</span>
+        <a href="/privacy" class="hover:text-slate-700 transition-colors">Privacy</a>
+        <span>·</span>
+        <a href="/cache-policy" class="hover:text-slate-700 transition-colors">Cache Policy</a>
+        <span>·</span>
+        <a href="/about" class="hover:text-slate-700 transition-colors">About</a>
+        <span>·</span>
+        <a href="/contact" class="hover:text-slate-700 transition-colors">Contact</a>
+      </div>
     </div>
 
   </div>

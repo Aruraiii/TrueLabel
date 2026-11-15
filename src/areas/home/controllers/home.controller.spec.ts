@@ -119,4 +119,43 @@ describe('HomeController', () => {
       expect(result.user).toEqual(mockMfgUser);
     });
   });
+
+  describe('Static & Policy Public Pages', () => {
+    const mockReq: any = { session: { user: { id: 1, name: 'Alice' } } };
+
+    it('should render terms page with proper title and activeNav', () => {
+      const result = controller.getTermsPage(mockReq);
+      expect(result.title).toContain('Terms of Service');
+      expect(result.activeNav).toBe('terms');
+      expect(result.user).toEqual(mockReq.session.user);
+    });
+
+    it('should render privacy policy page with proper title and activeNav', () => {
+      const result = controller.getPrivacyPage(mockReq);
+      expect(result.title).toContain('Privacy Policy');
+      expect(result.activeNav).toBe('privacy');
+      expect(result.user).toEqual(mockReq.session.user);
+    });
+
+    it('should render cache and cookie policy page with proper title and activeNav', () => {
+      const result = controller.getCachePolicyPage(mockReq);
+      expect(result.title).toContain('Cache, Cookies');
+      expect(result.activeNav).toBe('cache-policy');
+      expect(result.user).toEqual(mockReq.session.user);
+    });
+
+    it('should render about page with proper title and activeNav', () => {
+      const result = controller.getAboutPage(mockReq);
+      expect(result.title).toContain('About TrueLabel');
+      expect(result.activeNav).toBe('about');
+      expect(result.user).toEqual(mockReq.session.user);
+    });
+
+    it('should render contact and inquiries page with proper title and activeNav', () => {
+      const result = controller.getContactPage(mockReq);
+      expect(result.title).toContain('Contact & Regulatory');
+      expect(result.activeNav).toBe('contact');
+      expect(result.user).toEqual(mockReq.session.user);
+    });
+  });
 });
