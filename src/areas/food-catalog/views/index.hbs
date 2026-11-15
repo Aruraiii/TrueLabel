@@ -61,7 +61,7 @@
       {{#if selectedCategory}} in <span class="font-semibold text-slate-800">{{selectedCategory}}</span>{{/if}}
       {{#if selectedTag}} with tag <span class="font-semibold text-slate-800">{{selectedTag}}</span>{{/if}}
     </div>
-    {{#if (eq user.role "manufacturer")}}
+    {{#if (or (eq user.role "manufacturer") (eq user.role "admin"))}}
       <a href="/catalog/manage/create" class="font-bold text-emerald-700 hover:underline">+ Register New Food Product</a>
     {{/if}}
   </div>
@@ -157,7 +157,7 @@
         <a href="/catalog" class="px-4 py-2 border border-slate-300 text-slate-700 font-bold text-xs rounded hover:bg-slate-50">
           Reset Filters
         </a>
-        {{#if (eq user.role "manufacturer")}}
+        {{#if (or (eq user.role "manufacturer") (eq user.role "admin"))}}
           <a href="/catalog/manage/create" class="px-4 py-2 bg-emerald-700 text-white font-bold text-xs rounded hover:bg-emerald-800">
             Add This Food
           </a>

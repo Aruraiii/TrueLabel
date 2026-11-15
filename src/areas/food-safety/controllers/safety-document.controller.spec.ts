@@ -58,6 +58,9 @@ describe('SafetyDocumentController (Unit Tests)', () => {
         licence: null,
         message: 'Licence is verified',
       }),
+      getSampleLicences: jest.fn().mockResolvedValue([
+        { id: 1, licenceNumber: 'BSTI-FOOD-2024-001', status: 'valid' } as any,
+      ]),
     };
 
     const module: TestingModule = await Test.createTestingModule({

@@ -30,6 +30,46 @@ describe('HomeController', () => {
         page: 1,
         totalPages: 1,
       }),
+      getFilterOptions: jest.fn().mockResolvedValue({
+        categories: ['Beverages', 'Dairy & Plant Milks'],
+        dietaryTags: ['Vegan', 'Gluten-Free'],
+      }),
+      buildDossierSpecimen: jest.fn().mockReturnValue({
+        product: mockProduct,
+        tierInfo: {
+          score: 92,
+          tierNumber: 1,
+          tierLabel: 'Tier 1 · Superior Transparency',
+          badgeLabel: 'Verified High Standard',
+          badgeClass: 'score-badge-high',
+          textColorClass: 'text-emerald-700 dark:text-emerald-400',
+          tierColorClass: 'text-emerald-800 dark:text-emerald-300',
+          badgeBgClass: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+          isHigh: true,
+          isMid: false,
+          isLow: false,
+        },
+        additivesSummary: {
+          label: '0 Detected (Clean Label)',
+          count: 0,
+          status: 'safe',
+          badgeClass: 'text-emerald-700 bg-emerald-50',
+        },
+        allergensSummary: {
+          label: '0 Declared (Clean Formulation)',
+          count: 0,
+          status: 'safe',
+          badgeClass: 'text-emerald-700 bg-emerald-50',
+        },
+        sugarSummary: {
+          label: '2.8g / 100ml (Low Density)',
+          amount: 2.8,
+          status: 'safe',
+          colorClass: 'text-emerald-700 font-mono font-bold',
+        },
+        nationalLicence: 'BSTI-FOOD-2024-001 (Valid)',
+        ingredients: [],
+      } as any),
     };
 
     documentService = {
@@ -41,6 +81,9 @@ describe('HomeController', () => {
         expiringSoon: 0,
       }),
       getDocuments: jest.fn().mockResolvedValue([]),
+      getSampleLicences: jest.fn().mockResolvedValue([
+        { id: 1, licenceNumber: 'BSTI-FOOD-2024-001', status: 'valid' } as any,
+      ]),
     };
 
     preferenceService = {
@@ -110,6 +153,45 @@ describe('HomeController', () => {
       expect(documentService.getDocuments).toHaveBeenCalledWith({ manufacturerId: 2 });
       expect(result.roleInsights.manufacturerDocsCount).toBe(1);
       expect(result.user).toEqual(mockMfgUser);
+    });
+  });
+
+  describe('Static & Policy Public Pages', () => {
+    const mockReq: any = { session: { user: { id: 1, name: 'Alice' } } };
+
+    it('should render terms page with proper title and activeNav', () => {
+      const result = controller.getTermsPage(mockReq);
+      expect(result.title).toContain('Terms of Service');
+      expect(result.activeNav).toBe('terms');
+      expect(result.user).toEqual(mockReq.session.user);
+    });
+
+    it('should render privacy policy page with proper title and activeNav', () => {
+      const result = controller.getPrivacyPage(mockReq);
+      expect(result.title).toContain('Privacy Policy');
+      expect(result.activeNav).toBe('privacy');
+      expect(result.user).toEqual(mockReq.session.user);
+    });
+
+    it('should render cache and cookie policy page with proper title and activeNav', () => {
+      const result = controller.getCachePolicyPage(mockReq);
+      expect(result.title).toContain('Cache, Cookies');
+      expect(result.activeNav).toBe('cache-policy');
+      expect(result.user).toEqual(mockReq.session.user);
+    });
+
+    it('should render about page with proper title and activeNav', () => {
+      const result = controller.getAboutPage(mockReq);
+      expect(result.title).toContain('About TrueLabel');
+      expect(result.activeNav).toBe('about');
+      expect(result.user).toEqual(mockReq.session.user);
+    });
+
+    it('should render contact and inquiries page with proper title and activeNav', () => {
+      const result = controller.getContactPage(mockReq);
+      expect(result.title).toContain('Contact & Regulatory');
+      expect(result.activeNav).toBe('contact');
+      expect(result.user).toEqual(mockReq.session.user);
     });
   });
 });

@@ -371,3 +371,133 @@
   - `npm test`: 10 passed test suites, 72 unit tests passing (100%).
   - `npm run test:e2e`: 2 passed test suites, 11 tests passing (100%).
   - `npm run build`: Compiled with exit code 0.
+
+---
+
+### Entry 020 | 2026-11-15 19:40:00 +06:00 | Complete Dynamic Routing & Navigation Architecture Overhaul
+- **Action**: Performed platform-wide routing audit and converted all hardcoded links, query chips, verification records, barcode pre-fills, error routes, and navigation items into dynamic database-driven components.
+- **Specific Remediation**:
+  1. **Dynamic Licences for Instant Verification**:
+     - `src/areas/food-safety/services/document.service.ts`: Implemented `getSampleLicences(limit = 6)` querying live licence records from `licenceRepo`.
+     - `src/areas/home/controllers/home.controller.ts` & `src/areas/food-safety/controllers/safety-document.controller.ts`: Injected `sampleLicences` into ViewModels.
+     - `src/areas/home/views/index.hbs` & `src/areas/food-safety/views/verify-licence.hbs`: Converted hardcoded licence links into dynamic `{{#each sampleLicences}}` loops using `{{urlEncode this.licenceNumber}}`.
+  2. **Dynamic Food Discovery Chips & Dossier Link**:
+     - `src/areas/home/views/index.hbs`: Sourced category and dietary tag chips dynamically via `{{#each quickCategories}}` and `{{#each quickTags}}`.
+     - `src/areas/home/views/index.hbs`: Sourced featured dossier inspection link dynamically using `href="/catalog/product/{{dossierProduct.id}}"`.
+     - `src/areas/food-catalog/services/catalog.service.ts`: Updated category query from strict equality to flexible `LIKE :cat` pattern, and moved `dto.tag` filtering directly into SQL query builder before pagination and count.
+  3. **Dynamic Barcode Pre-Fill on Request-to-Add Flow**:
+     - `src/areas/food-catalog/views/not-found.hbs`: Dynamic creation link passing scanned barcode: `href="/catalog/manage/create?barcode={{urlEncode barcode}}"`.
+     - `src/areas/food-catalog/controllers/food-catalog.controller.ts`: Accepted `@Query('barcode')` in `getCreateForm()` and pre-populated into `create.hbs`.
+  4. **Dynamic Active Navigation & Role Consistency**:
+     - `src/areas/food-catalog/controllers/food-catalog.controller.ts`: Added `activeNav: 'catalog'` across `getProductDetail`, `getCreateForm`, `getEditForm`, and `searchBarcode`.
+     - `src/areas/food-safety/controllers/safety-document.controller.ts`: Added `activeNav: 'documents'` to `getUploadPage()`.
+     - `src/shared/views/partials/navbar.hbs`: Implemented dynamic `activeNav` state styling on mobile menu drawer links.
+     - `src/areas/food-catalog/views/index.hbs` & `not-found.hbs`: Allowed `admin` alongside `manufacturer` for product creation CTA buttons.
+  5. **Stateful Redirect Feedback & Authenticated Route Protection**:
+     - `src/areas/food-safety/controllers/safety-document.controller.ts`: Added `@Query('error')` to `getDocuments()` and rendered notification alert banner in `documents.hbs`.
+     - `src/areas/identity/controllers/auth.controller.ts`: Redirected authenticated users visiting `GET /auth/register` to `/`.
+  6. **Branded HTML 404 / 400 Error Routing**:
+     - `src/shared/views/not-found.hbs`: Created branded 404/400 view.
+     - `src/common/filters/auth-exception.filter.ts`: Broadened filter to handle `NotFoundException` (404) and `BadRequestException` (400) rendering branded HTML for web requests.
+     - `src/common/filters/auth-exception.filter.spec.ts`: Added unit tests for 404, 400, 401, and 403 handling.
+  7. **Footer Sitemapping & Layout Cleanup**:
+     - `src/shared/views/partials/footer.hbs`: Eliminated duplicate text blocks and introduced structured sitemap navigation columns for Discovery, Safety, and Account.
+- **Verification**:
+  - `npm test`: 14 passed test suites, 107 unit tests passing (100%).
+  - `npm run build`: Compiled with exit code 0.
+
+---
+
+### Entry 021 | 2026-11-15 19:51:50 +06:00 | Public Standard Pages & Comprehensive Footer Sitemapping
+- **Action**: Authored standard statutory public policy pages (Terms & Conditions, Privacy Policy, Cache & Storage Policy, About / Public Standards, Contact & Regulatory Inquiries) and updated the global footer sitemap.
+- **Specific Remediation**:
+  1. **Public Endpoints in `HomeController` (`src/areas/home/controllers/home.controller.ts`)**:
+     - `GET /terms`: Renders `areas/home/views/terms`.
+     - `GET /privacy`: Renders `areas/home/views/privacy`.
+     - `GET /cache-policy`: Renders `areas/home/views/cache-policy`.
+     - `GET /about`: Renders `areas/home/views/about`.
+     - `GET /contact`: Renders `areas/home/views/contact`.
+  2. **Authored High-Authority Public Views (`src/areas/home/views/`)**:
+     - `terms.hbs`: Binding legal platform terms, clinical allergy disclaimers, manufacturer declaration obligations under BSTI/BFSA/FDA, scoring methodology caveats, and fair usage.
+     - `privacy.hbs`: Personal health data sovereignty (zero ad-broker sale guarantee), bcrypt password hashing, session protection, CSRF verification, audit logging, and consumer profile rectification/erasure rights.
+     - `cache-policy.hbs`: Essential cookie classification (`connect.sid`, `_csrf`), HTTP cache headers, static asset caching rules, real-time cache invalidation triggers, and zero marketing tracker policy.
+     - `about.hbs`: TrueLabel mission, 3 core architectural pillars (Forensic Ingredient Decoding, Explainable 0–100 Scoring, Regulatory Licence Verification), and 4-stakeholder ecosystem overview.
+     - `contact.hbs`: Communication desks (Public Health, Manufacturer Compliance, Regulatory/Inspector), emergency medical notice, and public inquiry/mislabeled packaging dispatch form.
+  3. **Global Footer Sitemapping (`src/shared/views/partials/footer.hbs`)**:
+     - Structured 4 sitemap columns: Food Discovery, Safety & Standards, Legal & Governance, and Brand Mission.
+     - Integrated statutory health notice and bottom quick-links bar (Terms, Privacy, Cache Policy, About, Contact).
+  4. **Unit Testing (`src/areas/home/controllers/home.controller.spec.ts`)**:
+     - Added 5 unit tests for `getTermsPage`, `getPrivacyPage`, `getCachePolicyPage`, `getAboutPage`, and `getContactPage`.
+- **Verification**:
+  - `npm test`: 14 passed test suites, 112 unit tests passing (100%).
+  - `npm run build`: Compiled with exit code 0.
+
+
+---
+
+### Entry 022 | 2026-11-15 20:23:45 +06:00 | Comprehensive Authentic Dark Mode Option & Persistence
+- **Action**: Engineered and integrated a complete, high-contrast dark mode option across the TrueLabel platform with persistent theme switching, anti-FOUC prevention, and accessible typography.
+- **Specific Remediation**:
+  1. **Tailwind Class-Strategy & Anti-FOUC Architecture (`src/shared/views/layouts/main.hbs`)**:
+     - Configured `darkMode: 'class'` in Tailwind CDN inline setup.
+     - Injected synchronous, early anti-FOUC script inside `<head>` to evaluate `localStorage.getItem('truelabel_theme')` or system `window.matchMedia('(prefers-color-scheme: dark)')` before the DOM renders.
+     - Applied dark theme canvas classes to `<body>` (`dark:bg-[#090d16] dark:text-slate-100 dark:selection:bg-emerald-950 dark:selection:text-emerald-200`).
+  2. **Multi-Viewport Theme Toggle Controls (`src/shared/views/partials/navbar.hbs`)**:
+     - **Desktop Header**: Integrated `#theme-toggle-desktop` button featuring reactive Sun (`#theme-sun-desktop`) and Moon (`#theme-moon-desktop`) SVG icons.
+     - **Mobile Header & Drawer**: Added quick header toggle (`#theme-toggle-mobile-header`) and drawer row button (`#theme-toggle-drawer`).
+     - **Client Controller**: Implemented `toggleTheme()` and `updateThemeUI()` to synchronously toggle `.dark` on `<html>`, persist `'dark'` or `'light'` to `localStorage.setItem('truelabel_theme', ...)`, and synchronize icon states across all viewports.
+  3. **Authentic Dark Mode Design System (`public/css/style.css`)**:
+     - Defined `html.dark` design system variables (`--ink: #f8fafc`, `--surface: #0f172a`, `--surface-alt: #090d16`, `--border-light: #1e293b`, `--border-dark: #cbd5e1`).
+     - **Authentic FDA/EU Nutrition Panel**: Inverted hairline rules and heavy black dividers to crisp, high-contrast slate dividers on obsidian background.
+     - **Form Controls**: Customized `select`, `.form-select`, text inputs, and textareas with dark backgrounds, dark SVG arrows, and luminous emerald focus rings (`#10b981`).
+     - **Badges & Indicators**: Styled `.allergen-pill`, `.additive-pill`, quality score badges, and alert banners for accessible contrast.
+     - **Surface & Elevation**: Styled card lifts, deep slate backgrounds, custom scrollbars, and preserved Viva persona switcher active badge highlights.
+  4. **Automated Verification (`src/shared/views/dark-mode.spec.ts`)**:
+     - Created comprehensive test suite verifying Tailwind configuration, anti-FOUC script inclusion, desktop and mobile toggle DOM existence, and CSS variable / nutrition panel definitions.
+- **Verification**:
+  - `npm test`: 15 passed test suites, 122 unit tests passing (100%).
+  - `npm run build`: Compiled with exit code 0.
+
+
+---
+
+### Entry 023 | 2026-11-15 20:33:00 +06:00 | Food Quality Score & Tier Logic Audit and Remediation
+- **Problem**: The homepage specimen dossier rendered "54/100" in green (`text-emerald-700`) with static "Tier 1 · Superior Transparency" and Oat Milk forensic breakdown rows even when displaying `FizzCraft Sparkling Dark Citrus Soda` (quality score 54, containing synthetic caramel color E150d, phosphoric acid E338, and 10.6g sugar).
+- **Root Cause**: While `dossierProduct` was dynamically wired to the first featured catalog item, the template markup statically hardcoded the green color class (`text-emerald-700`), the "Tier 1" label, and the static forensic data rows, causing any lower-scoring product to display as green Tier 1.
+- **Specific Remediation**:
+  1. **Domain Service Tier & Specimen Evaluation (`src/areas/food-catalog/services/catalog.service.ts`)**:
+     - Implemented `getQualityScoreTier(score: number): QualityScoreTierInfo`:
+       - **Score ≥ 80**: Tier 1 · Superior Transparency (Emerald / `text-emerald-700`, `score-badge-high`, `isHigh: true`).
+       - **Score 60–79**: Tier 2 · Moderate Quality (Amber / `text-amber-700`, `score-badge-mid`, `isMid: true`).
+       - **Score < 60**: Tier 3 · Elevated Processing & Additives (Rose/Crimson / `text-rose-700`, `score-badge-low`, `isLow: true`). Score 54 strictly maps to Tier 3 and Rose styling.
+     - Implemented `buildDossierSpecimen(product, licenceNumber): DossierSpecimen`:
+       - Analyzes actual product ingredients for additives (`additiveCode` or hazard levels `caution`/`warning`) and outputs dynamic count and E-codes.
+       - Analyzes declared allergens (`isAllergen: true`).
+       - Analyzes sugar saturation per 100g/100ml from nutrition facts (Low ≤5g in emerald, Moderate ≤10g in amber, High >10g flagged in rose).
+       - Maps statutory licence numbers and formatted ingredients list.
+  2. **Controller Wiring (`src/areas/home/controllers/home.controller.ts`)**:
+     - Injected `dossierSpecimen` generated by `catalogService.buildDossierSpecimen(dossierProduct, sampleLicences[0]?.licenceNumber)` into the homepage ViewModel.
+  3. **View Dynamic Tier & Forensic Integration**:
+     - `src/areas/home/views/index.hbs`: Rendered dynamic score color (`dossierSpecimen.tierInfo.textColorClass` with fallback `gte` checks), dynamic tier label, dynamic header badge (`Quality Caution Flagged` for score 54), and dynamic forensic specimen rows for additives, allergens, sugar saturation, and ingredients.
+     - `src/areas/food-catalog/views/detail.hbs`: Standardized score seal to render the dynamic tier label (`Tier 1`, `Tier 2`, or `Tier 3`) below the numerical score.
+  4. **Automated Verification (`src/areas/food-catalog/services/catalog.service.spec.ts`)**:
+     - Added test suite for `getQualityScoreTier` asserting score 54 strictly yields Tier 3, `score-badge-low`, and `text-rose-700` (not emerald).
+     - Added test suite for `buildDossierSpecimen` verifying clean label analysis (score 92) and additive-dense caution analysis (score 54).
+- **Verification**:
+  - `npm test`: 15 passed test suites, 128 unit tests passing (100%).
+  - `npm run build`: Compiled with exit code 0.
+
+
+---
+
+### Entry 024 | 2026-11-15 20:39:40 +06:00 | Homepage Hero Spacing & Vertical Rhythm Harmonization
+- **Issue**: The homepage hero section felt crowded and uncomfortably high up against the sticky navbar header on desktop viewports (~40px gap at top vs 96px at bottom).
+- **Root Cause**: In `src/areas/home/views/index.hbs`, the parent container defined `pb-16` (64px) at the bottom and `space-y-16` (64px) between children, but had zero top padding (`pt-0`). When no authenticated role panel was active (e.g. guest visitors), the hero `<section>` was the first child and only had `pt-2` (8px), resulting in an uneven, cramped gap below `<main>`'s `py-8` (32px).
+- **Remediation**:
+  1. Updated `src/areas/home/views/index.hbs`:
+     - Container: Added responsive top padding `pt-4 sm:pt-6 lg:pt-10` to `div.space-y-16.pb-16` to establish symmetrical top and bottom breathing room.
+     - Hero Section: Enhanced top padding to `pt-2 sm:pt-4 lg:pt-6` on the hero `<section>`.
+  2. Total vertical distance from the 64px sticky navbar to the hero headline and dossier card now expands smoothly to ~96px on desktop (matching the bottom padding and section rhythm) without crowding the header.
+- **Verification**:
+  - `npm test`: 15 passed test suites, 128 unit tests passing (100%).
+  - `npm run build`: Compiled with exit code 0.

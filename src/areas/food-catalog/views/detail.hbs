@@ -44,7 +44,10 @@
       <div class="text-4xl font-black mt-1 {{#if (gte product.qualityScore 80)}}text-emerald-700{{else}}{{#if (gte product.qualityScore 60)}}text-amber-700{{else}}text-rose-700{{/if}}{{/if}}">
         {{product.qualityScore}}<span class="text-lg text-slate-400 font-semibold">/100</span>
       </div>
-      <div class="text-[10px] text-slate-400 mt-1">Explainable Formula</div>
+      <div class="text-[11px] font-bold mt-1 {{#if (gte product.qualityScore 80)}}text-emerald-800 dark:text-emerald-300{{else}}{{#if (gte product.qualityScore 60)}}text-amber-800 dark:text-amber-300{{else}}text-rose-800 dark:text-rose-400{{/if}}{{/if}}">
+        {{#if (gte product.qualityScore 80)}}Tier 1 · Superior Transparency{{else}}{{#if (gte product.qualityScore 60)}}Tier 2 · Moderate Quality{{else}}Tier 3 · Elevated Processing & Additives{{/if}}{{/if}}
+      </div>
+      <div class="text-[10px] text-slate-400 mt-0.5">Explainable Formula</div>
     </div>
   </div>
 

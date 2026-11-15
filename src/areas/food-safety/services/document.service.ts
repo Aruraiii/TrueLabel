@@ -247,6 +247,16 @@ export class DocumentService {
   }
 
   /**
+   * Get dynamic sample manufacturer licences for verification links (Feature F06)
+   */
+  async getSampleLicences(limit: number = 6): Promise<ManufacturerLicence[]> {
+    return this.licenceRepo.find({
+      take: limit,
+      order: { id: 'ASC' },
+    });
+  }
+
+  /**
    * Aggregate statistics for dashboard summary
    */
   async getStatistics(): Promise<DocumentStatistics> {
