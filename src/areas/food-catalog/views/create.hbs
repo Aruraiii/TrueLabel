@@ -12,6 +12,7 @@
   {{/if}}
 
   <form action="/catalog/manage/create" method="POST" class="space-y-6">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
     
     <!-- Section 1: Basic Identity -->
     <div>

@@ -37,6 +37,7 @@
 
   <!-- Main Profile Form -->
   <form action="/personal/profile" method="POST" class="space-y-6">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
     <!-- SECTION 1: Declared Food Allergies (The Big 9) -->
     <div class="bg-white border border-slate-200 rounded-lg p-6 space-y-4">

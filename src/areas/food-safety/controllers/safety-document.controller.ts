@@ -39,9 +39,26 @@ export class SafetyDocumentController {
     @Query('uploaded') uploaded?: string,
     @Query('reviewed') reviewed?: string,
   ) {
+    const user = req.session?.user;
+    let effectiveStatus = status || undefined;
+    let effectiveManufacturerId: number | undefined = undefined;
+
+    // RBAC Data Privacy Filtering:
+    // 1. Guests and Consumers can only access approved accreditations
+    if (!user || user.role === 'consumer') {
+      effectiveStatus = 'approved';
+    } else if (user.role === 'manufacturer') {
+      // 2. Manufacturers can view all approved documents, but only their own pending/rejected items
+      if (effectiveStatus && effectiveStatus !== 'approved') {
+        effectiveManufacturerId = user.id;
+      }
+    }
+    // 3. Inspectors and Admins can view all documents unconstrained
+
     const documents = await this.documentService.getDocuments({
-      status: status || undefined,
+      status: effectiveStatus,
       documentType: documentType || undefined,
+      manufacturerId: effectiveManufacturerId,
     });
     const stats = await this.documentService.getStatistics();
 
@@ -50,8 +67,8 @@ export class SafetyDocumentController {
       activeNav: 'documents',
       documents,
       stats,
-      currentFilter: { status: status || 'all', type: documentType || 'all' },
-      user: req.session?.user,
+      currentFilter: { status: effectiveStatus || 'all', type: documentType || 'all' },
+      user,
       uploaded: uploaded === 'true',
       reviewed: reviewed === 'true',
     };

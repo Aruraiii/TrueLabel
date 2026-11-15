@@ -8,6 +8,7 @@
     
     <!-- Archive Action Button -->
     <form action="/catalog/manage/{{product.id}}/archive" method="POST" onsubmit="return confirm('Archive this food product? It will be hidden from catalog discovery.');">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
       <button type="submit" class="text-xs font-bold px-3 py-1.5 rounded border border-rose-300 text-rose-700 hover:bg-rose-50">
         Archive Product
       </button>
@@ -21,6 +22,7 @@
   {{/if}}
 
   <form action="/catalog/manage/{{product.id}}/edit" method="POST" class="space-y-6">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Food Name *</label>

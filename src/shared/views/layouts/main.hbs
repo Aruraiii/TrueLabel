@@ -67,8 +67,10 @@
   <!-- Global Footer -->
   {{> footer}}
 
-  <!-- CSE470 Viva Evaluation Floating Dock (Option A) -->
-  {{> viva_dock}}
+  <!-- CSE470 Viva Evaluation Floating Dock (Only active when demo switcher is enabled) -->
+  {{#if enableDemoSwitcher}}
+    {{> viva_dock}}
+  {{/if}}
 
 </body>
 </html>

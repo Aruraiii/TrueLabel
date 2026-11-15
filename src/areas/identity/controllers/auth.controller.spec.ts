@@ -30,13 +30,24 @@ describe('AuthController (Unit Tests)', () => {
   });
 
   describe('getLoginPage', () => {
-    it('should return page title and user', () => {
+    it('should render login page when user is not authenticated', () => {
       const mockReq = { session: { user: null } } as any;
-      const res = controller.getLoginPage(mockReq);
-      expect(res).toEqual({
-        title: 'Sign In — TrueLabel',
-        user: null,
-      });
+      const mockRes = { render: jest.fn() } as any;
+      controller.getLoginPage(mockReq, mockRes);
+      expect(mockRes.render).toHaveBeenCalledWith(
+        'areas/identity/views/login',
+        expect.objectContaining({
+          title: 'Sign In — TrueLabel',
+          user: null,
+        }),
+      );
+    });
+
+    it('should redirect to /catalog if user is already authenticated', () => {
+      const mockReq = { session: { user: { id: 1, role: 'consumer' } } } as any;
+      const mockRes = { redirect: jest.fn() } as any;
+      controller.getLoginPage(mockReq, mockRes);
+      expect(mockRes.redirect).toHaveBeenCalledWith('/catalog');
     });
   });
 
@@ -83,6 +94,39 @@ describe('AuthController (Unit Tests)', () => {
           email: 'alice@example.com',
         }),
       );
+    });
+  });
+
+  describe('demoSwitchRole', () => {
+    it('should switch role and redirect when in non-production mode', () => {
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'development';
+
+      const mockReq = { session: {} } as any;
+      const mockRes = { redirect: jest.fn() } as any;
+
+      controller.demoSwitchRole('manufacturer', mockReq, mockRes);
+
+      expect(mockReq.session.user).toBeDefined();
+      expect(mockReq.session.user.role).toBe('manufacturer');
+      expect(mockRes.redirect).toHaveBeenCalledWith('/catalog');
+
+      process.env.NODE_ENV = originalEnv;
+    });
+
+    it('should throw ForbiddenException in production when ENABLE_DEMO_SWITCHER is not true', () => {
+      const originalEnv = process.env.NODE_ENV;
+      const originalFlag = process.env.ENABLE_DEMO_SWITCHER;
+      process.env.NODE_ENV = 'production';
+      delete process.env.ENABLE_DEMO_SWITCHER;
+
+      const mockReq = { session: {} } as any;
+      const mockRes = { redirect: jest.fn() } as any;
+
+      expect(() => controller.demoSwitchRole('admin', mockReq, mockRes)).toThrow();
+
+      process.env.NODE_ENV = originalEnv;
+      process.env.ENABLE_DEMO_SWITCHER = originalFlag;
     });
   });
 });

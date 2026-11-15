@@ -95,6 +95,31 @@ describe('SafetyDocumentController (Unit Tests)', () => {
       expect(documentService.getDocuments).toHaveBeenCalledWith({
         status: 'pending',
         documentType: 'halal',
+        manufacturerId: undefined,
+      });
+    });
+
+    it('should force status to approved for guests or consumers', async () => {
+      const req: any = { session: { user: null } };
+
+      await controller.getDocuments(req, 'rejected' as any);
+
+      expect(documentService.getDocuments).toHaveBeenCalledWith({
+        status: 'approved',
+        documentType: undefined,
+        manufacturerId: undefined,
+      });
+    });
+
+    it('should scope pending/rejected document queries to the manufacturer id for manufacturers', async () => {
+      const req: any = { session: { user: { id: 10, role: 'manufacturer' } } };
+
+      await controller.getDocuments(req, 'pending');
+
+      expect(documentService.getDocuments).toHaveBeenCalledWith({
+        status: 'pending',
+        documentType: undefined,
+        manufacturerId: 10,
       });
     });
   });

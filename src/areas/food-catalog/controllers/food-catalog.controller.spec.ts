@@ -130,5 +130,30 @@ describe('FoodCatalogController (Unit Tests)', () => {
       expect(result.isOwner).toBe(true);
     });
   });
+
+  describe('getEditForm (BOLA / Ownership Authorization)', () => {
+    it('should allow the product owner to access the edit form', async () => {
+      (catalogService.findById as jest.Mock).mockResolvedValue(mockProduct as any);
+      const mockReq = { session: { user: { id: 10, role: 'manufacturer' } } } as any;
+
+      const result = await controller.getEditForm(1, mockReq);
+      expect(result.product.id).toBe(1);
+    });
+
+    it('should throw ForbiddenException if another manufacturer attempts to access edit form', async () => {
+      (catalogService.findById as jest.Mock).mockResolvedValue(mockProduct as any);
+      const mockReq = { session: { user: { id: 99, role: 'manufacturer' } } } as any;
+
+      await expect(controller.getEditForm(1, mockReq)).rejects.toThrow();
+    });
+
+    it('should allow an administrator to access edit form for any product', async () => {
+      (catalogService.findById as jest.Mock).mockResolvedValue(mockProduct as any);
+      const mockReq = { session: { user: { id: 99, role: 'admin' } } } as any;
+
+      const result = await controller.getEditForm(1, mockReq);
+      expect(result.product.id).toBe(1);
+    });
+  });
 });
 
