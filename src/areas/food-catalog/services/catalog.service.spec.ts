@@ -289,6 +289,30 @@ describe('CatalogService (Unit Tests)', () => {
       expect(result.total).toBe(1);
       expect(mockQueryBuilder.andWhere).toHaveBeenCalled();
     });
+
+    it('should filter by dietary tag in query builder', async () => {
+      // Arrange
+      const mockQueryBuilder = {
+        leftJoinAndSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        getManyAndCount: jest.fn().mockResolvedValue([[mockProduct], 1]),
+      };
+      (productRepo.createQueryBuilder as jest.Mock).mockReturnValue(mockQueryBuilder);
+
+      // Act
+      const result = await service.searchAndFilter({ tag: 'Vegan' });
+
+      // Assert
+      expect(result.items).toHaveLength(1);
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'LOWER(product.dietaryTags) LIKE :tag',
+        { tag: '%vegan%' },
+      );
+    });
   });
 });
 

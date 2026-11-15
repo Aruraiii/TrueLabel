@@ -398,4 +398,22 @@ describe('DocumentService (Unit Tests)', () => {
       expect(stats.rejected).toBe(1);
     });
   });
+
+  describe('getSampleLicences', () => {
+    it('should return dynamic sample licences ordered by id', async () => {
+      // Arrange
+      const licences = [mockLicence];
+      licenceRepo.find.mockResolvedValue(licences);
+
+      // Act
+      const result = await service.getSampleLicences(5);
+
+      // Assert
+      expect(licenceRepo.find).toHaveBeenCalledWith({
+        take: 5,
+        order: { id: 'ASC' },
+      });
+      expect(result).toEqual(licences);
+    });
+  });
 });

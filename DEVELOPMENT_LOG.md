@@ -371,3 +371,37 @@
   - `npm test`: 10 passed test suites, 72 unit tests passing (100%).
   - `npm run test:e2e`: 2 passed test suites, 11 tests passing (100%).
   - `npm run build`: Compiled with exit code 0.
+
+---
+
+### Entry 020 | 2026-11-15 19:40:00 +06:00 | Complete Dynamic Routing & Navigation Architecture Overhaul
+- **Action**: Performed platform-wide routing audit and converted all hardcoded links, query chips, verification records, barcode pre-fills, error routes, and navigation items into dynamic database-driven components.
+- **Specific Remediation**:
+  1. **Dynamic Licences for Instant Verification**:
+     - `src/areas/food-safety/services/document.service.ts`: Implemented `getSampleLicences(limit = 6)` querying live licence records from `licenceRepo`.
+     - `src/areas/home/controllers/home.controller.ts` & `src/areas/food-safety/controllers/safety-document.controller.ts`: Injected `sampleLicences` into ViewModels.
+     - `src/areas/home/views/index.hbs` & `src/areas/food-safety/views/verify-licence.hbs`: Converted hardcoded licence links into dynamic `{{#each sampleLicences}}` loops using `{{urlEncode this.licenceNumber}}`.
+  2. **Dynamic Food Discovery Chips & Dossier Link**:
+     - `src/areas/home/views/index.hbs`: Sourced category and dietary tag chips dynamically via `{{#each quickCategories}}` and `{{#each quickTags}}`.
+     - `src/areas/home/views/index.hbs`: Sourced featured dossier inspection link dynamically using `href="/catalog/product/{{dossierProduct.id}}"`.
+     - `src/areas/food-catalog/services/catalog.service.ts`: Updated category query from strict equality to flexible `LIKE :cat` pattern, and moved `dto.tag` filtering directly into SQL query builder before pagination and count.
+  3. **Dynamic Barcode Pre-Fill on Request-to-Add Flow**:
+     - `src/areas/food-catalog/views/not-found.hbs`: Dynamic creation link passing scanned barcode: `href="/catalog/manage/create?barcode={{urlEncode barcode}}"`.
+     - `src/areas/food-catalog/controllers/food-catalog.controller.ts`: Accepted `@Query('barcode')` in `getCreateForm()` and pre-populated into `create.hbs`.
+  4. **Dynamic Active Navigation & Role Consistency**:
+     - `src/areas/food-catalog/controllers/food-catalog.controller.ts`: Added `activeNav: 'catalog'` across `getProductDetail`, `getCreateForm`, `getEditForm`, and `searchBarcode`.
+     - `src/areas/food-safety/controllers/safety-document.controller.ts`: Added `activeNav: 'documents'` to `getUploadPage()`.
+     - `src/shared/views/partials/navbar.hbs`: Implemented dynamic `activeNav` state styling on mobile menu drawer links.
+     - `src/areas/food-catalog/views/index.hbs` & `not-found.hbs`: Allowed `admin` alongside `manufacturer` for product creation CTA buttons.
+  5. **Stateful Redirect Feedback & Authenticated Route Protection**:
+     - `src/areas/food-safety/controllers/safety-document.controller.ts`: Added `@Query('error')` to `getDocuments()` and rendered notification alert banner in `documents.hbs`.
+     - `src/areas/identity/controllers/auth.controller.ts`: Redirected authenticated users visiting `GET /auth/register` to `/`.
+  6. **Branded HTML 404 / 400 Error Routing**:
+     - `src/shared/views/not-found.hbs`: Created branded 404/400 view.
+     - `src/common/filters/auth-exception.filter.ts`: Broadened filter to handle `NotFoundException` (404) and `BadRequestException` (400) rendering branded HTML for web requests.
+     - `src/common/filters/auth-exception.filter.spec.ts`: Added unit tests for 404, 400, 401, and 403 handling.
+  7. **Footer Sitemapping & Layout Cleanup**:
+     - `src/shared/views/partials/footer.hbs`: Eliminated duplicate text blocks and introduced structured sitemap navigation columns for Discovery, Safety, and Account.
+- **Verification**:
+  - `npm test`: 14 passed test suites, 107 unit tests passing (100%).
+  - `npm run build`: Compiled with exit code 0.

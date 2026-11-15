@@ -47,21 +47,11 @@
         Sample Registry Records for Instant Testing:
       </div>
       <div class="flex flex-wrap gap-2">
-        <a href="/safety/licence/verify?licenceNumber=BSTI-FOOD-2024-001" class="text-xs px-2.5 py-1 rounded bg-slate-100 hover:bg-emerald-50 hover:text-emerald-800 text-slate-700 font-mono font-medium transition-colors border border-slate-200">
-          BSTI-FOOD-2024-001 (Valid BSTI)
-        </a>
-        <a href="/safety/licence/verify?licenceNumber=BFSA-REG-88219" class="text-xs px-2.5 py-1 rounded bg-slate-100 hover:bg-emerald-50 hover:text-emerald-800 text-slate-700 font-mono font-medium transition-colors border border-slate-200">
-          BFSA-REG-88219 (Valid BFSA)
-        </a>
-        <a href="/safety/licence/verify?licenceNumber=BSTI-DAIRY-2023-441" class="text-xs px-2.5 py-1 rounded bg-slate-100 hover:bg-emerald-50 hover:text-emerald-800 text-slate-700 font-mono font-medium transition-colors border border-slate-200">
-          BSTI-DAIRY-2023-441 (Valid Dairy)
-        </a>
-        <a href="/safety/licence/verify?licenceNumber=BSTI-FOOD-2021-999" class="text-xs px-2.5 py-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-800 font-mono font-medium transition-colors border border-rose-200">
-          BSTI-FOOD-2021-999 (Expired)
-        </a>
-        <a href="/safety/licence/verify?licenceNumber=BFSA-SUSP-2024-012" class="text-xs px-2.5 py-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-800 font-mono font-medium transition-colors border border-rose-200">
-          BFSA-SUSP-2024-012 (Suspended)
-        </a>
+        {{#each sampleLicences}}
+          <a href="/safety/licence/verify?licenceNumber={{urlEncode this.licenceNumber}}" class="text-xs px-2.5 py-1 rounded {{#if (eq this.status 'valid')}}bg-slate-100 hover:bg-emerald-50 hover:text-emerald-800 text-slate-700{{else}}bg-rose-50 hover:bg-rose-100 text-rose-800 border-rose-200{{/if}} font-mono font-medium transition-colors border border-slate-200">
+            {{this.licenceNumber}} ({{this.status}}{{#if this.category}} · {{this.category}}{{/if}})
+          </a>
+        {{/each}}
       </div>
     </div>
   </div>

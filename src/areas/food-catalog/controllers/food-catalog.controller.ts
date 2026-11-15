@@ -88,6 +88,7 @@ export class FoodCatalogController {
     }
     return res.render('areas/food-catalog/views/not-found', {
       title: 'Barcode Not Found — TrueLabel',
+      activeNav: 'catalog',
       barcode,
       user: req.session?.user || null,
     });
@@ -118,6 +119,7 @@ export class FoodCatalogController {
 
     return {
       title: `${product.name} (${product.brand}) — TrueLabel`,
+      activeNav: 'catalog',
       product,
       allergens,
       additives,
@@ -138,12 +140,17 @@ export class FoodCatalogController {
   @UseGuards(AuthenticatedGuard, RolesGuard)
   @Roles('manufacturer', 'admin')
   @Render('areas/food-catalog/views/create')
-  async getCreateForm(@Req() req: Request) {
+  async getCreateForm(
+    @Req() req: Request,
+    @Query('barcode') barcode?: string,
+  ) {
     const filterOptions = await this.catalogService.getFilterOptions();
     return {
       title: 'Submit Food to Catalog — TrueLabel',
+      activeNav: 'catalog',
       categories: filterOptions.categories,
       dietaryTags: filterOptions.dietaryTags,
+      barcode: barcode ? barcode.trim() : '',
       user: req.session?.user,
     };
   }
@@ -202,6 +209,7 @@ export class FoodCatalogController {
 
     return {
       title: `Edit ${product.name} — TrueLabel`,
+      activeNav: 'catalog',
       product,
       categories: filterOptions.categories,
       dietaryTags: filterOptions.dietaryTags,

@@ -62,12 +62,14 @@ export class AuthController {
   }
 
   @Get('register')
-  @Render('areas/identity/views/register')
-  getRegisterPage(@Req() req: Request) {
-    return {
+  getRegisterPage(@Req() req: Request, @Res() res: Response) {
+    if (req.session?.user) {
+      return res.redirect('/');
+    }
+    return res.render('areas/identity/views/register', {
       title: 'Create Account — TrueLabel',
       user: req.session?.user,
-    };
+    });
   }
 
   @Post('register')

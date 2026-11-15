@@ -30,6 +30,10 @@ describe('HomeController', () => {
         page: 1,
         totalPages: 1,
       }),
+      getFilterOptions: jest.fn().mockResolvedValue({
+        categories: ['Beverages', 'Dairy & Plant Milks'],
+        dietaryTags: ['Vegan', 'Gluten-Free'],
+      }),
     };
 
     documentService = {
@@ -41,6 +45,9 @@ describe('HomeController', () => {
         expiringSoon: 0,
       }),
       getDocuments: jest.fn().mockResolvedValue([]),
+      getSampleLicences: jest.fn().mockResolvedValue([
+        { id: 1, licenceNumber: 'BSTI-FOOD-2024-001', status: 'valid' } as any,
+      ]),
     };
 
     preferenceService = {

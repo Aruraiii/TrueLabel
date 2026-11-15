@@ -38,6 +38,7 @@ export class SafetyDocumentController {
     @Query('type') documentType?: DocumentType,
     @Query('uploaded') uploaded?: string,
     @Query('reviewed') reviewed?: string,
+    @Query('error') error?: string,
   ) {
     const user = req.session?.user;
     let effectiveStatus = status || undefined;
@@ -71,6 +72,7 @@ export class SafetyDocumentController {
       user,
       uploaded: uploaded === 'true',
       reviewed: reviewed === 'true',
+      error: error ? decodeURIComponent(error) : null,
     };
   }
 
@@ -84,6 +86,7 @@ export class SafetyDocumentController {
   getUploadPage(@Req() req: Request) {
     return {
       title: 'Submit Food Safety Document — TrueLabel',
+      activeNav: 'documents',
       user: req.session.user,
     };
   }
@@ -147,12 +150,14 @@ export class SafetyDocumentController {
     if (licenceNumber && licenceNumber.trim()) {
       result = await this.documentService.verifyLicence(licenceNumber);
     }
+    const sampleLicences = await this.documentService.getSampleLicences(6);
 
     return {
       title: 'Manufacturer Licence Verification Registry — TrueLabel',
       activeNav: 'verify',
       licenceNumber: licenceNumber ? licenceNumber.trim() : '',
       result,
+      sampleLicences,
       user: req.session?.user,
     };
   }

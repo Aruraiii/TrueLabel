@@ -205,11 +205,12 @@
         <!-- Discovery Filter Query Chips -->
         <div class="flex flex-wrap items-center gap-2 text-xs text-slate-600 pt-1">
           <span class="font-bold text-slate-500">Quick queries:</span>
-          <a href="/catalog?q=Oat" class="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium transition-colors border border-slate-200">Organic Oat Drink</a>
-          <a href="/catalog?q=Peanut" class="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium transition-colors border border-slate-200">Natural Peanut Butter</a>
-          <a href="/catalog?category=Dairy" class="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium transition-colors border border-slate-200">Dairy</a>
-          <a href="/catalog?tag=Gluten-Free" class="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium transition-colors border border-slate-200">Gluten-Free</a>
-          <a href="/catalog?tag=Vegan" class="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium transition-colors border border-slate-200">Vegan</a>
+          {{#each quickCategories}}
+            <a href="/catalog?category={{urlEncode this}}" class="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium transition-colors border border-slate-200">{{this}}</a>
+          {{/each}}
+          {{#each quickTags}}
+            <a href="/catalog?tag={{urlEncode this}}" class="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium transition-colors border border-slate-200">{{this}}</a>
+          {{/each}}
         </div>
       </div>
 
@@ -238,7 +239,9 @@
         <div class="flex items-center justify-between border-b-2 border-slate-900 pb-4 mb-4">
           <div>
             <div class="text-[10px] font-mono uppercase font-bold tracking-wider text-slate-500">Official TrueLabel Dossier</div>
-            <div class="font-extrabold text-slate-950 text-base leading-tight mt-0.5">PureHarvest Organic Oat Drink</div>
+            <div class="font-extrabold text-slate-950 text-base leading-tight mt-0.5">
+              {{#if dossierProduct}}{{dossierProduct.brand}} {{dossierProduct.name}}{{else}}PureHarvest Organic Oat Drink{{/if}}
+            </div>
           </div>
           <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-emerald-100 text-emerald-800 border border-emerald-300">
             Verified Record
@@ -250,14 +253,14 @@
           <div>
             <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Food Quality Score</div>
             <div class="text-3xl font-black text-emerald-700 font-mono tracking-tight">
-              92<span class="text-lg text-slate-400 font-bold">/100</span>
+              {{#if dossierProduct}}{{dossierProduct.qualityScore}}{{else}}92{{/if}}<span class="text-lg text-slate-400 font-bold">/100</span>
             </div>
             <div class="text-[11px] font-bold text-emerald-800 mt-0.5">Tier 1 · Superior Transparency</div>
           </div>
           <div class="text-right text-xs space-y-1">
-            <div class="text-slate-500 font-medium">Serving Size: <strong class="text-slate-800">250 ml</strong></div>
-            <div class="text-slate-500 font-medium">Energy: <strong class="text-slate-800 font-mono">120 kcal</strong></div>
-            <div class="text-slate-500 font-medium">Barcode: <strong class="text-slate-800 font-mono">9312345678901</strong></div>
+            <div class="text-slate-500 font-medium">Serving: <strong class="text-slate-800">{{#if dossierProduct}}{{dossierProduct.servingSize}}{{dossierProduct.servingUnit}}{{else}}250 ml{{/if}}</strong></div>
+            <div class="text-slate-500 font-medium">Category: <strong class="text-slate-800">{{#if dossierProduct}}{{dossierProduct.category}}{{else}}Beverages{{/if}}</strong></div>
+            <div class="text-slate-500 font-medium">Barcode: <strong class="text-slate-800 font-mono">{{#if dossierProduct}}{{dossierProduct.barcode}}{{else}}9312345678901{{/if}}</strong></div>
           </div>
         </div>
 
@@ -299,7 +302,7 @@
         <!-- Action Button -->
         <div class="mt-4 pt-3 border-t border-slate-100">
           <a
-            href="/catalog/product/1"
+            href="{{#if dossierProduct}}/catalog/product/{{dossierProduct.id}}{{else}}/catalog{{/if}}"
             class="w-full py-2.5 px-4 rounded-lg bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider text-center flex items-center justify-center gap-2 transition-colors shadow-sm"
           >
             <span>Inspect Full Product Nutrition Facts</span>
@@ -562,18 +565,12 @@
     <div class="text-center space-y-2 pt-2">
       <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Sample Registry Records (Click to Inspect Live):</div>
       <div class="flex flex-wrap items-center justify-center gap-2">
-        <a href="/safety/licence/verify?licenceNumber=BSTI-FOOD-2024-001" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-mono font-medium border border-slate-200 transition-colors">
-          BSTI-FOOD-2024-001 <span class="text-emerald-700 font-bold ml-1">✓ Valid BSTI</span>
-        </a>
-        <a href="/safety/licence/verify?licenceNumber=BFSA-REG-2023-88219" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-mono font-medium border border-slate-200 transition-colors">
-          BFSA-REG-2023-88219 <span class="text-emerald-700 font-bold ml-1">✓ Valid BFSA</span>
-        </a>
-        <a href="/safety/licence/verify?licenceNumber=BSTI-EXP-2022-9900" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-mono font-medium border border-slate-200 transition-colors">
-          BSTI-EXP-2022-9900 <span class="text-rose-700 font-bold ml-1">✕ Expired</span>
-        </a>
-        <a href="/safety/licence/verify?licenceNumber=FDA-SUSP-2024-0412" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-mono font-medium border border-slate-200 transition-colors">
-          FDA-SUSP-2024-0412 <span class="text-amber-700 font-bold ml-1">⚠️ Suspended</span>
-        </a>
+        {{#each sampleLicences}}
+          <a href="/safety/licence/verify?licenceNumber={{urlEncode this.licenceNumber}}" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-mono font-medium border border-slate-200 transition-colors">
+            {{this.licenceNumber}}
+            {{#if (eq this.status 'valid')}}<span class="text-emerald-700 font-bold ml-1">✓ Valid</span>{{else}}{{#if (eq this.status 'expired')}}<span class="text-rose-700 font-bold ml-1">✕ Expired</span>{{else}}<span class="text-amber-700 font-bold ml-1">⚠️ {{this.status}}</span>{{/if}}{{/if}}
+          </a>
+        {{/each}}
       </div>
     </div>
   </section>

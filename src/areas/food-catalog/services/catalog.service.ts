@@ -52,9 +52,13 @@ export class CatalogService {
     }
 
     if (dto.category && dto.category.trim()) {
-      queryBuilder.andWhere('LOWER(product.category) = :cat', {
-        cat: dto.category.trim().toLowerCase(),
-      });
+      const cat = `%${dto.category.trim().toLowerCase()}%`;
+      queryBuilder.andWhere('LOWER(product.category) LIKE :cat', { cat });
+    }
+
+    if (dto.tag && dto.tag.trim()) {
+      const tagLower = `%${dto.tag.trim().toLowerCase()}%`;
+      queryBuilder.andWhere('LOWER(product.dietaryTags) LIKE :tag', { tag: tagLower });
     }
 
     if (dto.minScore) {
@@ -67,17 +71,8 @@ export class CatalogService {
 
     const [items, total] = await queryBuilder.getManyAndCount();
 
-    // In-memory filter for dietaryTags if tag is specified
-    let filteredItems = items;
-    if (dto.tag && dto.tag.trim()) {
-      const tagLower = dto.tag.trim().toLowerCase();
-      filteredItems = items.filter((p) =>
-        p.dietaryTags?.some((t) => t.toLowerCase() === tagLower),
-      );
-    }
-
     return {
-      items: filteredItems,
+      items,
       total,
       page,
       totalPages: Math.ceil(total / limit) || 1,

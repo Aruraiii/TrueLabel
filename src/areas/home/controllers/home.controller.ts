@@ -25,6 +25,8 @@ export class HomeController {
 
     // 2. Fetch safety documents & compliance statistics
     const docStats = await this.documentService.getStatistics();
+    const sampleLicences = await this.documentService.getSampleLicences(6);
+    const filterOptions = await this.catalogService.getFilterOptions();
 
     // 3. User session & personalized health profile evaluation
     const user = req.session?.user || null;
@@ -63,6 +65,10 @@ export class HomeController {
       title: 'TrueLabel — Food Quality, Safety & Diet Intelligence Platform',
       activeNav: 'home',
       featuredProducts: annotatedFeatured,
+      dossierProduct: annotatedFeatured.length > 0 ? annotatedFeatured[0] : null,
+      sampleLicences,
+      quickCategories: filterOptions.categories.slice(0, 3),
+      quickTags: filterOptions.dietaryTags.slice(0, 3),
       stats: {
         products: totalProducts,
         documents: docStats.total,

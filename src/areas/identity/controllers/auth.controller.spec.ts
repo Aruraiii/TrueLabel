@@ -51,6 +51,28 @@ describe('AuthController (Unit Tests)', () => {
     });
   });
 
+  describe('getRegisterPage', () => {
+    it('should render register page when user is not authenticated', () => {
+      const mockReq = { session: { user: null } } as any;
+      const mockRes = { render: jest.fn() } as any;
+      controller.getRegisterPage(mockReq, mockRes);
+      expect(mockRes.render).toHaveBeenCalledWith(
+        'areas/identity/views/register',
+        expect.objectContaining({
+          title: 'Create Account — TrueLabel',
+          user: null,
+        }),
+      );
+    });
+
+    it('should redirect to / if user is already authenticated', () => {
+      const mockReq = { session: { user: { id: 1, role: 'consumer' } } } as any;
+      const mockRes = { redirect: jest.fn() } as any;
+      controller.getRegisterPage(mockReq, mockRes);
+      expect(mockRes.redirect).toHaveBeenCalledWith('/');
+    });
+  });
+
   describe('handleLogin', () => {
     it('should authenticate user and redirect to / on success', async () => {
       const mockUser = { id: 1, name: 'Alice', email: 'alice@example.com', role: 'consumer' as const };
