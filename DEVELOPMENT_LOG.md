@@ -332,3 +332,42 @@
   - `npm test`: 10 test suites passed, 72 unit tests passing (100%).
   - `npm run test:e2e`: 2 test suites (11 tests) passing (100%).
   - `npm run build`: Compiled with exit code 0.
+
+---
+
+### Entry 018 | 2026-11-15 17:33:00 +06:00 | Component Redesign & Academic Token Sanitization
+- **Action**: Performed complete sweep across all user-facing views to remove unprofessional course and internal development keywords ("Feature F06", "Feature F01", "Sprint 1", "CSE470 viva"), replacing them with production-grade industry terminology. Redesigned the Licence Verification section to match the clinical paper aesthetic.
+- **Specific Remediation**:
+  1. **Licence Verification Section Redesign (`src/areas/home/views/index.hbs`)**:
+     - Converted the dark black card into an authoritative clinical paper card (`bg-white border-2 border-slate-900 rounded-2xl`).
+     - Removed the green `FEATURE F06 REGULATORY ENGINE` badge; replaced with `National Food Standards Registry`.
+     - Fixed the input placeholder text truncation: shortened to `Enter licence number (e.g. BSTI-FOOD-2024-001)` to prevent overflow across viewports.
+     - Styled the submit button with clean, authoritative charcoal `bg-slate-950 hover:bg-slate-800`.
+     - Standardized sample demo links with crisp high-contrast status chips (`✓ Valid BSTI`, `✓ Valid BFSA`, `✕ Expired`, `⚠️ Suspended`).
+  2. **Global Academic Token Sanitization**:
+     - `src/areas/home/views/index.hbs`: Replaced "Feature F03/F04/F06/F08" and "CSE470 Group 7" with "Toxicological Screening Engine", "Multi-Factor Scoring Model", "Regulatory Compliance Audit", "Public Health Recall Surveillance", and "National Food Quality & Safety Architecture".
+     - `src/areas/food-safety/views/documents.hbs`: Removed "Feature F06".
+     - `src/areas/food-safety/views/upload.hbs`: Removed "Feature F06".
+     - `src/areas/food-safety/views/verify-licence.hbs`: Removed "Feature F06" and changed "Quick Viva Evaluation Tests" to "Sample Registry Records for Instant Testing".
+     - `src/areas/personal-food/views/profile.hbs`: Replaced "Feature F16 · Active Health Profile" with "Personal Health Profile".
+     - `src/areas/food-catalog/views/detail.hbs`: Replaced "Explainable Formula (F04)" with "Explainable Formula".
+     - `src/areas/food-catalog/views/create.hbs`: Removed "(Feature F01)".
+     - `src/shared/views/partials/footer.hbs`: Replaced "CSE470 Group 7 Project | Strict MVC Architecture with Areas" and "Sprint 1 Release · High Business Value Delivery" with "National Food Transparency & Safety Intelligence Standard" and "Official Standards Release · Public Quality Architecture".
+     - `src/shared/views/partials/viva_dock.hbs`: Replaced "CSE470 Viva" with "Persona Switcher" and "Viva Persona" with "Active Persona".
+     - `src/areas/identity/views/login.hbs`: Replaced "Quick Demo Accounts (or use header role switcher)" with "Demo Accounts for Platform Testing".
+- **Verification**:
+  - `npm test`: 10 passed test suites, 72 unit tests passing (100%).
+  - `npm run test:e2e`: 2 passed test suites, 11 tests passing (100%).
+  - `npm run build`: Compiled with exit code 0.
+
+---
+
+### Entry 019 | 2026-11-15 17:39:00 +06:00 | Complete Removal of Top Indicator Bar & Footer Sprint Tokens
+- **Action**: Completely removed the top indicator bar from the landing page and eliminated all sprint/release markers from the footer.
+- **Specific Remediation**:
+  1. `src/areas/home/views/index.hbs`: Deleted the top indicator box containing `TrueLabel Public Health & Transparency Initiative | National Food Quality & Safety Architecture | Methodology v1.4 | PostgreSQL Active`. The page now opens directly with clean persona intelligence and the editorial hero.
+  2. `src/shared/views/partials/footer.hbs`: Deleted the right-hand release line (`Sprint 1 Release · High Business Value Delivery` / `Official Standards Release`). The footer now presents a clean, minimalist header and the official health disclaimer.
+- **Verification**:
+  - `npm test`: 10 passed test suites, 72 unit tests passing (100%).
+  - `npm run test:e2e`: 2 passed test suites, 11 tests passing (100%).
+  - `npm run build`: Compiled with exit code 0.

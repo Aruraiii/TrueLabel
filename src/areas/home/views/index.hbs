@@ -1,19 +1,4 @@
-<div class="space-y-20 pb-16">
-
-  <!-- TOP BANNER: Institutional Standard Indicator -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 py-2 px-4 rounded-lg bg-slate-100 border border-slate-200 text-xs text-slate-600">
-    <div class="flex items-center gap-2">
-      <span class="inline-block w-2 h-2 rounded-full bg-emerald-600"></span>
-      <span class="font-bold text-slate-800">TrueLabel Public Health & Transparency Initiative</span>
-      <span class="text-slate-400 hidden md:inline">|</span>
-      <span class="text-slate-500 hidden md:inline">CSE470 Group 7 Independent Food Safety Architecture</span>
-    </div>
-    <div class="flex items-center gap-3 text-[11px] font-mono text-slate-500">
-      <span>Methodology v1.4</span>
-      <span>·</span>
-      <span>PostgreSQL Active</span>
-    </div>
-  </div>
+<div class="space-y-16 pb-16">
 
   <!-- ROLE-CONTEXTUAL DASHBOARD MODULE (Adapts per Role) -->
   {{#if (eq user.role "consumer")}}
@@ -368,7 +353,7 @@
           </p>
         </div>
         <div class="text-[11px] font-bold text-slate-500 pt-3 border-t border-slate-200">
-          Feature F03 Rule Base
+          Toxicological Screening Engine
         </div>
       </div>
 
@@ -382,7 +367,7 @@
           </p>
         </div>
         <div class="text-[11px] font-bold text-slate-500 pt-3 border-t border-slate-200">
-          Feature F04 Algorithm
+          Multi-Factor Scoring Model
         </div>
       </div>
 
@@ -396,7 +381,7 @@
           </p>
         </div>
         <div class="text-[11px] font-bold text-slate-500 pt-3 border-t border-slate-200">
-          Feature F06 Verification
+          Regulatory Compliance Audit
         </div>
       </div>
 
@@ -410,7 +395,7 @@
           </p>
         </div>
         <div class="text-[11px] font-bold text-slate-500 pt-3 border-t border-slate-200">
-          Feature F08 / N2 Shield
+          Public Health Recall Surveillance
         </div>
       </div>
     </div>
@@ -543,16 +528,16 @@
   </section>
 
   <!-- SECTION 5: INTERACTIVE GOVERNMENT LICENCE VERIFIER (BSTI, BFSA, FDA) -->
-  <section class="bg-slate-950 rounded-2xl text-white p-8 sm:p-12 border border-slate-900 shadow-xl space-y-6">
+  <section class="bg-white rounded-2xl p-8 sm:p-12 border-2 border-slate-900 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-6">
     <div class="max-w-3xl mx-auto text-center space-y-3">
-      <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-950 text-emerald-400 border border-emerald-800">
-        Feature F06 Regulatory Engine
+      <span class="inline-flex items-center px-3 py-1 rounded text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+        National Food Standards Registry
       </span>
-      <h2 class="font-serif font-normal text-3xl sm:text-4xl text-white tracking-tight">
+      <h2 class="font-serif font-normal text-3xl sm:text-4xl text-slate-950 tracking-tight">
         Verify Manufacturer Accreditation Live
       </h2>
-      <p class="text-slate-300 text-sm max-w-xl mx-auto leading-relaxed">
-        Verify the legal registration and regulatory standing of food manufacturers against national and international food standards bodies.
+      <p class="text-slate-600 text-sm max-w-xl mx-auto leading-relaxed">
+        Verify the legal registration standing, accreditation status, and expiration dates of food manufacturers against national and international food standards bodies (BSTI, BFSA, FDA).
       </p>
     </div>
 
@@ -562,12 +547,12 @@
         type="text"
         name="licenceNumber"
         required
-        placeholder="Enter Licence / Registration Number (e.g. BSTI-FOOD-2024-001)"
-        class="flex-grow px-4 py-3 rounded-lg bg-slate-900 text-white border border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-sm placeholder-slate-500"
+        placeholder="Enter licence number (e.g. BSTI-FOOD-2024-001)"
+        class="flex-grow px-4 py-3 rounded-lg bg-slate-50 text-slate-900 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 font-mono text-sm placeholder-slate-400 font-medium"
       />
       <button
         type="submit"
-        class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider rounded-lg transition-colors whitespace-nowrap shadow-sm"
+        class="px-6 py-3 bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider rounded-lg transition-colors whitespace-nowrap shadow-sm"
       >
         Verify Credential
       </button>
@@ -575,19 +560,19 @@
 
     <!-- Quick Sample Demo Tests -->
     <div class="text-center space-y-2 pt-2">
-      <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Quick Test Records (Click to Inspect Live):</div>
+      <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Sample Registry Records (Click to Inspect Live):</div>
       <div class="flex flex-wrap items-center justify-center gap-2">
-        <a href="/safety/licence/verify?licenceNumber=BSTI-FOOD-2024-001" class="px-3 py-1.5 rounded bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-mono border border-slate-800 transition-colors">
-          BSTI-FOOD-2024-001 <span class="text-emerald-400 font-bold ml-1">✓ Valid BSTI</span>
+        <a href="/safety/licence/verify?licenceNumber=BSTI-FOOD-2024-001" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-mono font-medium border border-slate-200 transition-colors">
+          BSTI-FOOD-2024-001 <span class="text-emerald-700 font-bold ml-1">✓ Valid BSTI</span>
         </a>
-        <a href="/safety/licence/verify?licenceNumber=BFSA-REG-2023-88219" class="px-3 py-1.5 rounded bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-mono border border-slate-800 transition-colors">
-          BFSA-REG-2023-88219 <span class="text-emerald-400 font-bold ml-1">✓ Valid BFSA</span>
+        <a href="/safety/licence/verify?licenceNumber=BFSA-REG-2023-88219" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-mono font-medium border border-slate-200 transition-colors">
+          BFSA-REG-2023-88219 <span class="text-emerald-700 font-bold ml-1">✓ Valid BFSA</span>
         </a>
-        <a href="/safety/licence/verify?licenceNumber=BSTI-EXP-2022-9900" class="px-3 py-1.5 rounded bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-mono border border-slate-800 transition-colors">
-          BSTI-EXP-2022-9900 <span class="text-rose-400 font-bold ml-1">✕ Expired</span>
+        <a href="/safety/licence/verify?licenceNumber=BSTI-EXP-2022-9900" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-mono font-medium border border-slate-200 transition-colors">
+          BSTI-EXP-2022-9900 <span class="text-rose-700 font-bold ml-1">✕ Expired</span>
         </a>
-        <a href="/safety/licence/verify?licenceNumber=FDA-SUSP-2024-0412" class="px-3 py-1.5 rounded bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-mono border border-slate-800 transition-colors">
-          FDA-SUSP-2024-0412 <span class="text-amber-400 font-bold ml-1">⚠️ Suspended</span>
+        <a href="/safety/licence/verify?licenceNumber=FDA-SUSP-2024-0412" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-mono font-medium border border-slate-200 transition-colors">
+          FDA-SUSP-2024-0412 <span class="text-amber-700 font-bold ml-1">⚠️ Suspended</span>
         </a>
       </div>
     </div>
