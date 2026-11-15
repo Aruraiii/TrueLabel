@@ -5,6 +5,7 @@ import { IdentityModule } from './areas/identity/identity.module';
 import { FoodCatalogModule } from './areas/food-catalog/food-catalog.module';
 import { PersonalFoodModule } from './areas/personal-food/personal-food.module';
 import { FoodSafetyModule } from './areas/food-safety/food-safety.module';
+import { HomeModule } from './areas/home/home.module';
 import { SupabaseModule } from './config/supabase.module';
 import { SeedService } from './config/seed.service';
 import { User } from './areas/identity/models/user.entity';
@@ -32,6 +33,7 @@ import { ManufacturerLicence } from './areas/food-safety/models/manufacturer-lic
     FoodCatalogModule,
     PersonalFoodModule,
     FoodSafetyModule,
+    HomeModule,
   ],
   providers: [SeedService],
 })

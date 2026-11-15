@@ -37,6 +37,7 @@ export class PreferenceController {
 
     return {
       title: 'Dietary Profile & Allergen Preferences — TrueLabel',
+      activeNav: 'profile',
       profile,
       standardAllergens: STANDARD_ALLERGENS,
       standardDiets: STANDARD_DIETS,

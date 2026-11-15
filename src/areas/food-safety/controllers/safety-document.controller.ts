@@ -47,6 +47,7 @@ export class SafetyDocumentController {
 
     return {
       title: 'Food Safety Documents & Verified Accreditations — TrueLabel',
+      activeNav: 'documents',
       documents,
       stats,
       currentFilter: { status: status || 'all', type: documentType || 'all' },
@@ -132,6 +133,7 @@ export class SafetyDocumentController {
 
     return {
       title: 'Manufacturer Licence Verification Registry — TrueLabel',
+      activeNav: 'verify',
       licenceNumber: licenceNumber ? licenceNumber.trim() : '',
       result,
       user: req.session?.user,

@@ -256,3 +256,52 @@
 
 
 
+
+---
+
+### Entry 015 | 2026-11-15 16:53:00 +06:00 | Frontend Architecture Audit & Dedicated Home Page Delivery
+- **Action**: Conducted comprehensive frontend UI/UX audit and delivered a high-converting, authoritative **Home Page** along with a completely reorganized, responsive **Navbar**.
+- **Audit Findings & Architectural Remediation**:
+  1. **Root Redirect Resolution**: Eliminated legacy raw redirect (`/ -> /catalog`) in `src/main.ts`. Implemented dedicated `HomeModule` (`src/areas/home/`) with `HomeController` serving `/` following strict MVC and Area encapsulation.
+  2. **Navbar Reorganization**:
+     - Grouped navigation into distinct zones: Brand Identity, Primary Links (`Home`, `Food Catalog`, `Safety Documents`, `Verify Licence`, `Dietary Profile`), Role Management Tools (`+ Add Food`, `+ Upload Cert`, `Review Queue`), and compact Viva Demo Role Switcher.
+     - Added fully responsive mobile navigation drawer with hamburger toggle button and accessible vanilla JS controller.
+     - Added `activeNav` state indicators across controllers and templates.
+     - Changed brand logo link from `/catalog` to root `/`.
+  3. **Home Page Blueprint (`areas/home/views/index.hbs`)**:
+     - Built an authoritative hero section with live omnibar search, quick discovery chips (`Oat Milk`, `Peanut Butter`, `Gluten-Free`), and platform CTAs.
+     - Live transparency pulse displaying real-time database counts (audited foods, safety documents, inspector approvals).
+     - Visual breakdown of the **4 Pillars of TrueLabel** (Quality Score formula, Allergen Guard, Regulatory Verification, Recall Shield).
+     - Curated **Featured Food Products Spotlight** showing real database records with live Quality Scores and personalized allergen alert badges.
+     - Interactive **Regulatory Licence Checker Widget** supporting on-page verification against BSTI, BFSA, and FDA demo records.
+     - Ecosystem pathways tailored for Consumers, Manufacturers, and Food Safety Inspectors.
+  4. **Dynamic CSS & Micro-Interactions (`public/css/style.css`)**:
+     - Added smooth card elevations (`.card-lift`), breathing pulse beacons, subtle entrance animations, and tabular typography for clinical metrics.
+- **Test Execution & Verification**:
+  - `src/areas/home/controllers/home.controller.spec.ts`: 2 unit tests covering guest visitors and authenticated profile conflict mapping (100% pass).
+  - `test/catalog.e2e-spec.ts`: Added E2E test verifying `GET /` returning status 200 OK and rendering the home page (100% pass).
+  - **Unit Tests**: 10 passed test suites, 71 unit tests passing cleanly with 0 failures.
+  - **E2E Tests**: 2 test suites (11 tests) passing cleanly with 0 failures.
+  - **Build Status**: `npm run build` completed with exit code 0.
+
+---
+
+### Entry 016 | 2026-11-15 17:09:00 +06:00 | Professional Editorial Typography & Clinical Re-Design of Home Page
+- **Action**: Performed secondary deep audit following the `frontend-design` skill to eliminate cliché AI tropes (dark crypto gradient hero, saturated blur orbs) and replace them with an authentic, institutional, high-authority **Clinical Editorial** design system.
+- **Visual Design & Typography Upgrades**:
+  1. **High-Authority Type System**:
+     - Imported `Newsreader` (optical size 72, serif) for authoritative investigative headlines.
+     - Imported `Plus Jakarta Sans` for clean, geometric, high-legibility interface controls.
+     - Imported `JetBrains Mono` for tabular nutrition data, barcodes, and regulatory licence numbers.
+     - Set body on crisp `#FBFBFB` lab paper background with `#0F172A` deep ink text.
+  2. **Asymmetrical Editorial Hero**:
+     - Left column: Authoritative mission headline ("Every ingredient decoded. Every safety claim verified."), clinical prose, and high-contrast food search omnibar with instant query chips.
+     - Right column: Authentic **Specimen Product Dossier** showcasing live inspection metrics for PureHarvest Organic Oat Drink (Score 92/100, 0 synthetic additives, allergen tags, and valid BSTI licence).
+  3. **Mathematical Formula Breakdown (Zero Black-Box Obscurity)**:
+     - Clear visual bar and 4-column scientific breakdown explaining the exact weights of the 0–100 score: 40% Ingredients & Additives, 30% Nutritional Profile, 20% Regulatory Accreditations, 10% Batch Recalls.
+  4. **Government Accreditation Verifier**:
+     - Interactive on-page lookup tool with clickable BSTI, BFSA, and FDA demo verification links.
+- **Verification**:
+  - `npm test`: 10 passed test suites, 71 unit tests passing (100%).
+  - `npm run test:e2e`: 2 passed test suites, 11 tests passing (100%).
+  - `npm run build`: Exit code 0.
