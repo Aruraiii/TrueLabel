@@ -22,10 +22,10 @@
         {{/if}}
       </div>
 
-      <div class="flex gap-2">
+      <div class="flex flex-wrap sm:flex-nowrap gap-2">
         <select
           name="category"
-          class="px-3 py-2.5 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white text-slate-700"
+          class="w-full sm:w-auto px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent bg-white text-slate-800 shadow-sm transition-all"
         >
           <option value="">All Categories</option>
           {{#each categories}}
@@ -35,7 +35,7 @@
 
         <select
           name="tag"
-          class="px-3 py-2.5 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white text-slate-700"
+          class="w-full sm:w-auto px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent bg-white text-slate-800 shadow-sm transition-all"
         >
           <option value="">All Dietary Tags</option>
           {{#each dietaryTags}}
@@ -45,7 +45,7 @@
 
         <button
           type="submit"
-          class="px-5 py-2.5 bg-slate-900 text-white font-bold text-sm rounded hover:bg-slate-800 transition-colors whitespace-nowrap"
+          class="w-full sm:w-auto px-5 py-2.5 bg-slate-900 text-white font-bold text-sm rounded-lg hover:bg-slate-800 transition-colors whitespace-nowrap shadow-sm"
         >
           Search Foods
         </button>
