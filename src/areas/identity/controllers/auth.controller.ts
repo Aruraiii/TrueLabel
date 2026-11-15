@@ -31,7 +31,7 @@ export class AuthController {
     @Query('unauthorized') unauthorized?: string,
   ) {
     if (req.session?.user) {
-      return res.redirect('/catalog');
+      return res.redirect('/');
     }
     return res.render('areas/identity/views/login', {
       title: 'Sign In — TrueLabel',
@@ -51,7 +51,7 @@ export class AuthController {
     try {
       const user = await this.authService.validateUser(loginDto);
       req.session.user = user;
-      return res.redirect('/catalog');
+      return res.redirect('/');
     } catch (err) {
       return res.render('areas/identity/views/login', {
         title: 'Sign In — TrueLabel',
@@ -81,7 +81,7 @@ export class AuthController {
     try {
       const user = await this.authService.register(registerDto);
       req.session.user = user;
-      return res.redirect('/catalog');
+      return res.redirect('/');
     } catch (err) {
       return res.render('areas/identity/views/register', {
         title: 'Create Account — TrueLabel',
@@ -96,7 +96,7 @@ export class AuthController {
   @Post('logout')
   handleLogout(@Req() req: Request, @Res() res: Response) {
     req.session.destroy(() => {
-      res.redirect('/catalog');
+      res.redirect('/');
     });
   }
 
@@ -129,7 +129,7 @@ export class AuthController {
       updatedAt: new Date(),
     };
 
-    return res.redirect('/catalog');
+    return res.redirect('/');
   }
 }
 

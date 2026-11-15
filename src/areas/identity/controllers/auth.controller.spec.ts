@@ -43,16 +43,16 @@ describe('AuthController (Unit Tests)', () => {
       );
     });
 
-    it('should redirect to /catalog if user is already authenticated', () => {
+    it('should redirect to / if user is already authenticated', () => {
       const mockReq = { session: { user: { id: 1, role: 'consumer' } } } as any;
       const mockRes = { redirect: jest.fn() } as any;
       controller.getLoginPage(mockReq, mockRes);
-      expect(mockRes.redirect).toHaveBeenCalledWith('/catalog');
+      expect(mockRes.redirect).toHaveBeenCalledWith('/');
     });
   });
 
   describe('handleLogin', () => {
-    it('should authenticate user and redirect to /catalog on success', async () => {
+    it('should authenticate user and redirect to / on success', async () => {
       const mockUser = { id: 1, name: 'Alice', email: 'alice@example.com', role: 'consumer' as const };
       (authService.validateUser as jest.Mock).mockResolvedValue(mockUser);
 
@@ -69,7 +69,7 @@ describe('AuthController (Unit Tests)', () => {
       );
 
       expect(mockReq.session.user).toEqual(mockUser);
-      expect(mockRes.redirect).toHaveBeenCalledWith('/catalog');
+      expect(mockRes.redirect).toHaveBeenCalledWith('/');
     });
 
     it('should render login page with error on invalid credentials', async () => {
@@ -97,6 +97,44 @@ describe('AuthController (Unit Tests)', () => {
     });
   });
 
+  describe('handleRegister', () => {
+    it('should register user and redirect to / on success', async () => {
+      const mockUser = { id: 2, name: 'Bob', email: 'bob@example.com', role: 'manufacturer' as const };
+      (authService.register as jest.Mock).mockResolvedValue(mockUser);
+
+      const mockReq = { session: {} } as any;
+      const mockRes = {
+        redirect: jest.fn(),
+        render: jest.fn(),
+      } as any;
+
+      await controller.handleRegister(
+        { name: 'Bob', email: 'bob@example.com', password: 'password123', role: 'manufacturer' as const },
+        mockReq,
+        mockRes,
+      );
+
+      expect(mockReq.session.user).toEqual(mockUser);
+      expect(mockRes.redirect).toHaveBeenCalledWith('/');
+    });
+  });
+
+  describe('handleLogout', () => {
+    it('should destroy session and redirect to /', () => {
+      const mockReq = {
+        session: {
+          destroy: jest.fn((callback) => callback()),
+        },
+      } as any;
+      const mockRes = { redirect: jest.fn() } as any;
+
+      controller.handleLogout(mockReq, mockRes);
+
+      expect(mockReq.session.destroy).toHaveBeenCalled();
+      expect(mockRes.redirect).toHaveBeenCalledWith('/');
+    });
+  });
+
   describe('demoSwitchRole', () => {
     it('should switch role and redirect when in non-production mode', () => {
       const originalEnv = process.env.NODE_ENV;
@@ -109,7 +147,7 @@ describe('AuthController (Unit Tests)', () => {
 
       expect(mockReq.session.user).toBeDefined();
       expect(mockReq.session.user.role).toBe('manufacturer');
-      expect(mockRes.redirect).toHaveBeenCalledWith('/catalog');
+      expect(mockRes.redirect).toHaveBeenCalledWith('/');
 
       process.env.NODE_ENV = originalEnv;
     });
