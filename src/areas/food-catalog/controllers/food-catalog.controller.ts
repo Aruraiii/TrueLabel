@@ -12,6 +12,7 @@ import {
   UsePipes,
   ValidationPipe,
   ParseIntPipe,
+  ForbiddenException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { CatalogService } from '../services/catalog.service';
@@ -188,6 +189,15 @@ export class FoodCatalogController {
     @Req() req: Request,
   ) {
     const product = await this.catalogService.findById(id);
+    const user = req.session?.user;
+
+    // Strict Object-Level Authorization: Manufacturers may only access their own product edit form
+    if (user?.role === 'manufacturer' && product.manufacturerId !== user.id) {
+      throw new ForbiddenException(
+        'Manufacturers are only permitted to edit their own food products',
+      );
+    }
+
     const filterOptions = await this.catalogService.getFilterOptions();
 
     return {
@@ -195,7 +205,7 @@ export class FoodCatalogController {
       product,
       categories: filterOptions.categories,
       dietaryTags: filterOptions.dietaryTags,
-      user: req.session?.user,
+      user,
     };
   }
 

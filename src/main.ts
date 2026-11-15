@@ -2,9 +2,12 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import * as fs from 'fs';
+import * as crypto from 'crypto';
 import * as session from 'express-session';
 import * as hbs from 'hbs';
 import { AppModule } from './app.module';
+import { AuthExceptionFilter } from './common/filters/auth-exception.filter';
+import { CsrfGuard } from './common/guards/csrf.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -60,15 +63,44 @@ async function bootstrap() {
     return false;
   });
 
+  // Session & Security Hardening
+  const isProduction = process.env.NODE_ENV === 'production';
+  const sessionSecret = process.env.SESSION_SECRET;
+  if (!sessionSecret && isProduction) {
+    throw new Error('FATAL: SESSION_SECRET environment variable is required in production.');
+  }
+
   // Session Middleware
   app.use(
     session({
-      secret: process.env.SESSION_SECRET || 'truelabel_super_secret_session_key_2026',
+      secret: sessionSecret || 'truelabel_super_secret_session_key_2026',
       resave: false,
       saveUninitialized: false,
-      cookie: { maxAge: 24 * 60 * 60 * 1000 },
+      cookie: {
+        maxAge: 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: isProduction,
+      },
     }),
   );
+
+  // CSRF token generation and template exposure middleware
+  app.use((req: any, res: any, next: any) => {
+    if (req.session) {
+      if (!req.session.csrfToken) {
+        req.session.csrfToken = crypto.randomBytes(32).toString('hex');
+      }
+      res.locals.csrfToken = req.session.csrfToken;
+    }
+    res.locals.enableDemoSwitcher =
+      process.env.NODE_ENV !== 'production' || process.env.ENABLE_DEMO_SWITCHER === 'true';
+    next();
+  });
+
+  // Global Guards & Exception Filters
+  app.useGlobalGuards(new CsrfGuard());
+  app.useGlobalFilters(new AuthExceptionFilter());
 
 
   const port = process.env.PORT || 3000;

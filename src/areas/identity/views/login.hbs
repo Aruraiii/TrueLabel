@@ -10,7 +10,14 @@
     </div>
   {{/if}}
 
+  {{#if unauthorized}}
+    <div class="mb-4 p-3 bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded font-medium">
+      Please sign in to access this protected resource.
+    </div>
+  {{/if}}
+
   <form action="/auth/login" method="POST" class="space-y-4">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <div>
       <label for="email" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Email address</label>
       <input

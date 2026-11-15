@@ -57,9 +57,37 @@ export class PreferenceController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const userId = req.session.user.id;
-    await this.preferenceService.updateProfile(userId, dto);
-    return res.redirect('/personal/profile?saved=true');
+    try {
+      const userId = req.session.user.id;
+      // In standard HTML form POSTs, unchecking all checkboxes omits the keys from body.
+      // Explicitly normalize to empty array when omitted so unchecking can be persisted.
+      const normalizedDto: UpdatePreferenceProfileDto = {
+        ...dto,
+        allergies: req.body.allergies
+          ? Array.isArray(req.body.allergies)
+            ? req.body.allergies
+            : [req.body.allergies]
+          : [],
+        dietaryPreferences: req.body.dietaryPreferences
+          ? Array.isArray(req.body.dietaryPreferences)
+            ? req.body.dietaryPreferences
+            : [req.body.dietaryPreferences]
+          : [],
+      };
+      await this.preferenceService.updateProfile(userId, normalizedDto);
+      return res.redirect('/personal/profile?saved=true');
+    } catch (err) {
+      const profile = await this.preferenceService.findOrCreate(req.session.user.id);
+      return res.render('areas/personal-food/views/profile', {
+        title: 'Dietary Profile & Allergen Preferences — TrueLabel',
+        activeNav: 'profile',
+        profile: { ...profile, ...dto },
+        standardAllergens: STANDARD_ALLERGENS,
+        standardDiets: STANDARD_DIETS,
+        error: err.message || 'Failed to update dietary profile preferences',
+        user: req.session.user,
+      });
+    }
   }
 }
 

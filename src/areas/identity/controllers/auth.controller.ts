@@ -9,30 +9,39 @@ import {
   UsePipes,
   ValidationPipe,
   Param,
+  UseGuards,
+  ForbiddenException,
+  Query,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
 import { LoginDto } from '../models/dto/login.dto';
 import { RegisterDto } from '../models/dto/register.dto';
 import { UserRole } from '../models/user.entity';
+import { AuthThrottlerGuard } from '../../../common/guards/auth-throttler.guard';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Get('login')
-  @Render('areas/identity/views/login')
-  getLoginPage(@Req() req: Request) {
+  getLoginPage(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('unauthorized') unauthorized?: string,
+  ) {
     if (req.session?.user) {
-      return { redirect: '/catalog' };
+      return res.redirect('/catalog');
     }
-    return {
+    return res.render('areas/identity/views/login', {
       title: 'Sign In — TrueLabel',
       user: req.session?.user,
-    };
+      unauthorized: unauthorized === 'true',
+    });
   }
 
   @Post('login')
+  @UseGuards(AuthThrottlerGuard)
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async handleLogin(
     @Body() loginDto: LoginDto,
@@ -62,6 +71,7 @@ export class AuthController {
   }
 
   @Post('register')
+  @UseGuards(AuthThrottlerGuard)
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async handleRegister(
     @Body() registerDto: RegisterDto,
@@ -90,13 +100,22 @@ export class AuthController {
     });
   }
 
-  // Quick Switch for CSE470 Evaluation / Demo Viva
+  // Quick Switch for CSE470 Evaluation / Demo Viva (Gated in production)
   @Get('switch-role/:role')
   demoSwitchRole(
     @Param('role') role: UserRole,
     @Req() req: Request,
     @Res() res: Response,
   ) {
+    const isProduction = process.env.NODE_ENV === 'production';
+    const isDemoEnabled = process.env.ENABLE_DEMO_SWITCHER === 'true';
+
+    if (isProduction && !isDemoEnabled) {
+      throw new ForbiddenException(
+        'Demo persona switcher is strictly disabled in production environments.',
+      );
+    }
+
     const validRoles: UserRole[] = ['consumer', 'manufacturer', 'inspector', 'admin'];
     const chosenRole = validRoles.includes(role) ? role : 'consumer';
 
