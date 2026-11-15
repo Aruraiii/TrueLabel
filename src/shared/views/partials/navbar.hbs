@@ -159,10 +159,44 @@
         </div>
       {{/if}}
 
+      <!-- Theme Mode Toggle (Desktop) -->
+      <button
+        id="theme-toggle-desktop"
+        type="button"
+        class="p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-600 border border-slate-200"
+        title="Toggle color theme (Light / Dark)"
+        aria-label="Toggle color theme"
+      >
+        <!-- Sun icon (Active in Dark Mode) -->
+        <svg id="theme-sun-desktop" class="w-4 h-4 hidden text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        <!-- Moon icon (Active in Light Mode) -->
+        <svg id="theme-moon-desktop" class="w-4 h-4 block text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+      </button>
+
     </div>
 
-    <!-- Mobile Hamburger Toggle -->
+    <!-- Mobile Hamburger Toggle & Quick Theme Toggle -->
     <div class="flex items-center gap-2 lg:hidden">
+      <!-- Quick Theme Toggle for Mobile Header -->
+      <button
+        id="theme-toggle-mobile-header"
+        type="button"
+        class="p-2 rounded-lg text-slate-700 hover:text-slate-950 hover:bg-slate-100 border border-slate-200 transition-colors"
+        title="Toggle color theme"
+        aria-label="Toggle color theme"
+      >
+        <svg id="theme-sun-mobile-header" class="w-4 h-4 hidden text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        <svg id="theme-moon-mobile-header" class="w-4 h-4 block text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+      </button>
+
       <button
         id="mobile-nav-toggle"
         type="button"
@@ -269,6 +303,21 @@
       </div>
     {{/unless}}
 
+    <!-- Mobile Theme Switcher Row -->
+    <div class="pt-3 border-t border-slate-200 flex items-center justify-between px-1">
+      <div class="flex items-center gap-2 text-xs font-bold text-slate-700">
+        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+        <span>Color Theme</span>
+      </div>
+      <button
+        id="theme-toggle-drawer"
+        type="button"
+        class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700 hover:bg-slate-100 transition-colors"
+      >
+        <span id="theme-drawer-text">Switch Mode</span>
+      </button>
+    </div>
+
   </div>
 
   <!-- Vanilla JS Dropdown & Mobile Toggle Handlers -->
@@ -320,6 +369,63 @@
           }
         });
       }
+
+      // 3. Theme Toggle Handlers (Desktop & Mobile)
+      function updateThemeUI() {
+        const isDark = document.documentElement.classList.contains('dark');
+        
+        // Update desktop icons
+        const sunDesktop = document.getElementById('theme-sun-desktop');
+        const moonDesktop = document.getElementById('theme-moon-desktop');
+        if (sunDesktop && moonDesktop) {
+          if (isDark) {
+            sunDesktop.classList.remove('hidden');
+            moonDesktop.classList.add('hidden');
+          } else {
+            sunDesktop.classList.add('hidden');
+            moonDesktop.classList.remove('hidden');
+          }
+        }
+
+        // Update mobile header icons
+        const sunMobileHeader = document.getElementById('theme-sun-mobile-header');
+        const moonMobileHeader = document.getElementById('theme-moon-mobile-header');
+        if (sunMobileHeader && moonMobileHeader) {
+          if (isDark) {
+            sunMobileHeader.classList.remove('hidden');
+            moonMobileHeader.classList.add('hidden');
+          } else {
+            sunMobileHeader.classList.add('hidden');
+            moonMobileHeader.classList.remove('hidden');
+          }
+        }
+
+        // Update mobile drawer text
+        const drawerText = document.getElementById('theme-drawer-text');
+        if (drawerText) {
+          drawerText.textContent = isDark ? '🌙 Dark Active (Switch)' : '☀️ Light Active (Switch)';
+        }
+      }
+
+      function toggleTheme() {
+        const isDark = document.documentElement.classList.toggle('dark');
+        try {
+          localStorage.setItem('truelabel_theme', isDark ? 'dark' : 'light');
+        } catch (e) {}
+        updateThemeUI();
+      }
+
+      const btnDesktop = document.getElementById('theme-toggle-desktop');
+      if (btnDesktop) btnDesktop.addEventListener('click', toggleTheme);
+
+      const btnMobileHeader = document.getElementById('theme-toggle-mobile-header');
+      if (btnMobileHeader) btnMobileHeader.addEventListener('click', toggleTheme);
+
+      const btnDrawer = document.getElementById('theme-toggle-drawer');
+      if (btnDrawer) btnDrawer.addEventListener('click', toggleTheme);
+
+      // Initialize theme icons
+      updateThemeUI();
     })();
   </script>
 </header>

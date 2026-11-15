@@ -431,3 +431,29 @@
 - **Verification**:
   - `npm test`: 14 passed test suites, 112 unit tests passing (100%).
   - `npm run build`: Compiled with exit code 0.
+
+
+---
+
+### Entry 022 | 2026-11-15 20:23:45 +06:00 | Comprehensive Authentic Dark Mode Option & Persistence
+- **Action**: Engineered and integrated a complete, high-contrast dark mode option across the TrueLabel platform with persistent theme switching, anti-FOUC prevention, and accessible typography.
+- **Specific Remediation**:
+  1. **Tailwind Class-Strategy & Anti-FOUC Architecture (`src/shared/views/layouts/main.hbs`)**:
+     - Configured `darkMode: 'class'` in Tailwind CDN inline setup.
+     - Injected synchronous, early anti-FOUC script inside `<head>` to evaluate `localStorage.getItem('truelabel_theme')` or system `window.matchMedia('(prefers-color-scheme: dark)')` before the DOM renders.
+     - Applied dark theme canvas classes to `<body>` (`dark:bg-[#090d16] dark:text-slate-100 dark:selection:bg-emerald-950 dark:selection:text-emerald-200`).
+  2. **Multi-Viewport Theme Toggle Controls (`src/shared/views/partials/navbar.hbs`)**:
+     - **Desktop Header**: Integrated `#theme-toggle-desktop` button featuring reactive Sun (`#theme-sun-desktop`) and Moon (`#theme-moon-desktop`) SVG icons.
+     - **Mobile Header & Drawer**: Added quick header toggle (`#theme-toggle-mobile-header`) and drawer row button (`#theme-toggle-drawer`).
+     - **Client Controller**: Implemented `toggleTheme()` and `updateThemeUI()` to synchronously toggle `.dark` on `<html>`, persist `'dark'` or `'light'` to `localStorage.setItem('truelabel_theme', ...)`, and synchronize icon states across all viewports.
+  3. **Authentic Dark Mode Design System (`public/css/style.css`)**:
+     - Defined `html.dark` design system variables (`--ink: #f8fafc`, `--surface: #0f172a`, `--surface-alt: #090d16`, `--border-light: #1e293b`, `--border-dark: #cbd5e1`).
+     - **Authentic FDA/EU Nutrition Panel**: Inverted hairline rules and heavy black dividers to crisp, high-contrast slate dividers on obsidian background.
+     - **Form Controls**: Customized `select`, `.form-select`, text inputs, and textareas with dark backgrounds, dark SVG arrows, and luminous emerald focus rings (`#10b981`).
+     - **Badges & Indicators**: Styled `.allergen-pill`, `.additive-pill`, quality score badges, and alert banners for accessible contrast.
+     - **Surface & Elevation**: Styled card lifts, deep slate backgrounds, custom scrollbars, and preserved Viva persona switcher active badge highlights.
+  4. **Automated Verification (`src/shared/views/dark-mode.spec.ts`)**:
+     - Created comprehensive test suite verifying Tailwind configuration, anti-FOUC script inclusion, desktop and mobile toggle DOM existence, and CSS variable / nutrition panel definitions.
+- **Verification**:
+  - `npm test`: 15 passed test suites, 122 unit tests passing (100%).
+  - `npm run build`: Compiled with exit code 0.
