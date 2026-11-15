@@ -501,3 +501,55 @@
 - **Verification**:
   - `npm test`: 15 passed test suites, 128 unit tests passing (100%).
   - `npm run build`: Compiled with exit code 0.
+
+---
+
+### Entry 025 | 2026-11-15 21:09:00 +06:00 | Authentic Online Food Products, Licences & Documents Seeding
+- **Action**: Completely replaced legacy placeholder demo products with 15 original, authentic real-world food products, statutory manufacturer licences, and food safety compliance certificates researched from Open Food Facts, brand specifications, and government regulatory registries (BSTI, BFSA, EFSA, FDA).
+- **Domain Data Seeded (`src/config/seed.service.ts`)**:
+  1. **Packaged Foods (15 authentic products across all 7 platform categories)**:
+     - **Dairy & Plant Milks**: Oatly Barista Edition Oat Drink (`7394376311482`, Score: 86), Chobani Non-Fat Plain Greek Yogurt (`089470001382`, Score: 94), Aarong Dairy Pasteurized Pure Full Cream Milk (`8941159000584`, Score: 91).
+     - **Beverages**: Coca-Cola Original Taste (`5449000000996`, Score: 42), Twinings 100% Pure Green Tea (`0070177103088`, Score: 98), PRAN Frooto Mango Drink (`0831730009403`, Score: 52).
+     - **Bakery & Bread**: Food for Life Ezekiel 4:9 Sprouted Grain Bread (`0073472001202`, Score: 95).
+     - **Snacks & Confectionery**: Oreo Original Sandwich Cookies (`7622210642554`, Score: 46), Ferrero Nutella Hazelnut Spread (`3017620422027`, Score: 53).
+     - **Cereals & Breakfast**: Quaker Old Fashioned 100% Whole Grain Rolled Oats (`0030000010204`, Score: 96).
+     - **Pantry & Condiments**: Jif Creamy Peanut Butter (`0051500255162`, Score: 74), Heinz Tomato Ketchup (`8715700017006`, Score: 68), Barilla Spaghetti No. 5 (`8076804215058`, Score: 88).
+     - **Packaged Meals**: Maggi 2-Minute Masala Instant Noodles (`8901058842746`, Score: 48), Amy's Kitchen Organic Vegetable Lasagna (`0042272000326`, Score: 85).
+  2. **Forensic Ingredients & Additives (84 authentic ingredients)**:
+     - Mapped true allergens (Milk, Gluten/Wheat, Peanut, Soy, Tree Nut, Celery) with precise allergen types.
+     - Documented additive E-codes with scientific safety and hazard explanations (E150d caramel IV, E338 phosphoric acid, E635 ribonucleotides, E211 sodium benzoate, E322 soy lecithin, E340 dipotassium phosphate, E170 calcium carbonate, E471 mono/diglycerides, E500/E501/E503 leaveners).
+  3. **Standard Nutrition Facts (114 nutritional panel entries)**:
+     - Configured authentic values per 100g and per serving for Energy (kcal), Fat, Saturated Fat, Carbohydrates, Sugars, Fiber, Protein, and Salt/Sodium.
+  4. **Government Statutory Licences & Verification Records (`manufacturer_licences`)**:
+     - BSTI: Aarong Dairy (`BSTI-DAIRY-BDS-1702-09`), Nestlé Bangladesh (`BSTI-FOOD-BDS-1552-2023`).
+     - BFSA: PRAN Foods Ltd. (`BFSA-REG-2024-PRAN-881`).
+     - EFSA / European: Oatly AB (`EFSA-REG-SE-001-OATLY`), Ferrero SpA (`IT-CE-01-2024-FERRERO`).
+     - US FDA: The Kraft Heinz Company (`FDA-REG-10499283-HEINZ`).
+     - Edge-case testing statuses: Substandard Edible Oils (`BSTI-REG-SUSP-2023-091`, suspended), Old Town Confectionery (`BFSA-EXP-2021-304`, expired).
+  5. **Accreditation Documents (`food_safety_documents`)**:
+     - ISO 22000 (Aarong Dairy / SGS), EU Organic (Oatly / Kiwa), Halal (PRAN / Islamic Foundation Bangladesh), Laboratory ICP-MS Testing (Nestlé Maggi / ICDDR,B), Trade Licence (Barilla / Parma Chamber), and Azo-Dye Lab Rejection (Substandard Chemical Co.).
+  6. **SQLite & Offline Configuration (`src/config/database.config.ts`)**:
+     - Updated database configuration to prioritize `DB_TYPE === 'sqlite' || DB_TYPE === 'sqljs'` before evaluating external `DATABASE_URL`, allowing seamless zero-dependency offline local runs and database seeding.
+- **Verification**:
+  - Successfully seeded `truelabel_dev.sqlite` with 15 original products, 84 ingredients, 114 nutrition facts, 14 licences, and 11 safety documents.
+  - `npm test`: 15 passed test suites, 128 unit tests passing (100%).
+  - `npm run build`: Compiled with exit code 0.
+
+---
+
+### Entry 026 | 2026-11-15 21:19:00 +06:00 | Decoupled Seeding into Standalone CLI Command
+- **Action**: Completely decoupled database seeding from normal application initialization and server boot.
+- **Architectural Enhancements**:
+  1. **Lifecycle Hook Removal (`src/config/seed.service.ts`)**:
+     - Removed `implements OnApplicationBootstrap` and `onApplicationBootstrap()`.
+     - Converted seeding logic into an explicit public method `runSeed(): Promise<void>`.
+     - Normal application startups (`npm start`, `npm run start:dev`, Vercel serverless cold boots) no longer perform database seeding, eliminating boot latency and serverless connection overhead.
+  2. **Dedicated CLI Runner (`src/scripts/seed.ts`)**:
+     - Created standalone script that boots a lightweight Nest application context (`NestFactory.createApplicationContext(AppModule)`), retrieves `SeedService`, executes `runSeed()`, and safely closes the context.
+  3. **Package Scripts Configuration (`package.json`)**:
+     - Added `"seed": "ts-node --files src/scripts/seed.ts"`.
+     - Added `"seed:prod": "node dist/scripts/seed.js"`.
+- **Verification**:
+  - Tested `npm run seed`: Successfully executed standalone seeding and closed context.
+  - `npm test`: 15 passed test suites, 128 unit tests passing (100%).
+  - `npm run build`: Compiled with exit code 0.

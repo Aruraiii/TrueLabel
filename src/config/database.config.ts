@@ -21,6 +21,17 @@ const ALL_ENTITIES = [
 ];
 
 export const getDatabaseConfig = (): TypeOrmModuleOptions => {
+  if (process.env.DB_TYPE === 'sqlite' || process.env.DB_TYPE === 'sqljs') {
+    return {
+      type: 'sqljs',
+      autoSave: true,
+      location: process.env.DB_DATABASE || 'truelabel_dev.sqlite',
+      entities: ALL_ENTITIES,
+      autoLoadEntities: true,
+      synchronize: true,
+    };
+  }
+
   const databaseUrl = process.env.DATABASE_URL || process.env.SUPABASE_DB_URL;
   const isPostgres = process.env.DB_TYPE === 'postgres' || Boolean(databaseUrl);
 
