@@ -70,10 +70,6 @@ async function bootstrap() {
     }),
   );
 
-  // Root redirect to catalog
-  app.getHttpAdapter().get('/', (req: any, res: any) => {
-    res.redirect('/catalog');
-  });
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
@@ -83,7 +79,7 @@ async function bootstrap() {
   } else {
     console.log('[Database] Warning: No DATABASE_URL found. Running with local fallback.');
   }
-  console.log(`TrueLabel platform is running live at: http://localhost:${port}/catalog`);
+  console.log(`TrueLabel platform is running live at: http://localhost:${port}/`);
 }
 
 bootstrap();

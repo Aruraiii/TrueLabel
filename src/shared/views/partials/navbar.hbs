@@ -1,63 +1,323 @@
-<header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+<header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-[0_1px_3px_rgba(15,23,42,0.03)]">
   <div class="container mx-auto px-4 max-w-7xl h-16 flex items-center justify-between gap-4">
     
-    <!-- Brand Logo -->
-    <a href="/catalog" class="flex items-center gap-2 group text-decoration-none">
-      <div class="w-9 h-9 bg-slate-900 text-white rounded flex items-center justify-center font-black text-lg tracking-tighter group-hover:bg-emerald-700 transition-colors">
-        TL
-      </div>
-      <div>
-        <div class="font-extrabold text-slate-900 tracking-tight leading-none text-lg">TrueLabel</div>
-        <div class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Food Transparency Platform</div>
-      </div>
-    </a>
+    <!-- Left: Brand Logo & Primary Navigation -->
+    <div class="flex items-center gap-7">
+      <!-- Brand Logo -->
+      <a href="/" class="flex items-center gap-2.5 group text-decoration-none">
+        <div class="w-9 h-9 bg-slate-900 text-white rounded-lg flex items-center justify-center font-black text-sm tracking-tighter group-hover:bg-emerald-700 transition-colors shadow-sm relative">
+          TL
+          <span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white"></span>
+        </div>
+        <div>
+          <div class="font-extrabold text-slate-950 tracking-tight leading-none text-lg group-hover:text-emerald-700 transition-colors">TrueLabel</div>
+          <div class="text-[10px] text-slate-500 font-semibold tracking-wider uppercase">Food Safety Standard</div>
+        </div>
+      </a>
 
-    <!-- Navigation Links -->
-    <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
-      <a href="/catalog" class="hover:text-slate-900 transition-colors">Catalog Discovery</a>
-      <a href="/safety/documents" class="hover:text-slate-900 transition-colors">Safety Documents</a>
-      <a href="/safety/licence/verify" class="hover:text-slate-900 transition-colors">Verify Licence</a>
+      <!-- Desktop Primary Links -->
+      <nav class="hidden lg:flex items-center gap-1 text-xs font-bold text-slate-600">
+        <a href="/" class="px-3 py-2 rounded-md hover:text-slate-950 hover:bg-slate-100 transition-colors {{#if (eq activeNav 'home')}}text-emerald-700 bg-emerald-50/70 font-extrabold{{/if}}">
+          Home
+        </a>
+        <a href="/catalog" class="px-3 py-2 rounded-md hover:text-slate-950 hover:bg-slate-100 transition-colors {{#if (eq activeNav 'catalog')}}text-emerald-700 bg-emerald-50/70 font-extrabold{{/if}}">
+          Food Catalog
+        </a>
+        <a href="/safety/documents" class="px-3 py-2 rounded-md hover:text-slate-950 hover:bg-slate-100 transition-colors {{#if (eq activeNav 'documents')}}text-emerald-700 bg-emerald-50/70 font-extrabold{{/if}}">
+          Safety Documents
+        </a>
+        <a href="/safety/licence/verify" class="px-3 py-2 rounded-md hover:text-slate-950 hover:bg-slate-100 transition-colors {{#if (eq activeNav 'verify')}}text-emerald-700 bg-emerald-50/70 font-extrabold{{/if}}">
+          Verify Licence
+        </a>
+
+        <!-- Consumer Exclusive: Dietary & Allergen Profile -->
+        {{#if (eq user.role "consumer")}}
+          <a href="/personal/profile" class="px-3 py-2 rounded-md hover:text-emerald-700 hover:bg-emerald-50 transition-colors flex items-center gap-1.5 {{#if (eq activeNav 'profile')}}text-emerald-700 bg-emerald-50 font-extrabold{{else}}text-slate-700{{/if}}">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+            Dietary Profile
+          </a>
+        {{/if}}
+      </nav>
+    </div>
+
+    <!-- Right Controls: Role Actions & User Account -->
+    <div class="hidden md:flex items-center gap-3">
+
+      <!-- Manufacturer Console Actions -->
+      {{#if (or (eq user.role "manufacturer") (eq user.role "admin"))}}
+        <div class="flex items-center gap-1 bg-emerald-50/90 border border-emerald-200/90 rounded-lg p-1 text-xs">
+          <a href="/catalog/manage/create" class="px-2.5 py-1 font-bold text-emerald-800 hover:bg-emerald-100 rounded transition-colors flex items-center gap-1">
+            <svg class="w-3.5 h-3.5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+            Add Food
+          </a>
+          <a href="/safety/documents/upload" class="px-2.5 py-1 font-bold text-emerald-800 hover:bg-emerald-100 rounded transition-colors flex items-center gap-1">
+            <svg class="w-3.5 h-3.5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+            Upload Cert
+          </a>
+        </div>
+      {{/if}}
+
+      <!-- Inspector Audit Actions -->
+      {{#if (or (eq user.role "inspector") (eq user.role "admin"))}}
+        <a href="/safety/documents?status=pending" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-amber-50 border border-amber-200 text-amber-900 hover:bg-amber-100 transition-colors flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-amber-600 animate-pulse"></span>
+          <span>Review Queue</span>
+        </a>
+      {{/if}}
+
+      <!-- Authenticated User Profile Dropdown -->
       {{#if user}}
-        <a href="/personal/profile" class="hover:text-emerald-700 transition-colors font-medium">Dietary Profile</a>
-      {{/if}}
-      {{#if (eq user.role "manufacturer")}}
-        <a href="/safety/documents/upload" class="hover:text-emerald-700 font-semibold transition-colors">+ Upload Certificate</a>
-        <a href="/catalog/manage/create" class="hover:text-emerald-700 font-semibold transition-colors">+ Add Product</a>
-      {{/if}}
-      {{#if (eq user.role "admin")}}
-        <a href="/safety/documents/upload" class="hover:text-emerald-700 font-semibold transition-colors">+ Upload Certificate</a>
-        <a href="/catalog/manage/create" class="hover:text-emerald-700 font-semibold transition-colors">+ Add Product</a>
-      {{/if}}
-    </nav>
+        <div class="relative" id="user-menu-wrapper">
+          <button
+            id="user-menu-button"
+            type="button"
+            class="flex items-center gap-2 p-1 pl-2 rounded-lg hover:bg-slate-100 border border-transparent hover:border-slate-200 transition-all focus:outline-none focus:ring-2 focus:ring-slate-900"
+            aria-expanded="false"
+          >
+            <!-- Role-Colored User Initial -->
+            <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-xs uppercase text-white shadow-sm {{#if (eq user.role 'consumer')}}bg-blue-600{{else}}{{#if (eq user.role 'manufacturer')}}bg-emerald-700{{else}}{{#if (eq user.role 'inspector')}}bg-amber-600{{else}}bg-slate-900{{/if}}{{/if}}{{/if}}">
+              {{#if user.name}}{{user.name.[0]}}{{else}}U{{/if}}
+            </div>
 
-    <!-- Role Switcher & Auth Section -->
-    <div class="flex items-center gap-3">
-      <!-- Viva Demo Role Switcher -->
-      <div class="hidden sm:flex items-center bg-slate-100 rounded p-1 border border-slate-200 text-xs">
-        <span class="text-slate-400 font-medium px-2">Role:</span>
-        <a href="/auth/switch-role/consumer" class="px-2 py-0.5 rounded font-medium {{#if (eq user.role 'consumer')}}bg-white text-slate-900 shadow-sm{{else}}text-slate-600 hover:text-slate-900{{/if}}">Consumer</a>
-        <a href="/auth/switch-role/manufacturer" class="px-2 py-0.5 rounded font-medium {{#if (eq user.role 'manufacturer')}}bg-emerald-600 text-white shadow-sm{{else}}text-slate-600 hover:text-slate-900{{/if}}">Manufacturer</a>
-        <a href="/auth/switch-role/inspector" class="px-2 py-0.5 rounded font-medium {{#if (eq user.role 'inspector')}}bg-amber-600 text-white shadow-sm{{else}}text-slate-600 hover:text-slate-900{{/if}}">Inspector</a>
-        <a href="/auth/switch-role/admin" class="px-2 py-0.5 rounded font-medium {{#if (eq user.role 'admin')}}bg-slate-900 text-white shadow-sm{{else}}text-slate-600 hover:text-slate-900{{/if}}">Admin</a>
-      </div>
+            <!-- Name and Role Pill -->
+            <div class="text-left hidden lg:block">
+              <div class="text-xs font-bold text-slate-900 leading-tight">{{user.name}}</div>
+              <div class="text-[10px] uppercase font-bold tracking-wider {{#if (eq user.role 'consumer')}}text-blue-700{{else}}{{#if (eq user.role 'manufacturer')}}text-emerald-700{{else}}{{#if (eq user.role 'inspector')}}text-amber-700{{else}}text-slate-500{{/if}}{{/if}}{{/if}}">
+                {{user.role}}
+              </div>
+            </div>
 
-      {{#if user}}
-        <div class="flex items-center gap-2">
-          <div class="text-xs text-right hidden lg:block">
-            <div class="font-bold text-slate-900">{{user.name}}</div>
-            <div class="text-[11px] text-slate-500 uppercase font-semibold">{{user.role}}</div>
+            <!-- Chevron -->
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </button>
+
+          <!-- Dropdown Menu -->
+          <div
+            id="user-menu-dropdown"
+            class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50 animate-fadeIn"
+          >
+            <!-- User Header -->
+            <div class="px-4 py-3 border-b border-slate-100">
+              <div class="text-xs font-extrabold text-slate-900">{{user.name}}</div>
+              <div class="text-xs text-slate-500 font-mono mt-0.5 truncate">{{user.email}}</div>
+              <div class="mt-2">
+                <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider {{#if (eq user.role 'consumer')}}bg-blue-100 text-blue-800{{else}}{{#if (eq user.role 'manufacturer')}}bg-emerald-100 text-emerald-800{{else}}{{#if (eq user.role 'inspector')}}bg-amber-100 text-amber-800{{else}}bg-slate-100 text-slate-800{{/if}}{{/if}}{{/if}}">
+                  Role: {{user.role}}
+                </span>
+              </div>
+            </div>
+
+            <!-- Role-Specific Shortcuts -->
+            <div class="py-1 text-xs text-slate-700">
+              {{#if (eq user.role "consumer")}}
+                <a href="/personal/profile" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 font-medium">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                  My Dietary & Allergen Profile
+                </a>
+              {{/if}}
+
+              {{#if (or (eq user.role "manufacturer") (eq user.role "admin"))}}
+                <a href="/catalog/manage/create" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 font-medium">
+                  <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                  Register New Food Product
+                </a>
+                <a href="/safety/documents/upload" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 font-medium">
+                  <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                  Upload Compliance Certificate
+                </a>
+              {{/if}}
+
+              {{#if (or (eq user.role "inspector") (eq user.role "admin"))}}
+                <a href="/safety/documents?status=pending" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 font-medium text-amber-900">
+                  <span class="w-2 h-2 rounded-full bg-amber-600"></span>
+                  Pending Inspector Queue
+                </a>
+              {{/if}}
+            </div>
+
+            <!-- Sign Out -->
+            <div class="pt-1 border-t border-slate-100">
+              <form action="/auth/logout" method="POST" class="w-full">
+                <button type="submit" class="w-full text-left px-4 py-2 text-xs font-bold text-rose-700 hover:bg-rose-50 flex items-center justify-between">
+                  <span>Sign Out</span>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                </button>
+              </form>
+            </div>
           </div>
-          <form action="/auth/logout" method="POST" class="inline">
-            <button type="submit" class="text-xs font-semibold px-3 py-1.5 rounded border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors">
-              Sign Out
-            </button>
-          </form>
         </div>
       {{else}}
-        <a href="/auth/login" class="text-xs font-semibold px-3 py-1.5 rounded bg-slate-900 text-white hover:bg-slate-800 transition-colors">
-          Sign In
+        <!-- Guest Authentication Actions -->
+        <div class="flex items-center gap-3">
+          <a href="/auth/login" class="text-xs font-bold text-slate-700 hover:text-slate-950 transition-colors">
+            Sign In
+          </a>
+          <a href="/auth/register" class="px-3.5 py-2 rounded-lg bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-sm">
+            Create Account
+          </a>
+        </div>
+      {{/if}}
+
+    </div>
+
+    <!-- Mobile Hamburger Toggle -->
+    <div class="flex items-center gap-2 lg:hidden">
+      <button
+        id="mobile-nav-toggle"
+        type="button"
+        aria-label="Toggle navigation menu"
+        class="p-2 rounded-lg text-slate-700 hover:text-slate-950 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-900 transition-colors"
+      >
+        <svg id="hamburger-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+        <svg id="close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Mobile Drawer / Dropdown Panel -->
+  <div id="mobile-menu" class="hidden lg:hidden border-t border-slate-200 bg-white px-4 py-4 space-y-4 shadow-xl animate-fadeIn">
+    
+    <!-- User Info if Authenticated -->
+    {{#if user}}
+      <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs uppercase text-white {{#if (eq user.role 'consumer')}}bg-blue-600{{else}}{{#if (eq user.role 'manufacturer')}}bg-emerald-700{{else}}{{#if (eq user.role 'inspector')}}bg-amber-600{{else}}bg-slate-900{{/if}}{{/if}}{{/if}}">
+            {{#if user.name}}{{user.name.[0]}}{{else}}U{{/if}}
+          </div>
+          <div>
+            <div class="text-xs font-bold text-slate-900">{{user.name}}</div>
+            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500">{{user.role}}</div>
+          </div>
+        </div>
+        <form action="/auth/logout" method="POST">
+          <button type="submit" class="text-xs font-bold px-2.5 py-1 rounded bg-white border border-slate-300 text-slate-700 hover:bg-slate-100">
+            Sign Out
+          </button>
+        </form>
+      </div>
+    {{/if}}
+
+    <!-- Mobile Navigation Links -->
+    <div class="flex flex-col space-y-1 text-sm font-bold text-slate-700">
+      <a href="/" class="px-3 py-2 rounded-md hover:bg-slate-100 hover:text-slate-950 flex items-center justify-between">
+        <span>Home</span>
+        <span class="text-xs text-slate-400">&rarr;</span>
+      </a>
+      <a href="/catalog" class="px-3 py-2 rounded-md hover:bg-slate-100 hover:text-slate-950 flex items-center justify-between">
+        <span>Food Catalog Discovery</span>
+        <span class="text-xs text-slate-400">&rarr;</span>
+      </a>
+      <a href="/safety/documents" class="px-3 py-2 rounded-md hover:bg-slate-100 hover:text-slate-950 flex items-center justify-between">
+        <span>Safety Documents Registry</span>
+        <span class="text-xs text-slate-400">&rarr;</span>
+      </a>
+      <a href="/safety/licence/verify" class="px-3 py-2 rounded-md hover:bg-slate-100 hover:text-slate-950 flex items-center justify-between">
+        <span>Verify Manufacturer Licence</span>
+        <span class="text-xs text-slate-400">&rarr;</span>
+      </a>
+      {{#if (eq user.role "consumer")}}
+        <a href="/personal/profile" class="px-3 py-2 rounded-md bg-emerald-50 text-emerald-800 hover:bg-emerald-100 flex items-center justify-between">
+          <span class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+            My Dietary & Allergen Profile
+          </span>
+          <span class="text-xs text-emerald-600 font-bold">&rarr;</span>
         </a>
       {{/if}}
     </div>
+
+    <!-- Mobile Role Shortcuts -->
+    {{#if (or (eq user.role "manufacturer") (eq user.role "admin"))}}
+      <div class="pt-3 border-t border-slate-100 space-y-2">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Manufacturer Console:</div>
+        <div class="grid grid-cols-2 gap-2">
+          <a href="/catalog/manage/create" class="px-3 py-2 text-center text-xs font-bold rounded-lg bg-emerald-700 text-white">
+            + Add Product
+          </a>
+          <a href="/safety/documents/upload" class="px-3 py-2 text-center text-xs font-bold rounded-lg border border-emerald-700 text-emerald-800 bg-white">
+            + Upload Cert
+          </a>
+        </div>
+      </div>
+    {{/if}}
+
+    {{#if (or (eq user.role "inspector") (eq user.role "admin"))}}
+      <div class="pt-3 border-t border-slate-100 space-y-2">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Inspector Console:</div>
+        <a href="/safety/documents?status=pending" class="block px-3 py-2 text-center text-xs font-bold rounded-lg bg-amber-600 text-white">
+          Open Audit Queue (Pending Reviews)
+        </a>
+      </div>
+    {{/if}}
+
+    <!-- Mobile Guest Actions -->
+    {{#unless user}}
+      <div class="pt-3 border-t border-slate-100 grid grid-cols-2 gap-2">
+        <a href="/auth/login" class="text-center py-2.5 rounded-lg border border-slate-300 text-slate-800 font-bold text-xs">
+          Sign In
+        </a>
+        <a href="/auth/register" class="text-center py-2.5 rounded-lg bg-slate-950 text-white font-bold text-xs uppercase tracking-wider">
+          Create Account
+        </a>
+      </div>
+    {{/unless}}
+
   </div>
+
+  <!-- Vanilla JS Dropdown & Mobile Toggle Handlers -->
+  <script>
+    (function() {
+      // 1. Mobile Menu Toggle
+      const toggleBtn = document.getElementById('mobile-nav-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      const hamburgerIcon = document.getElementById('hamburger-icon');
+      const closeIcon = document.getElementById('close-icon');
+
+      if (toggleBtn && mobileMenu) {
+        toggleBtn.addEventListener('click', function() {
+          const isHidden = mobileMenu.classList.contains('hidden');
+          if (isHidden) {
+            mobileMenu.classList.remove('hidden');
+            if (hamburgerIcon) hamburgerIcon.classList.add('hidden');
+            if (closeIcon) closeIcon.classList.remove('hidden');
+          } else {
+            mobileMenu.classList.add('hidden');
+            if (hamburgerIcon) hamburgerIcon.classList.remove('hidden');
+            if (closeIcon) closeIcon.classList.add('hidden');
+          }
+        });
+      }
+
+      // 2. Desktop User Menu Dropdown Toggle
+      const userBtn = document.getElementById('user-menu-button');
+      const userDropdown = document.getElementById('user-menu-dropdown');
+
+      if (userBtn && userDropdown) {
+        userBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const isHidden = userDropdown.classList.contains('hidden');
+          if (isHidden) {
+            userDropdown.classList.remove('hidden');
+            userBtn.setAttribute('aria-expanded', 'true');
+          } else {
+            userDropdown.classList.add('hidden');
+            userBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+
+        // Close on outside click
+        document.addEventListener('click', function(e) {
+          if (!userDropdown.classList.contains('hidden') && !userDropdown.contains(e.target) && !userBtn.contains(e.target)) {
+            userDropdown.classList.add('hidden');
+            userBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+    })();
+  </script>
 </header>

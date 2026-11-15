@@ -256,3 +256,118 @@
 
 
 
+
+---
+
+### Entry 015 | 2026-11-15 16:53:00 +06:00 | Frontend Architecture Audit & Dedicated Home Page Delivery
+- **Action**: Conducted comprehensive frontend UI/UX audit and delivered a high-converting, authoritative **Home Page** along with a completely reorganized, responsive **Navbar**.
+- **Audit Findings & Architectural Remediation**:
+  1. **Root Redirect Resolution**: Eliminated legacy raw redirect (`/ -> /catalog`) in `src/main.ts`. Implemented dedicated `HomeModule` (`src/areas/home/`) with `HomeController` serving `/` following strict MVC and Area encapsulation.
+  2. **Navbar Reorganization**:
+     - Grouped navigation into distinct zones: Brand Identity, Primary Links (`Home`, `Food Catalog`, `Safety Documents`, `Verify Licence`, `Dietary Profile`), Role Management Tools (`+ Add Food`, `+ Upload Cert`, `Review Queue`), and compact Viva Demo Role Switcher.
+     - Added fully responsive mobile navigation drawer with hamburger toggle button and accessible vanilla JS controller.
+     - Added `activeNav` state indicators across controllers and templates.
+     - Changed brand logo link from `/catalog` to root `/`.
+  3. **Home Page Blueprint (`areas/home/views/index.hbs`)**:
+     - Built an authoritative hero section with live omnibar search, quick discovery chips (`Oat Milk`, `Peanut Butter`, `Gluten-Free`), and platform CTAs.
+     - Live transparency pulse displaying real-time database counts (audited foods, safety documents, inspector approvals).
+     - Visual breakdown of the **4 Pillars of TrueLabel** (Quality Score formula, Allergen Guard, Regulatory Verification, Recall Shield).
+     - Curated **Featured Food Products Spotlight** showing real database records with live Quality Scores and personalized allergen alert badges.
+     - Interactive **Regulatory Licence Checker Widget** supporting on-page verification against BSTI, BFSA, and FDA demo records.
+     - Ecosystem pathways tailored for Consumers, Manufacturers, and Food Safety Inspectors.
+  4. **Dynamic CSS & Micro-Interactions (`public/css/style.css`)**:
+     - Added smooth card elevations (`.card-lift`), breathing pulse beacons, subtle entrance animations, and tabular typography for clinical metrics.
+- **Test Execution & Verification**:
+  - `src/areas/home/controllers/home.controller.spec.ts`: 2 unit tests covering guest visitors and authenticated profile conflict mapping (100% pass).
+  - `test/catalog.e2e-spec.ts`: Added E2E test verifying `GET /` returning status 200 OK and rendering the home page (100% pass).
+  - **Unit Tests**: 10 passed test suites, 71 unit tests passing cleanly with 0 failures.
+  - **E2E Tests**: 2 test suites (11 tests) passing cleanly with 0 failures.
+  - **Build Status**: `npm run build` completed with exit code 0.
+
+---
+
+### Entry 016 | 2026-11-15 17:09:00 +06:00 | Professional Editorial Typography & Clinical Re-Design of Home Page
+- **Action**: Performed secondary deep audit following the `frontend-design` skill to eliminate cliché AI tropes (dark crypto gradient hero, saturated blur orbs) and replace them with an authentic, institutional, high-authority **Clinical Editorial** design system.
+- **Visual Design & Typography Upgrades**:
+  1. **High-Authority Type System**:
+     - Imported `Newsreader` (optical size 72, serif) for authoritative investigative headlines.
+     - Imported `Plus Jakarta Sans` for clean, geometric, high-legibility interface controls.
+     - Imported `JetBrains Mono` for tabular nutrition data, barcodes, and regulatory licence numbers.
+     - Set body on crisp `#FBFBFB` lab paper background with `#0F172A` deep ink text.
+  2. **Asymmetrical Editorial Hero**:
+     - Left column: Authoritative mission headline ("Every ingredient decoded. Every safety claim verified."), clinical prose, and high-contrast food search omnibar with instant query chips.
+     - Right column: Authentic **Specimen Product Dossier** showcasing live inspection metrics for PureHarvest Organic Oat Drink (Score 92/100, 0 synthetic additives, allergen tags, and valid BSTI licence).
+  3. **Mathematical Formula Breakdown (Zero Black-Box Obscurity)**:
+     - Clear visual bar and 4-column scientific breakdown explaining the exact weights of the 0–100 score: 40% Ingredients & Additives, 30% Nutritional Profile, 20% Regulatory Accreditations, 10% Batch Recalls.
+  4. **Government Accreditation Verifier**:
+     - Interactive on-page lookup tool with clickable BSTI, BFSA, and FDA demo verification links.
+- **Verification**:
+  - `npm test`: 10 passed test suites, 71 unit tests passing (100%).
+  - `npm run test:e2e`: 2 passed test suites, 11 tests passing (100%).
+  - `npm run build`: Exit code 0.
+
+---
+
+### Entry 017 | 2026-11-15 17:22:00 +06:00 | Option A Execution: Floating Viva Dock, Role Navbar, & Adaptive Landing Modules
+- **Action**: Delivered **Option A** to optimize the navbar and built dynamic, role-adaptive contextual intelligence modules on the landing page based on `frontend-design` principles.
+- **Architectural & UI Enhancements**:
+  1. **Option A — Floating Bottom Viva Evaluation Dock (`src/shared/views/partials/viva_dock.hbs`)**:
+     - Extracted the raw demo role switcher from the top navigation header into an elegant, floating, collapsible bottom dock.
+     - Features 1-click persona switching (`Consumer`, `Manufacturer`, `Inspector`, `Admin`) with active role highlighting and minimize/expand state memory.
+     - Leaves the primary navbar 100% clean, professional, and authentic for grading and presentations.
+  2. **Role-Tailored Top Navbar (`src/shared/views/partials/navbar.hbs`)**:
+     - **Guests**: Clean links + `Sign In` text + `Create Account` primary button.
+     - **Consumers**: Core links + `Dietary Profile` with active allergen indicator + user avatar dropdown showing name, email, consumer badge, and link to profile.
+     - **Manufacturers**: Core links + compact `+ Add Food` / `+ Upload Cert` console + avatar dropdown showing enterprise badge.
+     - **Inspectors**: Core links + `Review Queue` pill + avatar dropdown showing `Food Safety Inspector · BFSA/BSTI`.
+     - **Admins**: Core links + administrative governance console dropdown.
+  3. **Role-Adaptive Landing Page (`src/areas/home/views/index.hbs`)**:
+     - **Consumer Persona**: Displays real-time declared allergen alerts (*e.g., Peanuts, Cow's Milk*), dietary preferences (*Vegan*), and safe vs. flagged catalog product counts.
+     - **Manufacturer Persona**: Displays submitted compliance document counts and direct shortcuts to register food products or upload lab certificates.
+     - **Inspector Persona**: Displays live pending audit queue counts with 1-click jump to inspect manufacturer submissions.
+     - **Admin Persona**: Displays superuser governance overview.
+  4. **Domain Integration (`src/areas/home/controllers/home.controller.ts`)**:
+     - Enriched ViewModel with role-specific insights (`manufacturerDocsCount`, `userAllergenConflictsCount`, `userSafeProductsCount`).
+- **Verification**:
+  - `npm test`: 10 test suites passed, 72 unit tests passing (100%).
+  - `npm run test:e2e`: 2 test suites (11 tests) passing (100%).
+  - `npm run build`: Compiled with exit code 0.
+
+---
+
+### Entry 018 | 2026-11-15 17:33:00 +06:00 | Component Redesign & Academic Token Sanitization
+- **Action**: Performed complete sweep across all user-facing views to remove unprofessional course and internal development keywords ("Feature F06", "Feature F01", "Sprint 1", "CSE470 viva"), replacing them with production-grade industry terminology. Redesigned the Licence Verification section to match the clinical paper aesthetic.
+- **Specific Remediation**:
+  1. **Licence Verification Section Redesign (`src/areas/home/views/index.hbs`)**:
+     - Converted the dark black card into an authoritative clinical paper card (`bg-white border-2 border-slate-900 rounded-2xl`).
+     - Removed the green `FEATURE F06 REGULATORY ENGINE` badge; replaced with `National Food Standards Registry`.
+     - Fixed the input placeholder text truncation: shortened to `Enter licence number (e.g. BSTI-FOOD-2024-001)` to prevent overflow across viewports.
+     - Styled the submit button with clean, authoritative charcoal `bg-slate-950 hover:bg-slate-800`.
+     - Standardized sample demo links with crisp high-contrast status chips (`✓ Valid BSTI`, `✓ Valid BFSA`, `✕ Expired`, `⚠️ Suspended`).
+  2. **Global Academic Token Sanitization**:
+     - `src/areas/home/views/index.hbs`: Replaced "Feature F03/F04/F06/F08" and "CSE470 Group 7" with "Toxicological Screening Engine", "Multi-Factor Scoring Model", "Regulatory Compliance Audit", "Public Health Recall Surveillance", and "National Food Quality & Safety Architecture".
+     - `src/areas/food-safety/views/documents.hbs`: Removed "Feature F06".
+     - `src/areas/food-safety/views/upload.hbs`: Removed "Feature F06".
+     - `src/areas/food-safety/views/verify-licence.hbs`: Removed "Feature F06" and changed "Quick Viva Evaluation Tests" to "Sample Registry Records for Instant Testing".
+     - `src/areas/personal-food/views/profile.hbs`: Replaced "Feature F16 · Active Health Profile" with "Personal Health Profile".
+     - `src/areas/food-catalog/views/detail.hbs`: Replaced "Explainable Formula (F04)" with "Explainable Formula".
+     - `src/areas/food-catalog/views/create.hbs`: Removed "(Feature F01)".
+     - `src/shared/views/partials/footer.hbs`: Replaced "CSE470 Group 7 Project | Strict MVC Architecture with Areas" and "Sprint 1 Release · High Business Value Delivery" with "National Food Transparency & Safety Intelligence Standard" and "Official Standards Release · Public Quality Architecture".
+     - `src/shared/views/partials/viva_dock.hbs`: Replaced "CSE470 Viva" with "Persona Switcher" and "Viva Persona" with "Active Persona".
+     - `src/areas/identity/views/login.hbs`: Replaced "Quick Demo Accounts (or use header role switcher)" with "Demo Accounts for Platform Testing".
+- **Verification**:
+  - `npm test`: 10 passed test suites, 72 unit tests passing (100%).
+  - `npm run test:e2e`: 2 passed test suites, 11 tests passing (100%).
+  - `npm run build`: Compiled with exit code 0.
+
+---
+
+### Entry 019 | 2026-11-15 17:39:00 +06:00 | Complete Removal of Top Indicator Bar & Footer Sprint Tokens
+- **Action**: Completely removed the top indicator bar from the landing page and eliminated all sprint/release markers from the footer.
+- **Specific Remediation**:
+  1. `src/areas/home/views/index.hbs`: Deleted the top indicator box containing `TrueLabel Public Health & Transparency Initiative | National Food Quality & Safety Architecture | Methodology v1.4 | PostgreSQL Active`. The page now opens directly with clean persona intelligence and the editorial hero.
+  2. `src/shared/views/partials/footer.hbs`: Deleted the right-hand release line (`Sprint 1 Release · High Business Value Delivery` / `Official Standards Release`). The footer now presents a clean, minimalist header and the official health disclaimer.
+- **Verification**:
+  - `npm test`: 10 passed test suites, 72 unit tests passing (100%).
+  - `npm run test:e2e`: 2 passed test suites, 11 tests passing (100%).
+  - `npm run build`: Compiled with exit code 0.

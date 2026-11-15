@@ -56,6 +56,7 @@ export class FoodCatalogController {
 
     return {
       title: 'Food Catalog & Transparency Score — TrueLabel',
+      activeNav: 'catalog',
       products: annotatedItems,
       total,
       page,
