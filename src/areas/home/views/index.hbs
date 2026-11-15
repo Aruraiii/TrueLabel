@@ -15,6 +15,165 @@
     </div>
   </div>
 
+  <!-- ROLE-CONTEXTUAL DASHBOARD MODULE (Adapts per Role) -->
+  {{#if (eq user.role "consumer")}}
+    <!-- Consumer Persona Panel -->
+    <div class="p-6 rounded-2xl bg-gradient-to-r from-blue-50/80 via-white to-slate-50 border border-blue-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div class="space-y-2">
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-blue-100 text-blue-900 border border-blue-300">
+            Consumer Health Guard Active
+          </span>
+          <span class="text-xs text-slate-500 font-medium font-mono">User ID: #{{user.id}}</span>
+        </div>
+        <h2 class="text-xl font-extrabold text-slate-950 tracking-tight">
+          Welcome back, {{user.name}}
+        </h2>
+        <div class="flex flex-wrap items-center gap-2 text-xs text-slate-600 pt-1">
+          <span class="font-bold text-slate-700">Monitored Allergens:</span>
+          {{#if userProfile.allergies.length}}
+            {{#each userProfile.allergies}}
+              <span class="px-2 py-0.5 rounded text-[11px] font-bold uppercase bg-rose-100 text-rose-800 border border-rose-200">
+                ⚠️ {{this}}
+              </span>
+            {{/each}}
+          {{else}}
+            <span class="text-slate-500 italic">No allergens declared yet</span>
+          {{/if}}
+
+          {{#if userProfile.dietaryTags.length}}
+            <span class="text-slate-300">|</span>
+            <span class="font-bold text-slate-700">Lifestyle:</span>
+            {{#each userProfile.dietaryTags}}
+              <span class="px-2 py-0.5 rounded text-[11px] font-bold uppercase bg-slate-100 text-slate-800 border border-slate-200">
+                {{this}}
+              </span>
+            {{/each}}
+          {{/if}}
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+        <div class="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-200 text-xs">
+          <div class="text-center px-2 border-r border-slate-100">
+            <div class="font-mono text-lg font-black text-emerald-700">{{roleInsights.userSafeProductsCount}}</div>
+            <div class="text-[10px] uppercase font-bold text-slate-500">Safe Foods</div>
+          </div>
+          <div class="text-center px-2">
+            <div class="font-mono text-lg font-black text-rose-700">{{roleInsights.userAllergenConflictsCount}}</div>
+            <div class="text-[10px] uppercase font-bold text-slate-500">Flagged</div>
+          </div>
+        </div>
+        <a href="/personal/profile" class="px-4 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider text-center transition-colors shadow-sm">
+          Update Allergen Profile
+        </a>
+      </div>
+    </div>
+  {{/if}}
+
+  {{#if (eq user.role "manufacturer")}}
+    <!-- Manufacturer Persona Panel -->
+    <div class="p-6 rounded-2xl bg-gradient-to-r from-emerald-50/80 via-white to-slate-50 border border-emerald-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div class="space-y-2">
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-100 text-emerald-900 border border-emerald-300">
+            Manufacturer Enterprise Terminal
+          </span>
+          <span class="text-xs text-slate-500 font-medium font-mono">Org ID: #{{user.id}}</span>
+        </div>
+        <h2 class="text-xl font-extrabold text-slate-950 tracking-tight">
+          Welcome back, {{user.name}}
+        </h2>
+        <p class="text-xs text-slate-600 max-w-xl">
+          Manage your enterprise packaged foods, submit official laboratory analysis test reports, and link verified trade licences to maintain a certified compliance standing.
+        </p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+        <div class="p-3 bg-white rounded-xl border border-slate-200 text-xs text-center px-4">
+          <div class="font-mono text-lg font-black text-emerald-700">{{roleInsights.manufacturerDocsCount}}</div>
+          <div class="text-[10px] uppercase font-bold text-slate-500">Submitted Certs</div>
+        </div>
+        <div class="flex flex-col gap-2">
+          <a href="/catalog/manage/create" class="px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs uppercase tracking-wider text-center transition-colors shadow-sm">
+            + Register New Product
+          </a>
+          <a href="/safety/documents/upload" class="px-4 py-2 rounded-lg bg-white border border-emerald-700 text-emerald-800 hover:bg-emerald-50 font-bold text-xs uppercase tracking-wider text-center transition-colors">
+            + Upload Compliance Doc
+          </a>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+
+  {{#if (eq user.role "inspector")}}
+    <!-- Inspector Persona Panel -->
+    <div class="p-6 rounded-2xl bg-gradient-to-r from-amber-50/80 via-white to-slate-50 border border-amber-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div class="space-y-2">
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300">
+            Official Food Safety Inspection Terminal
+          </span>
+          <span class="text-xs text-slate-500 font-medium font-mono">Regulator ID: #{{user.id}}</span>
+        </div>
+        <h2 class="text-xl font-extrabold text-slate-950 tracking-tight">
+          {{user.name}} · Regulatory Inspector (BFSA / BSTI)
+        </h2>
+        <p class="text-xs text-slate-600 max-w-xl">
+          Authorized food safety oversight terminal. Audit manufacturer compliance documents, review lab tests, and issue official approvals or rejections with mandatory audit notes.
+        </p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+        <div class="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-200 text-xs">
+          <div class="text-center px-3 border-r border-slate-100">
+            <div class="font-mono text-lg font-black text-amber-700">{{stats.pendingDocs}}</div>
+            <div class="text-[10px] uppercase font-bold text-slate-500">Pending Review</div>
+          </div>
+          <div class="text-center px-3">
+            <div class="font-mono text-lg font-black text-emerald-700">{{stats.approvedDocs}}</div>
+            <div class="text-[10px] uppercase font-bold text-slate-500">Approved</div>
+          </div>
+        </div>
+        <a href="/safety/documents?status=pending" class="px-5 py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider text-center transition-colors shadow-sm whitespace-nowrap">
+          Open Audit Queue ({{stats.pendingDocs}})
+        </a>
+      </div>
+    </div>
+  {{/if}}
+
+  {{#if (eq user.role "admin")}}
+    <!-- Admin Persona Panel -->
+    <div class="p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 text-white border border-slate-800 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div class="space-y-2">
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-indigo-900/80 text-indigo-300 border border-indigo-700">
+            Full System Administration
+          </span>
+          <span class="text-xs text-slate-400 font-medium font-mono">Superuser Terminal</span>
+        </div>
+        <h2 class="text-xl font-extrabold tracking-tight">
+          {{user.name}} · TrueLabel Platform Administrator
+        </h2>
+        <p class="text-xs text-slate-300 max-w-xl">
+          Complete administrative control over catalog food records, scoring weight rules, document review queues, and user security roles.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <a href="/catalog/manage/create" class="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider">
+          + Add Food
+        </a>
+        <a href="/safety/documents?status=pending" class="px-3.5 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs uppercase tracking-wider">
+          Audit Queue ({{stats.pendingDocs}})
+        </a>
+        <a href="/safety/licence/verify" class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs uppercase tracking-wider">
+          Licence Registry
+        </a>
+      </div>
+    </div>
+  {{/if}}
+
   <!-- SECTION 1: ASYMMETRIC EDITORIAL HERO -->
   <section class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center pt-2">
     <!-- Left Column (7 cols): Editorial Mission & Omnibar -->

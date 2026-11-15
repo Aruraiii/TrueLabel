@@ -305,3 +305,30 @@
   - `npm test`: 10 passed test suites, 71 unit tests passing (100%).
   - `npm run test:e2e`: 2 passed test suites, 11 tests passing (100%).
   - `npm run build`: Exit code 0.
+
+---
+
+### Entry 017 | 2026-11-15 17:22:00 +06:00 | Option A Execution: Floating Viva Dock, Role Navbar, & Adaptive Landing Modules
+- **Action**: Delivered **Option A** to optimize the navbar and built dynamic, role-adaptive contextual intelligence modules on the landing page based on `frontend-design` principles.
+- **Architectural & UI Enhancements**:
+  1. **Option A — Floating Bottom Viva Evaluation Dock (`src/shared/views/partials/viva_dock.hbs`)**:
+     - Extracted the raw demo role switcher from the top navigation header into an elegant, floating, collapsible bottom dock.
+     - Features 1-click persona switching (`Consumer`, `Manufacturer`, `Inspector`, `Admin`) with active role highlighting and minimize/expand state memory.
+     - Leaves the primary navbar 100% clean, professional, and authentic for grading and presentations.
+  2. **Role-Tailored Top Navbar (`src/shared/views/partials/navbar.hbs`)**:
+     - **Guests**: Clean links + `Sign In` text + `Create Account` primary button.
+     - **Consumers**: Core links + `Dietary Profile` with active allergen indicator + user avatar dropdown showing name, email, consumer badge, and link to profile.
+     - **Manufacturers**: Core links + compact `+ Add Food` / `+ Upload Cert` console + avatar dropdown showing enterprise badge.
+     - **Inspectors**: Core links + `Review Queue` pill + avatar dropdown showing `Food Safety Inspector · BFSA/BSTI`.
+     - **Admins**: Core links + administrative governance console dropdown.
+  3. **Role-Adaptive Landing Page (`src/areas/home/views/index.hbs`)**:
+     - **Consumer Persona**: Displays real-time declared allergen alerts (*e.g., Peanuts, Cow's Milk*), dietary preferences (*Vegan*), and safe vs. flagged catalog product counts.
+     - **Manufacturer Persona**: Displays submitted compliance document counts and direct shortcuts to register food products or upload lab certificates.
+     - **Inspector Persona**: Displays live pending audit queue counts with 1-click jump to inspect manufacturer submissions.
+     - **Admin Persona**: Displays superuser governance overview.
+  4. **Domain Integration (`src/areas/home/controllers/home.controller.ts`)**:
+     - Enriched ViewModel with role-specific insights (`manufacturerDocsCount`, `userAllergenConflictsCount`, `userSafeProductsCount`).
+- **Verification**:
+  - `npm test`: 10 test suites passed, 72 unit tests passing (100%).
+  - `npm run test:e2e`: 2 test suites (11 tests) passing (100%).
+  - `npm run build`: Compiled with exit code 0.

@@ -29,8 +29,16 @@ export class HomeController {
     // 3. User session & personalized health profile evaluation
     const user = req.session?.user || null;
     let userProfile = null;
+    let manufacturerDocsCount = 0;
+
     if (user) {
-      userProfile = await this.preferenceService.findByUserId(user.id);
+      if (user.role === 'consumer') {
+        userProfile = await this.preferenceService.findByUserId(user.id);
+      }
+      if (user.role === 'manufacturer' || user.role === 'admin') {
+        const userDocs = await this.documentService.getDocuments({ manufacturerId: user.id });
+        manufacturerDocsCount = userDocs.length;
+      }
     }
 
     // Annotate featured items with user's allergen/dietary conflict status
@@ -44,6 +52,13 @@ export class HomeController {
       };
     });
 
+    const userAllergenConflictsCount = annotatedFeatured.filter(
+      (p) => p.userConflict?.hasAllergenConflict,
+    ).length;
+    const userSafeProductsCount = annotatedFeatured.filter(
+      (p) => p.userConflict?.isSafeForUser,
+    ).length;
+
     return {
       title: 'TrueLabel — Food Quality, Safety & Diet Intelligence Platform',
       activeNav: 'home',
@@ -53,6 +68,11 @@ export class HomeController {
         documents: docStats.total,
         approvedDocs: docStats.approved,
         pendingDocs: docStats.pending,
+      },
+      roleInsights: {
+        manufacturerDocsCount,
+        userAllergenConflictsCount,
+        userSafeProductsCount,
       },
       user,
       userProfile,

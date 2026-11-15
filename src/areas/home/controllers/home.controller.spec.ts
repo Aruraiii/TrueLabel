@@ -40,6 +40,7 @@ describe('HomeController', () => {
         rejected: 0,
         expiringSoon: 0,
       }),
+      getDocuments: jest.fn().mockResolvedValue([]),
     };
 
     preferenceService = {
@@ -96,6 +97,19 @@ describe('HomeController', () => {
       expect(preferenceService.evaluateProductConflict).toHaveBeenCalledWith(mockProfile, mockProduct);
       expect(result.featuredProducts[0].userConflict).toEqual(mockConflict);
       expect(result.user).toEqual(mockUser);
+    });
+
+    it('should query manufacturer documents when manufacturer user is logged in', async () => {
+      const mockMfgUser = { id: 2, email: 'manufacturer@test.demo', role: 'manufacturer', name: 'Test Mfg' };
+      documentService.getDocuments = jest.fn().mockResolvedValue([{ id: 101 }] as any);
+
+      const mockReq: any = { session: { user: mockMfgUser } };
+
+      const result = await controller.getHomePage(mockReq);
+
+      expect(documentService.getDocuments).toHaveBeenCalledWith({ manufacturerId: 2 });
+      expect(result.roleInsights.manufacturerDocsCount).toBe(1);
+      expect(result.user).toEqual(mockMfgUser);
     });
   });
 });
