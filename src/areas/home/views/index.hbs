@@ -1,4 +1,4 @@
-<div class="space-y-16 pb-16">
+<div class="space-y-16 pb-16 pt-4 sm:pt-6 lg:pt-10">
 
   <!-- ROLE-CONTEXTUAL DASHBOARD MODULE (Adapts per Role) -->
   {{#if (eq user.role "consumer")}}
@@ -160,7 +160,7 @@
   {{/if}}
 
   <!-- SECTION 1: ASYMMETRIC EDITORIAL HERO -->
-  <section class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center pt-2">
+  <section class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center pt-2 sm:pt-4 lg:pt-6">
     <!-- Left Column (7 cols): Editorial Mission & Omnibar -->
     <div class="lg:col-span-7 space-y-6">
       
@@ -243,8 +243,8 @@
               {{#if dossierProduct}}{{dossierProduct.brand}} {{dossierProduct.name}}{{else}}PureHarvest Organic Oat Drink{{/if}}
             </div>
           </div>
-          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-emerald-100 text-emerald-800 border border-emerald-300">
-            Verified Record
+          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase {{#if dossierSpecimen.tierInfo}}{{dossierSpecimen.tierInfo.badgeBgClass}}{{else}}{{#if (gte dossierProduct.qualityScore 80)}}bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800{{else}}{{#if (gte dossierProduct.qualityScore 60)}}bg-amber-100 text-amber-800 border border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800{{else}}bg-rose-100 text-rose-800 border border-rose-300 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800{{/if}}{{/if}}{{/if}}">
+            {{#if dossierSpecimen.tierInfo}}{{dossierSpecimen.tierInfo.badgeLabel}}{{else}}{{#if (gte dossierProduct.qualityScore 80)}}Verified Record{{else}}{{#if (gte dossierProduct.qualityScore 60)}}Moderate Formulation{{else}}Quality Alert Flagged{{/if}}{{/if}}{{/if}}
           </span>
         </div>
 
@@ -252,10 +252,12 @@
         <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 mb-4">
           <div>
             <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Food Quality Score</div>
-            <div class="text-3xl font-black text-emerald-700 font-mono tracking-tight">
+            <div class="text-3xl font-black font-mono tracking-tight {{#if dossierSpecimen.tierInfo}}{{dossierSpecimen.tierInfo.textColorClass}}{{else}}{{#if (gte dossierProduct.qualityScore 80)}}text-emerald-700 dark:text-emerald-400{{else}}{{#if (gte dossierProduct.qualityScore 60)}}text-amber-700 dark:text-amber-400{{else}}text-rose-700 dark:text-rose-400{{/if}}{{/if}}{{/if}}">
               {{#if dossierProduct}}{{dossierProduct.qualityScore}}{{else}}92{{/if}}<span class="text-lg text-slate-400 font-bold">/100</span>
             </div>
-            <div class="text-[11px] font-bold text-emerald-800 mt-0.5">Tier 1 · Superior Transparency</div>
+            <div class="text-[11px] font-bold mt-0.5 {{#if dossierSpecimen.tierInfo}}{{dossierSpecimen.tierInfo.tierColorClass}}{{else}}{{#if (gte dossierProduct.qualityScore 80)}}text-emerald-800 dark:text-emerald-300{{else}}{{#if (gte dossierProduct.qualityScore 60)}}text-amber-800 dark:text-amber-300{{else}}text-rose-800 dark:text-rose-400{{/if}}{{/if}}{{/if}}">
+              {{#if dossierSpecimen.tierInfo}}{{dossierSpecimen.tierInfo.tierLabel}}{{else}}{{#if (gte dossierProduct.qualityScore 80)}}Tier 1 · Superior Transparency{{else}}{{#if (gte dossierProduct.qualityScore 60)}}Tier 2 · Moderate Quality{{else}}Tier 3 · Elevated Processing & Additives{{/if}}{{/if}}{{/if}}
+            </div>
           </div>
           <div class="text-right text-xs space-y-1">
             <div class="text-slate-500 font-medium">Serving: <strong class="text-slate-800">{{#if dossierProduct}}{{dossierProduct.servingSize}}{{dossierProduct.servingUnit}}{{else}}250 ml{{/if}}</strong></div>
@@ -269,25 +271,45 @@
           <!-- Row 1: Additive Check -->
           <div class="flex items-center justify-between py-1.5 border-b border-slate-100">
             <span class="text-slate-600 font-medium">Synthetic Additives / Binders:</span>
-            <span class="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">0 Detected (Clean Label)</span>
+            {{#if dossierSpecimen.additivesSummary}}
+              <span class="font-bold px-2 py-0.5 rounded {{dossierSpecimen.additivesSummary.badgeClass}}">
+                {{dossierSpecimen.additivesSummary.label}}
+              </span>
+            {{else}}
+              <span class="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">0 Detected (Clean Label)</span>
+            {{/if}}
           </div>
 
           <!-- Row 2: Allergen Integrity -->
           <div class="flex items-center justify-between py-1.5 border-b border-slate-100">
             <span class="text-slate-600 font-medium">Allergen Declarations:</span>
-            <span class="font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded">Gluten Declared (Oats)</span>
+            {{#if dossierSpecimen.allergensSummary}}
+              <span class="font-bold px-2 py-0.5 rounded {{dossierSpecimen.allergensSummary.badgeClass}}">
+                {{dossierSpecimen.allergensSummary.label}}
+              </span>
+            {{else}}
+              <span class="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">0 Declared (Clean Formulation)</span>
+            {{/if}}
           </div>
 
           <!-- Row 3: Nutrition Benchmark -->
           <div class="flex items-center justify-between py-1.5 border-b border-slate-100">
             <span class="text-slate-600 font-medium">Sugar Saturation:</span>
-            <span class="font-bold text-emerald-700 font-mono">2.8g / 100ml (Low Density)</span>
+            {{#if dossierSpecimen.sugarSummary}}
+              <span class="{{dossierSpecimen.sugarSummary.colorClass}}">
+                {{dossierSpecimen.sugarSummary.label}}
+              </span>
+            {{else}}
+              <span class="font-bold text-emerald-700 font-mono">2.8g / 100ml (Low Density)</span>
+            {{/if}}
           </div>
 
           <!-- Row 4: Government Accreditation -->
           <div class="flex items-center justify-between py-1.5 border-b border-slate-100">
             <span class="text-slate-600 font-medium">National Licence:</span>
-            <span class="font-bold font-mono text-slate-900">BSTI-FOOD-2024-001 (Valid)</span>
+            <span class="font-bold font-mono text-slate-900">
+              {{#if dossierSpecimen.nationalLicence}}{{dossierSpecimen.nationalLicence}}{{else}}BSTI-FOOD-2024-001 (Valid){{/if}}
+            </span>
           </div>
         </div>
 
@@ -295,7 +317,13 @@
         <div class="mt-4 p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs">
           <div class="font-bold text-slate-800 mb-1">Declared Ingredients:</div>
           <div class="text-slate-600 leading-relaxed font-medium">
-            Filtered Water, <span class="font-bold text-slate-900 underline decoration-amber-400">Organic Whole Oats</span> (15%), Cold-Pressed Sunflower Oil, Sea Salt.
+            {{#if dossierProduct.ingredients.length}}
+              {{#each dossierProduct.ingredients}}
+                <span class="{{#if this.isAllergen}}font-bold text-amber-700 underline decoration-amber-400{{else}}{{#if this.additiveCode}}font-bold text-rose-700{{/if}}{{/if}}">{{this.name}}{{#if this.additiveCode}} ({{this.additiveCode}}){{/if}}{{#unless @last}}, {{/unless}}</span>
+              {{/each}}
+            {{else}}
+              {{#if dossierProduct.description}}{{dossierProduct.description}}{{else}}Filtered Water, Organic Whole Oats (15%), Cold-Pressed Sunflower Oil, Sea Salt.{{/if}}
+            {{/if}}
           </div>
         </div>
 

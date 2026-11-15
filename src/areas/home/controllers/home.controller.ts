@@ -10,7 +10,7 @@ export class HomeController {
     private readonly catalogService: CatalogService,
     private readonly documentService: DocumentService,
     private readonly preferenceService: PreferenceService,
-  ) {}
+  ) { }
 
   /**
    * Home Landing Page: Central platform hub presenting core pillars,
@@ -61,11 +61,21 @@ export class HomeController {
       (p) => p.userConflict?.isSafeForUser,
     ).length;
 
+    // Build authentic dynamic specimen dossier analysis for the hero highlight
+    const dossierProduct = annotatedFeatured.length > 0 ? annotatedFeatured[0] : null;
+    const dossierSpecimen = dossierProduct
+      ? this.catalogService.buildDossierSpecimen(
+        dossierProduct,
+        sampleLicences.length > 0 ? sampleLicences[0].licenceNumber : undefined,
+      )
+      : null;
+
     return {
       title: 'TrueLabel — Food Quality, Safety & Diet Intelligence Platform',
       activeNav: 'home',
       featuredProducts: annotatedFeatured,
-      dossierProduct: annotatedFeatured.length > 0 ? annotatedFeatured[0] : null,
+      dossierProduct,
+      dossierSpecimen,
       sampleLicences,
       quickCategories: filterOptions.categories.slice(0, 3),
       quickTags: filterOptions.dietaryTags.slice(0, 3),
