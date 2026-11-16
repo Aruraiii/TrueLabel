@@ -3,14 +3,17 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
-import * as session from 'express-session';
-import * as hbs from 'hbs';
+import session = require('express-session');
+import hbs = require('hbs');
 import { AppModule } from './app.module';
 import { AuthExceptionFilter } from './common/filters/auth-exception.filter';
 import { CsrfGuard } from './common/guards/csrf.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // Trust reverse proxy (Railway, Render, Fly.io, Cloudflare) for HTTPS secure cookies
+  app.set('trust proxy', 1);
 
   // Serve static assets (CSS, images, client scripts)
   app.useStaticAssets(join(__dirname, '..', 'public'));
@@ -77,6 +80,7 @@ async function bootstrap() {
       secret: sessionSecret || 'truelabel_super_secret_session_key_2026',
       resave: false,
       saveUninitialized: false,
+      proxy: true, // Required for secure cookies behind reverse proxies (Railway, Render, etc.)
       cookie: {
         maxAge: 24 * 60 * 60 * 1000,
         httpOnly: true,
