@@ -1,0 +1,166 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+  <!-- Header Banner -->
+  <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-900">
+          Official Inspector Portal
+        </span>
+        <span class="text-xs text-slate-400">Auditor Badge #{{user.id}}</span>
+      </div>
+      <h1 class="text-3xl font-black text-slate-900 tracking-tight">{{user.name}}</h1>
+      <p class="text-sm text-slate-500 mt-1">
+        Official statutory compliance audit queue. Review manufacturer accreditation documents, verify trade licences, and issue binding food safety decisions.
+      </p>
+    </div>
+    
+    <div class="flex flex-wrap items-center gap-3">
+      <a
+        href="/safety/licence/verify"
+        class="px-4 py-2.5 bg-amber-700 hover:bg-amber-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm flex items-center gap-2"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        Verify Licence Registry
+      </a>
+      <a
+        href="/safety/documents"
+        class="px-4 py-2.5 border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
+      >
+        All Documents
+      </a>
+    </div>
+  </div>
+
+  <!-- Metric Counters Grid -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+      <div class="text-xs font-bold text-amber-800 uppercase tracking-wider">Pending Queue</div>
+      <div class="text-3xl font-black text-amber-900 font-mono mt-1">{{stats.pending}}</div>
+      <div class="text-[11px] text-slate-400 mt-0.5">Awaiting inspection</div>
+    </div>
+    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+      <div class="text-xs font-bold text-emerald-800 uppercase tracking-wider">Accreditations Approved</div>
+      <div class="text-3xl font-black text-emerald-900 font-mono mt-1">{{stats.approved}}</div>
+      <div class="text-[11px] text-slate-400 mt-0.5">Statutory standard met</div>
+    </div>
+    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+      <div class="text-xs font-bold text-rose-800 uppercase tracking-wider">Rejected Submissions</div>
+      <div class="text-3xl font-black text-rose-900 font-mono mt-1">{{stats.rejected}}</div>
+      <div class="text-[11px] text-slate-400 mt-0.5">With mandatory audit reasons</div>
+    </div>
+    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+      <div class="text-xs font-bold text-slate-600 uppercase tracking-wider">Expiring in 30 Days</div>
+      <div class="text-3xl font-black text-slate-800 font-mono mt-1">{{stats.expiringSoon}}</div>
+      <div class="text-[11px] text-slate-400 mt-0.5">Renewal required</div>
+    </div>
+  </div>
+
+  <!-- Pending Review Queue Table -->
+  <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+    <div class="p-6 border-b border-slate-200 flex items-center justify-between">
+      <div>
+        <h2 class="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
+          <span>Active Review Queue</span>
+          <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">{{pendingDocuments.length}}</span>
+        </h2>
+        <p class="text-xs text-slate-500">Examine submitted lab reports and certifications, then approve or reject with audit notes</p>
+      </div>
+    </div>
+
+    {{#if pendingDocuments.length}}
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+            <tr>
+              <th class="px-6 py-3">Company & Document</th>
+              <th class="px-6 py-3">Certificate / Issuer</th>
+              <th class="px-6 py-3">Validity Period</th>
+              <th class="px-6 py-3">File</th>
+              <th class="px-6 py-3 text-right">Inspection Decision</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            {{#each pendingDocuments}}
+              <tr class="hover:bg-slate-50/70 transition-colors">
+                <td class="px-6 py-4">
+                  <div class="font-bold text-slate-900 text-sm">{{this.companyName}}</div>
+                  <div class="text-xs text-slate-500 uppercase font-semibold">{{this.formattedType}}</div>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="font-mono font-bold text-slate-800">{{this.certificateNumber}}</div>
+                  <div class="text-xs text-slate-400">{{this.issuer}}</div>
+                </td>
+                <td class="px-6 py-4 font-mono text-slate-600">
+                  {{this.issueDate}} &rarr; {{this.expiryDate}}
+                </td>
+                <td class="px-6 py-4">
+                  {{#if this.fileUrl}}
+                    <a href="{{this.fileUrl}}" target="_blank" class="text-blue-600 hover:underline font-bold">View Document</a>
+                  {{else}}
+                    <span class="text-slate-400">No file</span>
+                  {{/if}}
+                </td>
+                <td class="px-6 py-4 text-right">
+                  <div class="flex items-center justify-end gap-2">
+                    <form action="/safety/documents/{{this.id}}/review" method="POST" class="inline">
+                      <input type="hidden" name="_csrf" value="{{../csrfToken}}">
+                      <input type="hidden" name="action" value="approve">
+                      <input type="hidden" name="notes" value="Verified and approved by official food safety inspector.">
+                      <button type="submit" class="px-3 py-1 bg-emerald-700 text-white rounded text-xs font-bold hover:bg-emerald-800">
+                        Approve
+                      </button>
+                    </form>
+                    <form action="/safety/documents/{{this.id}}/review" method="POST" class="inline">
+                      <input type="hidden" name="_csrf" value="{{../csrfToken}}">
+                      <input type="hidden" name="action" value="reject">
+                      <input type="hidden" name="rejectionReason" value="Document incomplete or does not meet statutory hygiene parameters.">
+                      <button type="submit" class="px-3 py-1 border border-rose-300 text-rose-700 rounded text-xs font-bold hover:bg-rose-50">
+                        Reject
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    {{else}}
+      <div class="p-12 text-center text-slate-500">
+        <div class="text-3xl mb-2">✓</div>
+        <p class="font-bold text-sm text-slate-800">Review Queue Cleared</p>
+        <p class="text-xs text-slate-500 mt-1">All manufacturer food safety documents and accreditations have been audited.</p>
+      </div>
+    {{/if}}
+  </div>
+
+  <!-- Recent Inspector Decisions -->
+  <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+    <h2 class="text-lg font-black text-slate-900 tracking-tight mb-4">Recent Audit Decisions & Notes</h2>
+    <div class="space-y-3">
+      {{#each recentDecisions}}
+        <div class="p-4 rounded-xl border border-slate-100 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-slate-900">{{this.companyName}}</span>
+              <span class="font-mono text-slate-500">({{this.formattedType}})</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase {{#if (eq this.status 'approved')}}bg-emerald-100 text-emerald-800{{else}}bg-rose-100 text-rose-800{{/if}}">
+                {{this.status}}
+              </span>
+            </div>
+            <div class="text-slate-500 mt-1">
+              {{#if this.rejectionReason}}
+                <span class="text-rose-700 font-medium">Reason: {{this.rejectionReason}}</span>
+              {{else}}
+                <span class="text-slate-600">{{this.notes}}</span>
+              {{/if}}
+            </div>
+          </div>
+          <div class="text-right font-mono text-slate-400 text-[11px] flex-shrink-0">
+            Audited by: {{this.reviewedByName}}
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+</div>

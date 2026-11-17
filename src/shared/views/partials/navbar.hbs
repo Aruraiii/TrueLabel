@@ -30,6 +30,12 @@
           Verify Licence
         </a>
 
+        {{#if user}}
+          <a href="/dashboard" class="px-3 py-2 rounded-md hover:text-slate-950 hover:bg-slate-100 transition-colors {{#if (eq activeNav 'dashboard')}}text-emerald-700 bg-emerald-50/70 font-extrabold{{/if}}">
+            Dashboard
+          </a>
+        {{/if}}
+
         <!-- Consumer Exclusive: Dietary & Allergen Profile -->
         {{#if (eq user.role "consumer")}}
           <a href="/personal/profile" class="px-3 py-2 rounded-md hover:text-emerald-700 hover:bg-emerald-50 transition-colors flex items-center gap-1.5 {{#if (eq activeNav 'profile')}}text-emerald-700 bg-emerald-50 font-extrabold{{else}}text-slate-700{{/if}}">
@@ -109,6 +115,11 @@
 
             <!-- Role-Specific Shortcuts -->
             <div class="py-1 text-xs text-slate-700">
+              <a href="/dashboard" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 font-bold text-slate-900 border-b border-slate-100">
+                <svg class="w-4 h-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                My Dashboard
+              </a>
+
               {{#if (eq user.role "consumer")}}
                 <a href="/personal/profile" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 font-medium">
                   <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
@@ -257,6 +268,15 @@
         <span class="text-xs text-slate-400">&rarr;</span>
       </a>
       {{#if user}}
+        <a href="/dashboard" class="px-3 py-2 rounded-md hover:bg-slate-100 hover:text-slate-950 flex items-center justify-between {{#if (eq activeNav 'dashboard')}}text-emerald-700 bg-emerald-50/80 font-extrabold{{/if}}">
+          <span class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            My Dashboard
+          </span>
+          <span class="text-xs text-slate-400">&rarr;</span>
+        </a>
+      {{/if}}
+      {{#if (eq user.role "consumer")}}
         <a href="/personal/profile" class="px-3 py-2 rounded-md hover:bg-emerald-100 flex items-center justify-between {{#if (eq activeNav 'profile')}}text-emerald-800 bg-emerald-100 font-extrabold{{else}}bg-emerald-50 text-emerald-800{{/if}}">
           <span class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-emerald-600"></span>

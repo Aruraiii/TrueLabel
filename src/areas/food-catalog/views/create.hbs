@@ -133,6 +133,131 @@
       </div>
     </div>
 
+    <!-- Section 3: Statutory Nutrition Facts Panel (per 100g / 100ml) -->
+    <div class="pt-4 border-t border-slate-200">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-sm font-black text-slate-900 uppercase tracking-wider">3. Statutory Nutrition Facts (per 100g / 100ml)</h2>
+        <span class="text-xs text-slate-500 font-medium">Standard Mandatory Food Label Declaration</span>
+      </div>
+      
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-lg border border-slate-200">
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-slate-700 mb-1">Energy (kcal) *</label>
+          <input
+            type="number"
+            name="nutrition_energy"
+            step="0.1"
+            min="0"
+            required
+            placeholder="e.g. 59"
+            value="{{#if productData.nutrition_energy}}{{productData.nutrition_energy}}{{else}}0{{/if}}"
+            class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white font-mono focus:ring-2 focus:ring-slate-900"
+          />
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-slate-700 mb-1">Total Fat (g)</label>
+          <input
+            type="number"
+            name="nutrition_fat"
+            step="0.1"
+            min="0"
+            placeholder="e.g. 3.0"
+            value="{{#if productData.nutrition_fat}}{{productData.nutrition_fat}}{{else}}0{{/if}}"
+            class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white font-mono focus:ring-2 focus:ring-slate-900"
+          />
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-slate-700 mb-1">Saturated Fat (g)</label>
+          <input
+            type="number"
+            name="nutrition_saturatedFat"
+            step="0.1"
+            min="0"
+            placeholder="e.g. 0.3"
+            value="{{#if productData.nutrition_saturatedFat}}{{productData.nutrition_saturatedFat}}{{else}}0{{/if}}"
+            class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white font-mono focus:ring-2 focus:ring-slate-900"
+          />
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-slate-700 mb-1">Carbohydrates (g)</label>
+          <input
+            type="number"
+            name="nutrition_carbohydrates"
+            step="0.1"
+            min="0"
+            placeholder="e.g. 6.6"
+            value="{{#if productData.nutrition_carbohydrates}}{{productData.nutrition_carbohydrates}}{{else}}0{{/if}}"
+            class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white font-mono focus:ring-2 focus:ring-slate-900"
+          />
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-slate-700 mb-1">Sugars (g)</label>
+          <input
+            type="number"
+            name="nutrition_sugars"
+            step="0.1"
+            min="0"
+            placeholder="e.g. 4.0"
+            value="{{#if productData.nutrition_sugars}}{{productData.nutrition_sugars}}{{else}}0{{/if}}"
+            class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white font-mono focus:ring-2 focus:ring-slate-900"
+          />
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-slate-700 mb-1">Dietary Fiber (g)</label>
+          <input
+            type="number"
+            name="nutrition_fiber"
+            step="0.1"
+            min="0"
+            placeholder="e.g. 0.8"
+            value="{{#if productData.nutrition_fiber}}{{productData.nutrition_fiber}}{{else}}0{{/if}}"
+            class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white font-mono focus:ring-2 focus:ring-slate-900"
+          />
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-slate-700 mb-1">Protein (g)</label>
+          <input
+            type="number"
+            name="nutrition_protein"
+            step="0.1"
+            min="0"
+            placeholder="e.g. 1.2"
+            value="{{#if productData.nutrition_protein}}{{productData.nutrition_protein}}{{else}}0{{/if}}"
+            class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white font-mono focus:ring-2 focus:ring-slate-900"
+          />
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-slate-700 mb-1">Salt / Sodium (g)</label>
+          <input
+            type="number"
+            name="nutrition_salt"
+            step="0.01"
+            min="0"
+            placeholder="e.g. 0.10"
+            value="{{#if productData.nutrition_salt}}{{productData.nutrition_salt}}{{else}}0{{/if}}"
+            class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white font-mono focus:ring-2 focus:ring-slate-900"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Declared Ingredients & Additives -->
+    <div class="pt-4 border-t border-slate-200">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-sm font-black text-slate-900 uppercase tracking-wider">4. Declared Ingredients</h2>
+        <span class="text-xs text-slate-500 font-medium">Comma-separated list from packaged label</span>
+      </div>
+      <textarea
+        name="rawIngredients"
+        rows="3"
+        placeholder="e.g. Oat Base (Water, Oats 10%), Rapeseed Oil, Dipotassium Phosphate (E340), Calcium Carbonate (E170), Sea Salt, Potassium Iodide"
+        class="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 font-sans"
+      >{{productData.rawIngredients}}</textarea>
+      <p class="text-[11px] text-slate-400 mt-1">
+        Allergens (Milk, Gluten, Peanuts, Tree Nuts, Soy, Celery) and additive E-numbers are automatically recognized and flagged for consumer safety.
+      </p>
+    </div>
+
     <button
       type="submit"
       class="w-full py-3 px-6 bg-slate-900 text-white font-bold text-sm rounded hover:bg-slate-800 transition-colors uppercase tracking-wider"

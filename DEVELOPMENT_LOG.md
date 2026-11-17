@@ -581,3 +581,38 @@
   - `npm test`: 16 passed test suites, 141 unit tests passing (100%).
   - `npm run build`: Compiled with exit code 0.
 
+---
+
+### Entry 028 | 2026-11-17 14:07:00 +06:00 | Nutrition Facts Form Inputs & Role-Dedicated Dashboards (F01, F06, F16)
+- **Action**: Added FDA/EU Nutrition Facts and Declared Ingredients inputs to food creation and editing forms, clarified that dietary profiles are restricted to Consumers, and built dedicated user dashboards for all 4 platform roles (Consumer, Manufacturer, Inspector, Admin).
+- **Architectural Enhancements**:
+  1. **Nutrition Facts & Ingredients Form Integration (`create.hbs` & `edit.hbs`)**:
+     - Added **Section 3: Statutory Nutrition Facts Panel (per 100g / 100ml)** collecting Energy (kcal), Total Fat, Saturated Fat, Carbohydrates, Sugars, Dietary Fiber, Protein, and Salt/Sodium.
+     - Added **Section 4: Declared Ingredients & Additives** textarea with automatic allergen (Milk, Gluten, Peanuts, Tree Nuts, Soy, Celery) and E-number parsing.
+     - Updated `FoodCatalogController.handleCreate` & `handleEdit` to convert form inputs into typed `dto.nutritionFacts` and `dto.ingredients`.
+     - Updated `CatalogService.update()` to persist edited nutrition facts and ingredients.
+     - Added `CatalogService.findByManufacturer(manufacturerId)` to query a manufacturer's catalog listings.
+  2. **Role Boundaries & Dietary Profile Restriction (`PreferenceController`)**:
+     - Clarified that corporate manufacturers and inspectors do not possess biological health profiles.
+     - Updated `PreferenceController.getProfile()` to restrict profile setup to Consumers (`@Roles('consumer')`), automatically redirecting non-consumers to their dedicated role dashboard.
+  3. **Role-Dedicated Dashboards (`identity` Area)**:
+     - Created `DashboardService` (`src/areas/identity/services/dashboard.service.ts`) aggregating role-tailored datasets.
+     - Created `DashboardController` (`src/areas/identity/controllers/dashboard.controller.ts`) with central `GET /dashboard` dispatcher and role endpoints:
+       * `/dashboard/consumer`: Health & Allergen shield, macro goals, and recent catalog conflict matches.
+       * `/dashboard/manufacturer`: Corporate licence status, accreditation health counters, and registered products table with Transparency Scores and actions.
+       * `/dashboard/inspector`: Real-time pending document inspection queue with one-click review actions, recent audit decisions, and licence verification tools.
+       * `/dashboard/admin`: Platform vital counters, user directory with role badges, and platform oversight links.
+     - Built 4 responsive Handlebars views in `src/areas/identity/views/dashboard/`: `consumer.hbs`, `manufacturer.hbs`, `inspector.hbs`, and `admin.hbs`.
+  4. **Navbar & Navigation Updates (`navbar.hbs`)**:
+     - Added primary "Dashboard" link in desktop and mobile navigation for authenticated users.
+     - Integrated "My Dashboard" into the user avatar dropdown menu.
+  5. **Unit Testing & Verification**:
+     - Created `dashboard.service.spec.ts` testing data aggregation across all 4 roles.
+     - Created `dashboard.controller.spec.ts` testing central dispatcher redirects and role view rendering.
+     - Updated `preference.controller.spec.ts` testing non-consumer redirect behavior.
+     - Updated `food-catalog.controller.spec.ts` testing nutrition facts and ingredients mapping.
+- **Verification**:
+  - `npm test`: 18 passed test suites, 155 unit tests passing (100% green).
+  - `npm run build`: Compiled with exit code 0.
+
+

@@ -1,0 +1,151 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+  <!-- Header Banner -->
+  <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-100 text-blue-800">
+          Consumer Health Portal
+        </span>
+        <span class="text-xs text-slate-400">Account #{{user.id}}</span>
+      </div>
+      <h1 class="text-3xl font-black text-slate-900 tracking-tight">Welcome back, {{user.name}}</h1>
+      <p class="text-sm text-slate-500 mt-1">
+        Your active dietary shield dynamically flags allergens, unwholesome additives, and macro thresholds across the entire food catalog.
+      </p>
+    </div>
+    <div class="flex flex-wrap items-center gap-3">
+      <a
+        href="/personal/profile"
+        class="px-4 py-2.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm flex items-center gap-2"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+        Edit Health Profile
+      </a>
+      <a
+        href="/catalog"
+        class="px-4 py-2.5 border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
+      >
+        Browse Catalog
+      </a>
+    </div>
+  </div>
+
+  <!-- Key Metrics / Health Shield Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Card 1: Allergen Watchlist -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xs font-black uppercase tracking-wider text-slate-500">Active Allergen Shield</h2>
+        <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
+      </div>
+      <div class="space-y-3">
+        {{#if profile.allergies.length}}
+          <div class="flex flex-wrap gap-1.5">
+            {{#each profile.allergies}}
+              <span class="px-2.5 py-1 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold rounded-lg flex items-center gap-1">
+                <span>⚠️</span> {{this}}
+              </span>
+            {{/each}}
+          </div>
+          <p class="text-[11px] text-slate-400">Products containing these ingredients will display high-visibility red warnings on catalog detail pages.</p>
+        {{else}}
+          <p class="text-xs text-slate-500">No active allergies configured yet.</p>
+          <a href="/personal/profile" class="text-xs font-bold text-blue-600 hover:underline">+ Add Known Allergies</a>
+        {{/if}}
+      </div>
+    </div>
+
+    <!-- Card 2: Dietary Lifestyle -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xs font-black uppercase tracking-wider text-slate-500">Dietary Preferences</h2>
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+      </div>
+      <div class="space-y-3">
+        {{#if profile.dietaryPreferences.length}}
+          <div class="flex flex-wrap gap-1.5">
+            {{#each profile.dietaryPreferences}}
+              <span class="px-2.5 py-1 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-lg">
+                🌱 {{this}}
+              </span>
+            {{/each}}
+          </div>
+          <p class="text-[11px] text-slate-400">Foods conflicting with your lifestyle are filtered and tagged with caution badges.</p>
+        {{else}}
+          <p class="text-xs text-slate-500">No dietary preferences set (e.g., Vegan, Halal, Kosher).</p>
+          <a href="/personal/profile" class="text-xs font-bold text-emerald-600 hover:underline">+ Configure Preferences</a>
+        {{/if}}
+      </div>
+    </div>
+
+    <!-- Card 3: Daily Macro Limits -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xs font-black uppercase tracking-wider text-slate-500">Daily Targets & Limits</h2>
+        <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+      </div>
+      <div class="space-y-2 text-xs">
+        <div class="flex justify-between py-1 border-b border-slate-100">
+          <span class="text-slate-500 font-medium">Daily Calorie Target:</span>
+          <span class="font-bold text-slate-900 font-mono">{{#if profile.calorieGoal}}{{profile.calorieGoal}} kcal{{else}}Not configured{{/if}}</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-slate-100">
+          <span class="text-slate-500 font-medium">Max Sugar / Serving:</span>
+          <span class="font-bold text-slate-900 font-mono">{{#if profile.maxSugarPerServing}}{{profile.maxSugarPerServing}}g{{else}}No limit{{/if}}</span>
+        </div>
+        <div class="flex justify-between py-1">
+          <span class="text-slate-500 font-medium">Max Sodium / Serving:</span>
+          <span class="font-bold text-slate-900 font-mono">{{#if profile.maxSodiumPerServing}}{{profile.maxSodiumPerServing}}g{{else}}No limit{{/if}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Catalog Foods with Personalized Conflict Analysis -->
+  <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h2 class="text-lg font-black text-slate-900 tracking-tight">Recent Catalog Products & Your Safety Match</h2>
+        <p class="text-xs text-slate-500">Real-time allergen collision matching based on your active health profile</p>
+      </div>
+      <a href="/catalog" class="text-xs font-bold text-blue-700 hover:underline">View All Foods &rarr;</a>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {{#each recentProducts}}
+        <div class="border border-slate-200 rounded-xl p-4 hover:border-slate-300 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+              <span class="font-bold text-slate-700">{{this.brand}}</span>
+              <span class="font-mono">{{this.category}}</span>
+            </div>
+            <a href="/catalog/product/{{this.id}}" class="text-sm font-bold text-slate-900 hover:text-blue-700 transition-colors line-clamp-1">
+              {{this.name}}
+            </a>
+            <div class="mt-2 text-xs flex items-center gap-2">
+              <span class="font-bold font-mono text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                Score: {{this.qualityScore}}/100
+              </span>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-100">
+            {{#if this.conflict.hasAllergenConflict}}
+              <div class="px-2.5 py-1.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-[11px] font-bold flex items-center gap-1.5">
+                <span>⚠️</span> Allergen Conflict Detected
+              </div>
+            {{else}}{{#if this.conflict.hasDietaryConflict}}
+              <div class="px-2.5 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-bold flex items-center gap-1.5">
+                <span>⚡</span> Dietary Lifestyle Mismatch
+              </div>
+            {{else}}
+              <div class="px-2.5 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold flex items-center gap-1.5">
+                <span>✓</span> Safe for Your Profile
+              </div>
+            {{/if}}{{/if}}
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+</div>

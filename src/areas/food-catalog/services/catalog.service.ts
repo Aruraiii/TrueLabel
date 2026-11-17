@@ -213,7 +213,43 @@ export class CatalogService {
     if (dto.servingUnit) product.servingUnit = dto.servingUnit;
     if (dto.dietaryTags) product.dietaryTags = dto.dietaryTags;
 
-    return this.productRepo.save(product);
+    const saved = await this.productRepo.save(product);
+
+    if (dto.ingredients) {
+      await this.ingredientRepo.delete({ product: { id } });
+      const entities = dto.ingredients.map((i) =>
+        this.ingredientRepo.create({
+          ...i,
+          name: i.name.trim(),
+          product: saved,
+        }),
+      );
+      saved.ingredients = await this.ingredientRepo.save(entities);
+    }
+
+    if (dto.nutritionFacts) {
+      await this.nutritionRepo.delete({ product: { id } });
+      const entities = dto.nutritionFacts.map((n) =>
+        this.nutritionRepo.create({
+          ...n,
+          product: saved,
+        }),
+      );
+      saved.nutritionFacts = await this.nutritionRepo.save(entities);
+    }
+
+    return saved;
+  }
+
+  /**
+   * Find all products registered by a specific manufacturer (Feature F01 & F06 Dashboard)
+   */
+  async findByManufacturer(manufacturerId: number): Promise<FoodProduct[]> {
+    return this.productRepo.find({
+      where: { manufacturerId },
+      relations: ['ingredients', 'nutritionFacts'],
+      order: { createdAt: 'DESC' },
+    });
   }
 
   /**

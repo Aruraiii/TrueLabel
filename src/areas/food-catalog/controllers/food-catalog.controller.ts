@@ -168,6 +168,16 @@ export class FoodCatalogController {
         }
       }
 
+      const body = req.body || {};
+
+      // Extract and map nutrition facts & ingredients from form submission
+      if (!dto.nutritionFacts || dto.nutritionFacts.length === 0) {
+        dto.nutritionFacts = buildNutritionFactsFromForm(body);
+      }
+      if (!dto.ingredients || dto.ingredients.length === 0) {
+        dto.ingredients = parseRawIngredients(body.rawIngredients);
+      }
+
       const product = await this.catalogService.create(dto, user.id);
       return res.redirect(`/catalog/product/${product.id}`);
     } catch (err) {
@@ -295,10 +305,19 @@ export class FoodCatalogController {
 
     const filterOptions = await this.catalogService.getFilterOptions();
 
+    const nutritionMap: Record<string, number> = {};
+    (product.nutritionFacts || []).forEach((n) => {
+      nutritionMap[n.nutrient] = n.amountPer100g;
+      if (n.nutrient === 'Saturated Fat') nutritionMap.SaturatedFat = n.amountPer100g;
+    });
+    const rawIngredients = (product.ingredients || []).map((i) => i.name).join(', ');
+
     return {
       title: `Edit ${product.name} — TrueLabel`,
       activeNav: 'catalog',
       product,
+      nutritionMap,
+      rawIngredients,
       categories: filterOptions.categories,
       dietaryTags: filterOptions.dietaryTags,
       user,
@@ -318,6 +337,13 @@ export class FoodCatalogController {
     @Res() res: Response,
   ) {
     try {
+      const body = req.body || {};
+      if (body.nutrition_energy !== undefined) {
+        dto.nutritionFacts = buildNutritionFactsFromForm(body);
+      }
+      if (body.rawIngredients !== undefined) {
+        dto.ingredients = parseRawIngredients(body.rawIngredients);
+      }
       await this.catalogService.update(id, dto, req.session.user);
       return res.redirect(`/catalog/product/${id}`);
     } catch (err) {
@@ -348,5 +374,92 @@ export class FoodCatalogController {
     await this.catalogService.archive(id, req.session.user);
     return res.redirect('/catalog');
   }
+}
+
+/**
+ * Helper to parse comma-separated raw ingredients with allergen & additive detection
+ */
+export function parseRawIngredients(raw?: string) {
+  if (!raw || !raw.trim()) return [];
+  const items = raw.split(',').map((s) => s.trim()).filter(Boolean);
+  return items.map((name) => {
+    const lower = name.toLowerCase();
+    let isAllergen = false;
+    let allergenType: string | undefined = undefined;
+
+    if (/peanut|groundnut/.test(lower)) {
+      isAllergen = true;
+      allergenType = 'Peanut';
+    } else if (/milk|dairy|cheese|cream|whey|casein|butter|lactose|yogurt/.test(lower)) {
+      isAllergen = true;
+      allergenType = 'Milk';
+    } else if (/wheat|gluten|barley|rye|spelt/.test(lower)) {
+      isAllergen = true;
+      allergenType = 'Gluten';
+    } else if (/soy|soya|soybean/.test(lower)) {
+      isAllergen = true;
+      allergenType = 'Soy';
+    } else if (/almond|walnut|cashew|hazelnut|pecan|pistachio|macadamia|tree nut/.test(lower)) {
+      isAllergen = true;
+      allergenType = 'Tree Nut';
+    } else if (/egg|albumin/.test(lower)) {
+      isAllergen = true;
+      allergenType = 'Egg';
+    } else if (/celery/.test(lower)) {
+      isAllergen = true;
+      allergenType = 'Celery';
+    } else if (/sesame/.test(lower)) {
+      isAllergen = true;
+      allergenType = 'Sesame';
+    }
+
+    const match = /E-?(\d{3,4}[a-z]?)/i.exec(name);
+    const additiveCode = match ? `E${match[1].toUpperCase()}` : undefined;
+
+    let hazardLevel: 'safe' | 'caution' | 'warning' = 'safe';
+    if (additiveCode && /E150|E211|E635|E250|E102|E110|E129/.test(additiveCode)) {
+      hazardLevel = 'caution';
+    } else if (/high fructose|palm oil|hydrogenated|artificial/.test(lower)) {
+      hazardLevel = 'caution';
+    }
+
+    return {
+      name,
+      isAllergen,
+      allergenType,
+      additiveCode,
+      hazardLevel,
+    };
+  });
+}
+
+/**
+ * Helper to build nutrition facts from standard form inputs
+ */
+export function buildNutritionFactsFromForm(body: any) {
+  const servingSize = Number(body.servingSize) || 100;
+
+  const specs = [
+    { key: 'nutrition_energy', name: 'Energy', unit: 'kcal' },
+    { key: 'nutrition_fat', name: 'Fat', unit: 'g' },
+    { key: 'nutrition_saturatedFat', name: 'Saturated Fat', unit: 'g' },
+    { key: 'nutrition_carbohydrates', name: 'Carbohydrates', unit: 'g' },
+    { key: 'nutrition_sugars', name: 'Sugars', unit: 'g' },
+    { key: 'nutrition_fiber', name: 'Fiber', unit: 'g' },
+    { key: 'nutrition_protein', name: 'Protein', unit: 'g' },
+    { key: 'nutrition_salt', name: 'Salt', unit: 'g' },
+  ];
+
+  return specs.map((spec) => {
+    const rawVal = body[spec.key];
+    const amountPer100g = rawVal !== undefined && rawVal !== '' ? Number(rawVal) : 0;
+    const amountPerServing = Math.round(((amountPer100g * servingSize) / 100) * 10) / 10;
+    return {
+      nutrient: spec.name,
+      amountPer100g: isNaN(amountPer100g) ? 0 : amountPer100g,
+      amountPerServing,
+      unit: spec.unit,
+    };
+  });
 }
 

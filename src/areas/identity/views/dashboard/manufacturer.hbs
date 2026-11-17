@@ -1,0 +1,197 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+  <!-- Header Banner -->
+  <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800">
+          Manufacturer Enterprise Console
+        </span>
+        {{#if hasApprovedDocument}}
+          <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            ✓ Compliance Approved
+          </span>
+        {{else}}
+          <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+            🔒 Accreditation Pending
+          </span>
+        {{/if}}
+      </div>
+      <h1 class="text-3xl font-black text-slate-900 tracking-tight">{{user.name}}</h1>
+      <p class="text-sm text-slate-500 mt-1">
+        Manage corporate compliance certificates, statutory licences, and registered packaged food catalogs.
+      </p>
+    </div>
+    
+    <div class="flex flex-wrap items-center gap-3">
+      <a
+        href="/catalog/manage/create"
+        class="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm flex items-center gap-2"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        Register New Food
+      </a>
+      <a
+        href="/safety/documents/upload"
+        class="px-4 py-2.5 border border-emerald-300 hover:bg-emerald-50 text-emerald-900 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+        Upload Certificate
+      </a>
+      <a
+        href="/safety/licence/verify"
+        class="px-4 py-2.5 border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
+      >
+        Verify Licence
+      </a>
+    </div>
+  </div>
+
+  <!-- Corporate Status Cards Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Card 1: Statutory Licence -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-xs font-black uppercase tracking-wider text-slate-500">Corporate Statutory Licence</h2>
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+      </div>
+      {{#if licence}}
+        <div class="space-y-1 text-xs">
+          <div class="font-bold text-slate-900 text-sm font-mono">{{licence.licenceNumber}}</div>
+          <div class="text-slate-500">{{licence.authority}}</div>
+          <div class="pt-2 flex items-center justify-between border-t border-slate-100 mt-2">
+            <span class="text-slate-400">Status:</span>
+            <span class="font-bold uppercase text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-[10px]">
+              {{licence.status}}
+            </span>
+          </div>
+          <div class="flex justify-between text-slate-500">
+            <span>Expires:</span>
+            <span class="font-mono text-slate-700">{{licence.expiryDate}}</span>
+          </div>
+        </div>
+      {{else}}
+        <p class="text-xs text-slate-500">No statutory licence linked to this enterprise account.</p>
+        <a href="/safety/licence/verify" class="text-xs font-bold text-emerald-700 hover:underline mt-2 inline-block">Verify Licence Now &rarr;</a>
+      {{/if}}
+    </div>
+
+    <!-- Card 2: Food Safety Accreditations -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-xs font-black uppercase tracking-wider text-slate-500">Accreditation Health</h2>
+        <span class="text-xs font-bold text-emerald-700">{{documentStats.total}} Documents</span>
+      </div>
+      <div class="grid grid-cols-3 gap-2 text-center my-2">
+        <div class="p-2 rounded-lg bg-emerald-50 border border-emerald-200">
+          <div class="text-lg font-black text-emerald-800">{{documentStats.approved}}</div>
+          <div class="text-[10px] font-bold text-emerald-700 uppercase">Approved</div>
+        </div>
+        <div class="p-2 rounded-lg bg-amber-50 border border-amber-200">
+          <div class="text-lg font-black text-amber-800">{{documentStats.pending}}</div>
+          <div class="text-[10px] font-bold text-amber-700 uppercase">Pending</div>
+        </div>
+        <div class="p-2 rounded-lg bg-rose-50 border border-rose-200">
+          <div class="text-lg font-black text-rose-800">{{documentStats.rejected}}</div>
+          <div class="text-[10px] font-bold text-rose-700 uppercase">Rejected</div>
+        </div>
+      </div>
+      <a href="/safety/documents" class="text-xs font-bold text-slate-600 hover:text-slate-950 block mt-3 text-center">
+        View All Compliance Documents &rarr;
+      </a>
+    </div>
+
+    <!-- Card 3: Catalog Transparency Summary -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-xs font-black uppercase tracking-wider text-slate-500">Active Catalog Scope</h2>
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">Enterprise</span>
+        </div>
+        <div class="text-3xl font-black text-slate-900 font-mono">{{totalProducts}}</div>
+        <p class="text-xs text-slate-500 mt-1">Packaged products actively discoverable by consumers in TrueLabel directory.</p>
+      </div>
+      <div class="mt-4 pt-3 border-t border-slate-100">
+        <a href="/catalog/manage/create" class="text-xs font-bold text-emerald-700 hover:underline">
+          + Submit New Product &rarr;
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Registered Products Table -->
+  <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+    <div class="p-6 border-b border-slate-200 flex items-center justify-between">
+      <div>
+        <h2 class="text-lg font-black text-slate-900 tracking-tight">Your Registered Food Products</h2>
+        <p class="text-xs text-slate-500">Directly manage formulations, nutrition facts, and Transparency Scores</p>
+      </div>
+      <a
+        href="/catalog/manage/create"
+        class="px-3.5 py-2 bg-slate-900 text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-slate-800 transition-colors"
+      >
+        + Add Food Product
+      </a>
+    </div>
+
+    {{#if products.length}}
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+            <tr>
+              <th class="px-6 py-3">Product Name & Category</th>
+              <th class="px-6 py-3">Barcode</th>
+              <th class="px-6 py-3">Serving</th>
+              <th class="px-6 py-3">Transparency Score</th>
+              <th class="px-6 py-3">Status</th>
+              <th class="px-6 py-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 font-medium">
+            {{#each products}}
+              <tr class="hover:bg-slate-50/70 transition-colors">
+                <td class="px-6 py-4">
+                  <div class="font-bold text-slate-900 text-sm">{{this.name}}</div>
+                  <div class="text-slate-400 text-xs">{{this.brand}} · {{this.category}}</div>
+                </td>
+                <td class="px-6 py-4 font-mono text-slate-600">
+                  {{this.barcode}}
+                </td>
+                <td class="px-6 py-4 text-slate-600">
+                  {{this.servingSize}}{{this.servingUnit}}
+                </td>
+                <td class="px-6 py-4">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold font-mono {{#if (gte this.qualityScore 80)}}bg-emerald-100 text-emerald-800 border border-emerald-300{{else}}{{#if (gte this.qualityScore 60)}}bg-amber-100 text-amber-800 border border-amber-300{{else}}bg-rose-100 text-rose-800 border border-rose-300{{/if}}{{/if}}">
+                    {{this.qualityScore}} / 100
+                  </span>
+                </td>
+                <td class="px-6 py-4">
+                  <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase {{#if (eq this.status 'active')}}bg-emerald-50 text-emerald-700 border border-emerald-200{{else}}bg-slate-100 text-slate-600{{/if}}">
+                    {{this.status}}
+                  </span>
+                </td>
+                <td class="px-6 py-4 text-right space-x-2">
+                  <a href="/catalog/product/{{this.id}}" class="text-slate-600 hover:text-slate-900 font-bold hover:underline">View</a>
+                  <a href="/catalog/manage/{{this.id}}/edit" class="text-emerald-700 hover:text-emerald-900 font-bold hover:underline">Edit</a>
+                </td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    {{else}}
+      <div class="p-12 text-center text-slate-500">
+        <div class="text-3xl mb-2">📦</div>
+        <p class="font-bold text-sm text-slate-800">No Food Products Registered Yet</p>
+        <p class="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4">
+          Register your packaged food products with nutrition facts and declared ingredients to calculate their verified Transparency Score.
+        </p>
+        <a
+          href="/catalog/manage/create"
+          class="inline-block px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold uppercase tracking-wider transition-colors"
+        >
+          Submit First Product
+        </a>
+      </div>
+    {{/if}}
+  </div>
+</div>

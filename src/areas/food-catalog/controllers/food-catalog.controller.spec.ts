@@ -219,6 +219,40 @@ describe('FoodCatalogController (Unit Tests)', () => {
       expect(mockRes.redirect).toHaveBeenCalledWith('/catalog/product/42');
     });
 
+    it('should map nutrition facts and parsed ingredients from form submission', async () => {
+      (documentService.hasApprovedDocument as jest.Mock).mockResolvedValue(true);
+      (catalogService.create as jest.Mock).mockImplementation((dto) => Promise.resolve({ id: 88, ...dto }));
+      const mockReq = {
+        session: { user: { id: 25, role: 'manufacturer' } },
+        body: {
+          servingSize: '200',
+          nutrition_energy: '120',
+          nutrition_fat: '4.5',
+          rawIngredients: 'Whole Cow Milk, Cocoa Powder, Soy Lecithin (E322), Salt',
+        },
+      } as any;
+      const mockRes = { redirect: jest.fn(), render: jest.fn(), status: jest.fn().mockReturnThis() } as any;
+
+      const dto = { name: 'Chocolate Drink', barcode: '88888888' } as any;
+      await controller.handleCreate(dto, mockReq, mockRes);
+
+      expect(catalogService.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Chocolate Drink',
+          nutritionFacts: expect.arrayContaining([
+            expect.objectContaining({ nutrient: 'Energy', amountPer100g: 120, amountPerServing: 240, unit: 'kcal' }),
+            expect.objectContaining({ nutrient: 'Fat', amountPer100g: 4.5, amountPerServing: 9, unit: 'g' }),
+          ]),
+          ingredients: expect.arrayContaining([
+            expect.objectContaining({ name: 'Whole Cow Milk', isAllergen: true, allergenType: 'Milk' }),
+            expect.objectContaining({ name: 'Soy Lecithin (E322)', isAllergen: true, allergenType: 'Soy', additiveCode: 'E322' }),
+          ]),
+        }),
+        25,
+      );
+      expect(mockRes.redirect).toHaveBeenCalledWith('/catalog/product/88');
+    });
+
     it('should render create view with error when service throws a ConflictException for duplicate barcode', async () => {
       (documentService.hasApprovedDocument as jest.Mock).mockResolvedValue(true);
       (catalogService.create as jest.Mock).mockRejectedValue(
