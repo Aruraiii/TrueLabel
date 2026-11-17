@@ -18,6 +18,7 @@ import { Request, Response } from 'express';
 import { DocumentService } from '../services/document.service';
 import { UploadDocumentDto } from '../models/dto/upload-document.dto';
 import { ReviewDocumentDto } from '../models/dto/review-document.dto';
+import { QueryDocumentsDto } from '../models/dto/query-documents.dto';
 import { AuthenticatedGuard } from '../../../common/guards/authenticated.guard';
 import { RolesGuard } from '../../../common/guards/roles.guard';
 import { Roles } from '../../../common/decorators/roles.decorator';
@@ -28,12 +29,13 @@ export class SafetyDocumentController {
   constructor(private readonly documentService: DocumentService) {}
 
   /**
-   * List all submitted food safety documents with filters and metrics
+   * List all submitted food safety documents with filters, search, and pagination (Feature F06)
    */
   @Get('documents')
   @Render('areas/food-safety/views/documents')
   async getDocuments(
     @Req() req: Request,
+    @Query() queryDto?: QueryDocumentsDto,
     @Query('status') status?: DocumentStatus,
     @Query('type') documentType?: DocumentType,
     @Query('uploaded') uploaded?: string,
@@ -41,7 +43,10 @@ export class SafetyDocumentController {
     @Query('error') error?: string,
   ) {
     const user = req.session?.user;
-    let effectiveStatus = status || undefined;
+    const qDto = queryDto || {};
+    const requestedStatus = qDto.status || status;
+    const requestedType = qDto.type || documentType;
+    let effectiveStatus = requestedStatus || undefined;
     let effectiveManufacturerId: number | undefined = undefined;
 
     // RBAC Data Privacy Filtering:
@@ -56,19 +61,27 @@ export class SafetyDocumentController {
     }
     // 3. Inspectors and Admins can view all documents unconstrained
 
-    const documents = await this.documentService.getDocuments({
+    const paginated = await this.documentService.getDocumentsPaginated({
+      q: qDto.q,
       status: effectiveStatus,
-      documentType: documentType || undefined,
+      documentType: requestedType || undefined,
       manufacturerId: effectiveManufacturerId,
+      page: qDto.page ? Number(qDto.page) : 1,
+      limit: qDto.limit ? Number(qDto.limit) : 9,
     });
     const stats = await this.documentService.getStatistics();
 
     return {
       title: 'Food Safety Documents & Verified Accreditations — TrueLabel',
       activeNav: 'documents',
-      documents,
+      documents: paginated.items,
+      total: paginated.total,
+      page: paginated.page,
+      totalPages: paginated.totalPages,
+      limit: paginated.limit,
+      query: qDto.q || '',
       stats,
-      currentFilter: { status: effectiveStatus || 'all', type: documentType || 'all' },
+      currentFilter: { status: effectiveStatus || 'all', type: requestedType || 'all' },
       user,
       uploaded: uploaded === 'true',
       reviewed: reviewed === 'true',

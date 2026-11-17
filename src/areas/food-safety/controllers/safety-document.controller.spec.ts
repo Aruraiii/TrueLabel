@@ -44,6 +44,13 @@ describe('SafetyDocumentController (Unit Tests)', () => {
   beforeEach(async () => {
     documentService = {
       getDocuments: jest.fn().mockResolvedValue([mockDocumentMeta]),
+      getDocumentsPaginated: jest.fn().mockResolvedValue({
+        items: [mockDocumentMeta],
+        total: 1,
+        page: 1,
+        totalPages: 1,
+        limit: 9,
+      }),
       getStatistics: jest.fn().mockResolvedValue(mockStats),
       uploadDocument: jest.fn().mockResolvedValue(mockDocumentMeta),
       reviewDocument: jest.fn().mockResolvedValue({
@@ -77,13 +84,14 @@ describe('SafetyDocumentController (Unit Tests)', () => {
   });
 
   describe('getDocuments', () => {
-    it('should return documents, stats, and currentFilter (AAA Pattern)', async () => {
+    it('should return documents, stats, and currentFilter with pagination (AAA Pattern)', async () => {
       // Arrange
       const req: any = { session: { user: { id: 1, role: 'inspector' } } };
 
       // Act
       const result = await controller.getDocuments(
         req,
+        { q: 'BSTI', page: 1, limit: 9 },
         'pending',
         'halal',
         'false',
@@ -95,35 +103,46 @@ describe('SafetyDocumentController (Unit Tests)', () => {
       expect(result).toHaveProperty('stats');
       expect(result.stats).toEqual(mockStats);
       expect(result.currentFilter).toEqual({ status: 'pending', type: 'halal' });
-      expect(documentService.getDocuments).toHaveBeenCalledWith({
+      expect(result.total).toBe(1);
+      expect(result.page).toBe(1);
+      expect(result.totalPages).toBe(1);
+      expect(result.query).toBe('BSTI');
+      expect(documentService.getDocumentsPaginated).toHaveBeenCalledWith({
+        q: 'BSTI',
         status: 'pending',
         documentType: 'halal',
         manufacturerId: undefined,
+        page: 1,
+        limit: 9,
       });
     });
 
     it('should force status to approved for guests or consumers', async () => {
       const req: any = { session: { user: null } };
 
-      await controller.getDocuments(req, 'rejected' as any);
+      await controller.getDocuments(req, undefined, 'rejected' as any);
 
-      expect(documentService.getDocuments).toHaveBeenCalledWith({
-        status: 'approved',
-        documentType: undefined,
-        manufacturerId: undefined,
-      });
+      expect(documentService.getDocumentsPaginated).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: 'approved',
+          documentType: undefined,
+          manufacturerId: undefined,
+        }),
+      );
     });
 
     it('should scope pending/rejected document queries to the manufacturer id for manufacturers', async () => {
       const req: any = { session: { user: { id: 10, role: 'manufacturer' } } };
 
-      await controller.getDocuments(req, 'pending');
+      await controller.getDocuments(req, undefined, 'pending');
 
-      expect(documentService.getDocuments).toHaveBeenCalledWith({
-        status: 'pending',
-        documentType: undefined,
-        manufacturerId: 10,
-      });
+      expect(documentService.getDocumentsPaginated).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: 'pending',
+          documentType: undefined,
+          manufacturerId: 10,
+        }),
+      );
     });
   });
 

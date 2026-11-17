@@ -45,6 +45,23 @@ export interface DocumentStatistics {
   expiringSoon: number;
 }
 
+export interface DocumentFilter {
+  q?: string;
+  status?: DocumentStatus;
+  documentType?: DocumentType;
+  manufacturerId?: number;
+  page?: number;
+  limit?: number;
+}
+
+export interface PaginatedDocumentsResult {
+  items: DocumentWithMeta[];
+  total: number;
+  page: number;
+  totalPages: number;
+  limit: number;
+}
+
 export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   trade_licence: 'Trade & Commercial Licence',
   halal: 'Halal Certification',
@@ -145,12 +162,16 @@ export class DocumentService {
   /**
    * Query all documents with optional filters and computed expiry metadata
    */
-  async getDocuments(filter?: {
-    status?: DocumentStatus;
-    documentType?: DocumentType;
-    manufacturerId?: number;
-  }): Promise<DocumentWithMeta[]> {
+  async getDocuments(filter?: DocumentFilter): Promise<DocumentWithMeta[]> {
     const queryBuilder = this.documentRepo.createQueryBuilder('doc');
+
+    if (filter?.q && filter.q.trim()) {
+      const q = `%${filter.q.trim().toLowerCase()}%`;
+      queryBuilder.andWhere(
+        '(LOWER(doc.companyName) LIKE :q OR LOWER(doc.certificateNumber) LIKE :q OR LOWER(doc.issuer) LIKE :q)',
+        { q },
+      );
+    }
 
     if (filter?.status) {
       queryBuilder.andWhere('doc.status = :status', { status: filter.status });
@@ -172,6 +193,53 @@ export class DocumentService {
     const documents = await queryBuilder.getMany();
 
     return documents.map((doc) => this.annotateWithMeta(doc));
+  }
+
+  /**
+   * Query documents with server-side pagination and keyword search (Feature F06)
+   */
+  async getDocumentsPaginated(filter?: DocumentFilter): Promise<PaginatedDocumentsResult> {
+    const page = Math.max(1, filter?.page || 1);
+    const limit = Math.max(1, Math.min(50, filter?.limit || 9));
+    const skip = (page - 1) * limit;
+
+    const queryBuilder = this.documentRepo.createQueryBuilder('doc');
+
+    if (filter?.q && filter.q.trim()) {
+      const q = `%${filter.q.trim().toLowerCase()}%`;
+      queryBuilder.andWhere(
+        '(LOWER(doc.companyName) LIKE :q OR LOWER(doc.certificateNumber) LIKE :q OR LOWER(doc.issuer) LIKE :q)',
+        { q },
+      );
+    }
+
+    if (filter?.status) {
+      queryBuilder.andWhere('doc.status = :status', { status: filter.status });
+    }
+
+    if (filter?.documentType) {
+      queryBuilder.andWhere('doc.documentType = :docType', {
+        docType: filter.documentType,
+      });
+    }
+
+    if (filter?.manufacturerId) {
+      queryBuilder.andWhere('doc.manufacturerId = :mId', {
+        mId: filter.manufacturerId,
+      });
+    }
+
+    queryBuilder.orderBy('doc.createdAt', 'DESC').skip(skip).take(limit);
+
+    const [documents, total] = await queryBuilder.getManyAndCount();
+
+    return {
+      items: documents.map((doc) => this.annotateWithMeta(doc)),
+      total,
+      page,
+      totalPages: Math.ceil(total / limit) || 1,
+      limit,
+    };
   }
 
   /**

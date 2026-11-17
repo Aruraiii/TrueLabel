@@ -668,3 +668,61 @@
 - **Verification**:
   - `npm test`: 18 passed test suites, 158 unit tests passing (100% green).
   - `npm run build`: Compiled with exit code 0.
+---
+
+### Entry 031 | 2026-11-17 14:55:00 +06:00 | Search & Server-Side Pagination for Safety Documents & Food Catalog (F01, F06)
+- **Problem & Requirements**:
+  1. The Food Safety Documents & Verified Accreditations registry (`/safety/documents`) lacked a keyword search and loaded all documents in one query without pagination, which would degrade performance and clutter the UI as records grow.
+  2. The Food Catalog (`/catalog`) performed server-side pagination in the service layer, but lacked bottom pagination navigation controls in the view template.
+- **Architectural Enhancements**:
+  1. **Safety Document DTO (`query-documents.dto.ts`)**:
+     - Created `QueryDocumentsDto` with optional search keyword `q`, filter `status`, filter `type`, and pagination fields `page` (default 1) and `limit` (default 9).
+  2. **Domain Service Layer (`document.service.ts`)**:
+     - Added `getDocumentsPaginated(filter: DocumentFilter)` using TypeORM query builder with `skip` and `take`, SQL multi-column `LIKE` matching on `companyName`, `certificateNumber`, and `issuer`, and `getManyAndCount()`.
+     - Preserved `getDocuments()` for internal service callers and backwards compatibility.
+     - Enhanced `getDocuments()` to also support optional `filter.q` query keyword matching.
+  3. **Controller Layer (`safety-document.controller.ts`)**:
+     - Updated `getDocuments` to accept `QueryDocumentsDto` and call `getDocumentsPaginated()`.
+     - Preserved strict RBAC data privacy rules (consumers and guests only view approved documents; manufacturers view approved plus their own pending/rejected; inspectors/admins view all).
+     - Passed `total`, `page`, `totalPages`, `limit`, and `query` to the ViewModel.
+  4. **Handlebars Helpers (`main.ts`)**:
+     - Registered template math & comparison helpers `gt`, `lt`, `add`, and `subtract` to support declarative Handlebars pagination links without client-side scripts.
+  5. **View Layer & Frontend Design Protocol**:
+     - `documents.hbs`: Added a clean, responsive search and document type filter bar with keyword clear control, and an accessible pagination navigation bar preserving query state.
+     - `index.hbs`: Added an authentic, accessible pagination navigation bar below the food catalog grid displaying page status and Previous / Next links.
+  6. **Unit Test Coverage**:
+     - `document.service.spec.ts`: Added unit test verifying `getDocumentsPaginated` with search keyword, skip/take calculation, and totalPages computation.
+     - `safety-document.controller.spec.ts`: Added unit test verifying `getDocuments` returns paginated view models and passes parameters.
+- **Verification**:
+  - `npm test`: 18 passed test suites, 159 unit tests passing (100% green).
+  - `npm run build`: Compiled with exit code 0.
+---
+
+### Entry 032 | 2026-11-17 15:10:00 +06:00 | Global Navigation Bar Uniformity Across All Platform Roles
+- **Problem & Root Cause**:
+  - In Admin mode, the top navigation header rendered disparate action button groups (`+ Add Food`, `Upload Cert`, and `Review Queue`) directly inside the header bar, causing severe visual clutter and inconsistency compared to other user roles.
+  - In mobile navigation, Admin mode also rendered duplicate role-specific console blocks.
+- **Architectural Enhancements**:
+  - **Header Structure Standardization (`navbar.hbs`)**:
+    1. Standardized the top primary navigation bar across all roles (`Home`, `Food Catalog`, `Safety Documents`, `Verify Licence`, `Dashboard`).
+    2. Removed disparate colored action pill clusters from the top header.
+    3. Retained all role-specific shortcuts (Register food, Upload document, Audit queue) inside the authenticated **User Profile Dropdown Menu** and the dedicated **Dashboard**, where they are clean, structured, and accessible.
+    4. Cleaned the mobile navigation drawer to maintain uniform layout across Consumer, Manufacturer, Inspector, and Admin accounts.
+- **Verification**:
+  - `npm test`: 18 passed test suites, 159 unit tests passing (100% green).
+  - `npm run build`: Compiled with exit code 0.
+---
+
+### Entry 033 | 2026-11-17 15:18:00 +06:00 | Default Day Mode for First-Time Visitors
+- **Requirement**: When any user opens the webpage for the first time, day mode (light theme) must be the default regardless of OS preference.
+- **Architectural Enhancements**:
+  - **Early Theme Script (`main.hbs`)**:
+    - Updated early anti-FOUC resolution script in `<head>`.
+    - Removed `window.matchMedia('(prefers-color-scheme: dark)')` fallback that previously forced dark theme on users whose OS had dark mode enabled.
+    - Day mode (`document.documentElement.classList.remove('dark')`) is now the default for all first-time visitors (`savedTheme` is null or not `'dark'`).
+    - Explicit user preference is preserved: if the user clicks the theme toggle to select dark mode, `'dark'` is stored in `localStorage.getItem('truelabel_theme')` and applied.
+  - **Unit Test Coverage (`dark-mode.spec.ts`)**:
+    - Updated assertions to verify day mode default behavior and anti-FOUC resolution logic.
+- **Verification**:
+  - `npm test`: 18 passed test suites, 159 unit tests passing (100% green).
+  - `npm run build`: Compiled with exit code 0.

@@ -297,6 +297,38 @@ describe('DocumentService (Unit Tests)', () => {
         mId: 10,
       });
     });
+
+    it('should query paginated documents with search keyword, skip/take, and totalPages', async () => {
+      // Arrange
+      const mockQb: any = {
+        andWhere: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        getManyAndCount: jest.fn().mockResolvedValue([[mockDocument], 25]),
+      };
+      docRepo.createQueryBuilder.mockReturnValue(mockQb);
+
+      // Act
+      const result = await service.getDocumentsPaginated({
+        q: 'OatLand',
+        status: 'approved',
+        page: 2,
+        limit: 10,
+      });
+
+      // Assert
+      expect(result.items.length).toBe(1);
+      expect(result.total).toBe(25);
+      expect(result.page).toBe(2);
+      expect(result.totalPages).toBe(3); // 25 / 10 -> ceil is 3
+      expect(mockQb.skip).toHaveBeenCalledWith(10);
+      expect(mockQb.take).toHaveBeenCalledWith(10);
+      expect(mockQb.andWhere).toHaveBeenCalledWith(
+        expect.stringContaining('LOWER(doc.companyName) LIKE :q'),
+        { q: '%oatland%' },
+      );
+    });
   });
 
   describe('verifyLicence (Official Demo Registry)', () => {
