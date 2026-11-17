@@ -17,10 +17,11 @@ describe('Dark Mode System Architecture', () => {
       expect(mainLayoutContent).toContain("darkMode: 'class'");
     });
 
-    it('should include early anti-FOUC theme resolution script in head', () => {
+    it('should include early anti-FOUC theme resolution script in head defaulting to day mode', () => {
       expect(mainLayoutContent).toContain("localStorage.getItem('truelabel_theme')");
-      expect(mainLayoutContent).toContain("prefers-color-scheme: dark");
+      expect(mainLayoutContent).toContain("savedTheme === 'dark'");
       expect(mainLayoutContent).toContain("document.documentElement.classList.add('dark')");
+      expect(mainLayoutContent).toContain("document.documentElement.classList.remove('dark')");
     });
 
     it('should declare dark background and text classes on body', () => {

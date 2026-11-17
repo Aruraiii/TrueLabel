@@ -44,13 +44,12 @@
       }
     }
   </script>
-  <!-- Anti-FOUC Early Theme Resolution -->
+  <!-- Anti-FOUC Early Theme Resolution: Day Mode Default for First-Time Visitors -->
   <script>
     (function() {
       try {
         var savedTheme = localStorage.getItem('truelabel_theme');
-        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        if (savedTheme === 'dark') {
           document.documentElement.classList.add('dark');
         } else {
           document.documentElement.classList.remove('dark');

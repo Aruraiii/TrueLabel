@@ -55,6 +55,10 @@ async function bootstrap() {
   hbs.registerHelper('and', (a, b) => a && b);
   hbs.registerHelper('gte', (a, b) => a >= b);
   hbs.registerHelper('lte', (a, b) => a <= b);
+  hbs.registerHelper('gt', (a, b) => a > b);
+  hbs.registerHelper('lt', (a, b) => a < b);
+  hbs.registerHelper('add', (a, b) => Number(a) + Number(b));
+  hbs.registerHelper('subtract', (a, b) => Number(a) - Number(b));
   hbs.registerHelper('urlEncode', (val: any) => encodeURIComponent(String(val || '')));
   hbs.registerHelper('includes', (arr: any, val: any) => {
     if (!arr) return false;
