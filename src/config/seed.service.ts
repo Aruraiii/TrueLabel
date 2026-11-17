@@ -92,7 +92,7 @@ export class SeedService {
     const passwordHash = await bcrypt.hash('password123', salt);
 
     const demoUsers = [
-      { name: 'Sarah Consumer', email: 'consumer@truelabel.demo', role: 'consumer' as const },
+      { name: 'Sharah Consumer', email: 'consumer@truelabel.demo', role: 'consumer' as const },
       { name: 'PureHarvest & Aarong Dairy', email: 'manufacturer@truelabel.demo', role: 'manufacturer' as const },
       { name: 'Dr. Marcus Vance (Inspector)', email: 'inspector@truelabel.demo', role: 'inspector' as const },
       { name: 'Lead System Admin', email: 'admin@truelabel.demo', role: 'admin' as const },
