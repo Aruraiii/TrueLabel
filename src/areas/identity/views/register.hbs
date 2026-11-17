@@ -4,12 +4,6 @@
     <p class="text-sm text-slate-500 mt-1">Join TrueLabel as a Consumer or Food Manufacturer.</p>
   </div>
 
-  {{#if error}}
-    <div class="mb-4 p-3 bg-rose-50 border border-rose-200 text-rose-700 text-sm rounded font-medium">
-      {{error}}
-    </div>
-  {{/if}}
-
   <form action="/auth/register" method="POST" class="space-y-4">
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <div>

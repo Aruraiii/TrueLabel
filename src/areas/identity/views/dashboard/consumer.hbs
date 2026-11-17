@@ -144,38 +144,7 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {{#each recentProducts}}
-        <div class="border border-slate-200 rounded-lg p-5 hover:border-slate-300 transition-colors flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
-              <span class="font-semibold text-slate-700">{{this.brand}}</span>
-              <span class="text-slate-500">{{this.category}}</span>
-            </div>
-            <a href="/catalog/product/{{this.id}}" class="text-sm font-bold text-slate-900 hover:text-slate-700 transition-colors line-clamp-1">
-              {{this.name}}
-            </a>
-            <div class="mt-2.5 text-xs flex items-center gap-2">
-              <span class="font-bold font-mono text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                Score: {{this.qualityScore}} / 100
-              </span>
-            </div>
-          </div>
-
-          <div class="mt-4 pt-3 border-t border-slate-100">
-            {{#if this.conflict.hasAllergenConflict}}
-              <div class="px-2.5 py-1.5 rounded-md bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold flex items-center gap-1.5">
-                Allergen conflict detected
-              </div>
-            {{else}}{{#if this.conflict.hasDietaryConflict}}
-              <div class="px-2.5 py-1.5 rounded-md bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold flex items-center gap-1.5">
-                Dietary lifestyle mismatch
-              </div>
-            {{else}}
-              <div class="px-2.5 py-1.5 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-1.5">
-                Safe for your profile
-              </div>
-            {{/if}}{{/if}}
-          </div>
-        </div>
+        {{> _food_card this}}
       {{/each}}
     </div>
   </div>
