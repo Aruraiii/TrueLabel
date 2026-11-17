@@ -112,6 +112,9 @@ export class SeedService {
             isVerified: true,
           }),
         );
+      } else if (existing.name !== u.name) {
+        existing.name = u.name;
+        await this.userRepo.save(existing);
       }
     }
   }
