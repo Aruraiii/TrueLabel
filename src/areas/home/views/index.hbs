@@ -80,11 +80,13 @@
           <div class="text-[10px] uppercase font-bold text-slate-500">Submitted Certs</div>
         </div>
         <div class="flex flex-col gap-2">
-          <a href="/catalog/manage/create" class="px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs uppercase tracking-wider text-center transition-colors shadow-sm">
-            + Register New Product
+          <a href="/catalog/manage/create" class="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs uppercase tracking-wider text-center transition-colors shadow-sm inline-flex items-center justify-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+            <span>Register New Product</span>
           </a>
-          <a href="/safety/documents/upload" class="px-4 py-2 rounded-lg bg-white border border-emerald-700 text-emerald-800 hover:bg-emerald-50 font-bold text-xs uppercase tracking-wider text-center transition-colors">
-            + Upload Compliance Doc
+          <a href="/safety/documents/upload" class="px-4 py-2.5 rounded-xl bg-white border border-emerald-700 text-emerald-800 hover:bg-emerald-50 font-bold text-xs uppercase tracking-wider text-center transition-colors inline-flex items-center justify-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+            <span>Upload Compliance Doc</span>
           </a>
         </div>
       </div>
@@ -129,32 +131,42 @@
 
   {{#if (eq user.role "admin")}}
     <!-- Admin Persona Panel -->
-    <div class="p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 text-white border border-slate-800 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+    <div class="p-6 rounded-2xl bg-gradient-to-r from-slate-100/90 via-white to-slate-50 border border-slate-300 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
       <div class="space-y-2">
         <div class="flex items-center gap-2">
-          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-indigo-900/80 text-indigo-300 border border-indigo-700">
-            Full System Administration
+          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-slate-900 text-white border border-slate-900">
+            Platform Governance Terminal
           </span>
-          <span class="text-xs text-slate-400 font-medium font-mono">Superuser Terminal</span>
+          <span class="text-xs text-slate-500 font-medium font-mono">Admin ID: #{{user.id}}</span>
         </div>
-        <h2 class="text-xl font-extrabold tracking-tight">
-          {{user.name}} · TrueLabel Platform Administrator
+        <h2 class="text-xl font-extrabold text-slate-950 tracking-tight">
+          {{user.name}} · Platform Administrator
         </h2>
-        <p class="text-xs text-slate-300 max-w-xl">
-          Complete administrative control over catalog food records, scoring weight rules, document review queues, and user security roles.
+        <p class="text-xs text-slate-600 max-w-xl">
+          Complete administrative control over user identity governance, catalog transparency records, regulatory audit review queues, and system parameters.
         </p>
       </div>
 
-      <div class="flex flex-wrap items-center gap-2">
-        <a href="/catalog/manage/create" class="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider">
-          + Add Food
-        </a>
-        <a href="/safety/documents?status=pending" class="px-3.5 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs uppercase tracking-wider">
-          Audit Queue ({{stats.pendingDocs}})
-        </a>
-        <a href="/safety/licence/verify" class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs uppercase tracking-wider">
-          Licence Registry
-        </a>
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+        <div class="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-200 text-xs">
+          <div class="text-center px-3 border-r border-slate-100">
+            <div class="font-mono text-lg font-black text-slate-900">{{stats.products}}</div>
+            <div class="text-[10px] uppercase font-bold text-slate-500">Catalog Foods</div>
+          </div>
+          <div class="text-center px-3">
+            <div class="font-mono text-lg font-black text-amber-700">{{stats.pendingDocs}}</div>
+            <div class="text-[10px] uppercase font-bold text-slate-500">Pending Audits</div>
+          </div>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <a href="/dashboard/admin" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider text-center transition-colors shadow-sm whitespace-nowrap">
+            Admin Console
+          </a>
+          <a href="/catalog/manage/create" class="px-4 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-bold text-xs uppercase tracking-wider text-center transition-colors whitespace-nowrap inline-flex items-center justify-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+            <span>Add Food</span>
+          </a>
+        </div>
       </div>
     </div>
   {{/if}}
@@ -481,79 +493,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {{#each featuredProducts}}
-        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:border-slate-400 hover:shadow-md transition-all flex flex-col justify-between">
-          <div>
-            <!-- Header: Category & Score Badge -->
-            <div class="flex items-start justify-between gap-2 mb-3">
-              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 font-mono">{{this.category}}</span>
-              
-              <div class="flex items-center gap-1">
-                {{#if this.userConflict.hasAllergenConflict}}
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-rose-100 text-rose-800 border border-rose-300">
-                    ⚠️ Alert
-                  </span>
-                {{else}}
-                  {{#if (and this.userConflict.isSafeForUser this.userConflict.profileConfigured)}}
-                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800 border border-emerald-300">
-                      ✓ Safe
-                    </span>
-                  {{/if}}
-                {{/if}}
-                
-                <span class="score-badge px-2 py-0.5 text-xs font-black font-mono {{#if (gte this.qualityScore 80)}}score-badge-high{{else}}{{#if (gte this.qualityScore 60)}}score-badge-mid{{else}}score-badge-low{{/if}}{{/if}}">
-                  {{this.qualityScore}}/100
-                </span>
-              </div>
-            </div>
-
-            <!-- Brand & Name -->
-            <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-tight">{{this.brand}}</div>
-            <h3 class="text-base font-extrabold text-slate-950 leading-snug mt-0.5">
-              <a href="/catalog/product/{{this.id}}" class="hover:text-emerald-700 transition-colors">
-                {{this.name}}
-              </a>
-            </h3>
-
-            <!-- Barcode & Serving -->
-            <div class="text-[11px] text-slate-400 mt-1 font-mono">
-              Barcode: {{this.barcode}}
-            </div>
-
-            <!-- Dietary Tags -->
-            {{#if this.dietaryTags.length}}
-              <div class="flex flex-wrap gap-1 mt-3">
-                {{#each this.dietaryTags}}
-                  <span class="text-[10px] font-bold uppercase px-2 py-0.5 bg-slate-100 text-slate-700 rounded border border-slate-200">
-                    {{this}}
-                  </span>
-                {{/each}}
-              </div>
-            {{/if}}
-
-            <!-- Declared Ingredients Snippet -->
-            <div class="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-600 line-clamp-2">
-              <strong class="text-slate-800 font-bold">Ingredients:</strong>
-              {{#if this.ingredients.length}}
-                {{#each this.ingredients}}
-                  <span class="{{#if this.isAllergen}}text-rose-700 font-bold{{/if}}">{{this.name}}{{#unless @last}}, {{/unless}}</span>
-                {{/each}}
-              {{else}}
-                <span class="text-slate-400 italic">No declared ingredients</span>
-              {{/if}}
-            </div>
-          </div>
-
-          <!-- Card Action -->
-          <div class="mt-5 pt-3 border-t border-slate-100">
-            <a
-              href="/catalog/product/{{this.id}}"
-              class="w-full py-2 px-3 text-xs font-bold rounded-lg bg-slate-50 hover:bg-slate-950 hover:text-white text-slate-800 border border-slate-200 transition-all flex items-center justify-center gap-1.5"
-            >
-              <span>Inspect Nutrition Facts</span>
-              <span>&rarr;</span>
-            </a>
-          </div>
-        </div>
+        {{> _food_card this}}
       {{/each}}
     </div>
   </section>
@@ -590,16 +530,8 @@
     </form>
 
     <!-- Quick Sample Demo Tests -->
-    <div class="text-center space-y-2 pt-2">
-      <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Sample Registry Records (Click to Inspect Live):</div>
-      <div class="flex flex-wrap items-center justify-center gap-2">
-        {{#each sampleLicences}}
-          <a href="/safety/licence/verify?licenceNumber={{urlEncode this.licenceNumber}}" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-mono font-medium border border-slate-200 transition-colors">
-            {{this.licenceNumber}}
-            {{#if (eq this.status 'valid')}}<span class="text-emerald-700 font-bold ml-1">✓ Valid</span>{{else}}{{#if (eq this.status 'expired')}}<span class="text-rose-700 font-bold ml-1">✕ Expired</span>{{else}}<span class="text-amber-700 font-bold ml-1">⚠️ {{this.status}}</span>{{/if}}{{/if}}
-          </a>
-        {{/each}}
-      </div>
+    <div class="max-w-xl mx-auto">
+      {{> _sample_licence_chips}}
     </div>
   </section>
 
@@ -621,18 +553,17 @@
       <!-- Workflow 1: Consumers -->
       <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm flex flex-col justify-between space-y-6">
         <div class="space-y-3">
-          <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-900 flex items-center justify-center font-bold text-sm font-mono">
-            01
-          </div>
-          <h3 class="font-extrabold text-slate-950 text-lg">For Consumers & Households</h3>
+          <span class="inline-flex px-2.5 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+            Consumers & Households
+          </span>
+          <h3 class="font-extrabold text-slate-950 text-lg">Safe Food Discovery</h3>
           <p class="text-xs text-slate-600 leading-relaxed">
             Search packaged foods by barcode or brand, inspect authentic nutrition panels, set up automated Big-9 allergen warnings, and compare items side-by-side to make confident buying choices.
           </p>
         </div>
         <div class="pt-4 border-t border-slate-100">
-          <a href="/catalog" class="text-xs font-bold text-slate-900 hover:text-emerald-700 flex items-center gap-1 font-sans">
-            <span>Explore Consumer Discovery</span>
-            <span>&rarr;</span>
+          <a href="/catalog" class="text-xs font-semibold text-slate-900 hover:text-emerald-700 underline font-sans">
+            Explore consumer catalog
           </a>
         </div>
       </div>
@@ -640,18 +571,17 @@
       <!-- Workflow 2: Manufacturers -->
       <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm flex flex-col justify-between space-y-6">
         <div class="space-y-3">
-          <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-900 flex items-center justify-center font-bold text-sm font-mono">
-            02
-          </div>
-          <h3 class="font-extrabold text-slate-950 text-lg">For Food Manufacturers</h3>
+          <span class="inline-flex px-2.5 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-800 border border-blue-200">
+            Food Manufacturers
+          </span>
+          <h3 class="font-extrabold text-slate-950 text-lg">Compliance Accreditation</h3>
           <p class="text-xs text-slate-600 leading-relaxed">
             Maintain accurate product listings, upload accredited lab analysis reports, link valid BSTI/BFSA/FDA trade licences, and earn verified trust seals to differentiate clean formulations.
           </p>
         </div>
         <div class="pt-4 border-t border-slate-100">
-          <a href="/safety/documents/upload" class="text-xs font-bold text-blue-700 hover:underline flex items-center gap-1 font-sans">
-            <span>Submit Verification Documents</span>
-            <span>&rarr;</span>
+          <a href="/safety/documents/upload" class="text-xs font-semibold text-blue-700 hover:underline font-sans">
+            Submit safety certificates
           </a>
         </div>
       </div>
@@ -659,18 +589,17 @@
       <!-- Workflow 3: Inspectors -->
       <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm flex flex-col justify-between space-y-6">
         <div class="space-y-3">
-          <div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-900 flex items-center justify-center font-bold text-sm font-mono">
-            03
-          </div>
-          <h3 class="font-extrabold text-slate-950 text-lg">For Food Safety Inspectors</h3>
+          <span class="inline-flex px-2.5 py-0.5 rounded text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+            Safety Inspectors
+          </span>
+          <h3 class="font-extrabold text-slate-950 text-lg">Regulatory Audit Bench</h3>
           <p class="text-xs text-slate-600 leading-relaxed">
             Audit submitted compliance documents, review lab accreditations, record formal approval/rejection decisions with mandatory audit reasons, and issue batch contamination recalls.
           </p>
         </div>
         <div class="pt-4 border-t border-slate-100">
-          <a href="/safety/documents" class="text-xs font-bold text-amber-800 hover:underline flex items-center gap-1 font-sans">
-            <span>Inspect Safety Documents</span>
-            <span>&rarr;</span>
+          <a href="/safety/documents" class="text-xs font-semibold text-amber-800 hover:underline font-sans">
+            Inspect safety documents
           </a>
         </div>
       </div>

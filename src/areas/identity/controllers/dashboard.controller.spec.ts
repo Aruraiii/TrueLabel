@@ -29,9 +29,14 @@ describe('DashboardController (Unit Tests)', () => {
         users: [],
         totalUsers: 4,
         roleBreakdown: { consumer: 1, manufacturer: 1, inspector: 1, admin: 1 },
+        userTypesCount: 4,
+        userTypes: [],
         totalProducts: 10,
         docStats: { total: 5 },
       } as any),
+      createAdminUser: jest.fn().mockResolvedValue({ id: 10, name: 'New' } as any),
+      updateAdminUser: jest.fn().mockResolvedValue({ id: 10, name: 'Updated' } as any),
+      deleteAdminUser: jest.fn().mockResolvedValue({ success: true } as any),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -126,6 +131,148 @@ describe('DashboardController (Unit Tests)', () => {
       expect(result.title).toContain('Admin');
       expect(result.totalUsers).toBe(4);
       expect(service.getAdminDashboardData).toHaveBeenCalled();
+    });
+
+    it('should pass pagination, sorting and filter queries to service', async () => {
+      const mockReq = {
+        session: { user: { id: 4, name: 'Root Admin', role: 'admin' } },
+      } as any;
+      const result = await controller.getAdminDashboard(
+        mockReq,
+        '2',
+        '15',
+        'name',
+        'ASC',
+        'consumer',
+        'john',
+        'Success message',
+      );
+
+      expect(service.getAdminDashboardData).toHaveBeenCalledWith({
+        page: 2,
+        limit: 15,
+        sort: 'name',
+        order: 'ASC',
+        role: 'consumer',
+        search: 'john',
+      });
+      expect(result.success).toBe('Success message');
+    });
+  });
+
+  describe('createAdminUser', () => {
+    it('should create user and redirect with success message', async () => {
+      const mockRes = { redirect: jest.fn() } as any;
+      await controller.createAdminUser(
+        {
+          name: 'Jane Inspector',
+          email: 'jane@inspection.gov',
+          role: 'inspector',
+          password: 'password123',
+          isVerified: 'on',
+        },
+        mockRes,
+      );
+
+      expect(service.createAdminUser).toHaveBeenCalledWith({
+        name: 'Jane Inspector',
+        email: 'jane@inspection.gov',
+        role: 'inspector',
+        password: 'password123',
+        isVerified: true,
+      });
+      expect(mockRes.redirect).toHaveBeenCalledWith(
+        expect.stringContaining('/dashboard/admin?success='),
+      );
+    });
+
+    it('should redirect with error message when creation throws', async () => {
+      const mockRes = { redirect: jest.fn() } as any;
+      (service.createAdminUser as jest.Mock).mockRejectedValueOnce(
+        new Error('Account already exists'),
+      );
+
+      await controller.createAdminUser(
+        {
+          name: 'Duplicate',
+          email: 'dup@test.com',
+          role: 'consumer',
+        },
+        mockRes,
+      );
+
+      expect(mockRes.redirect).toHaveBeenCalledWith(
+        expect.stringContaining('/dashboard/admin?error='),
+      );
+    });
+  });
+
+  describe('updateAdminUser', () => {
+    it('should update user and redirect with success message', async () => {
+      const mockRes = { redirect: jest.fn() } as any;
+      await controller.updateAdminUser(
+        5,
+        {
+          name: 'Updated Name',
+          email: 'updated@test.com',
+          role: 'manufacturer',
+          isVerified: 'on',
+          _hasVerifiedField: 'true',
+        },
+        mockRes,
+      );
+
+      expect(service.updateAdminUser).toHaveBeenCalledWith(5, {
+        name: 'Updated Name',
+        email: 'updated@test.com',
+        role: 'manufacturer',
+        password: undefined,
+        isVerified: true,
+      });
+      expect(mockRes.redirect).toHaveBeenCalledWith(
+        expect.stringContaining('/dashboard/admin?success='),
+      );
+    });
+
+    it('should redirect with error message when update throws', async () => {
+      const mockRes = { redirect: jest.fn() } as any;
+      (service.updateAdminUser as jest.Mock).mockRejectedValueOnce(
+        new Error('User not found'),
+      );
+
+      await controller.updateAdminUser(999, { name: 'None' }, mockRes);
+
+      expect(mockRes.redirect).toHaveBeenCalledWith(
+        expect.stringContaining('/dashboard/admin?error='),
+      );
+    });
+  });
+
+  describe('deleteAdminUser', () => {
+    it('should delete user and redirect with success message', async () => {
+      const mockReq = { session: { user: { id: 4 } } } as any;
+      const mockRes = { redirect: jest.fn() } as any;
+
+      await controller.deleteAdminUser(7, mockReq, mockRes);
+
+      expect(service.deleteAdminUser).toHaveBeenCalledWith(7, 4);
+      expect(mockRes.redirect).toHaveBeenCalledWith(
+        expect.stringContaining('/dashboard/admin?success='),
+      );
+    });
+
+    it('should redirect with error message when deletion fails', async () => {
+      const mockReq = { session: { user: { id: 4 } } } as any;
+      const mockRes = { redirect: jest.fn() } as any;
+      (service.deleteAdminUser as jest.Mock).mockRejectedValueOnce(
+        new Error('Cannot delete own account'),
+      );
+
+      await controller.deleteAdminUser(4, mockReq, mockRes);
+
+      expect(mockRes.redirect).toHaveBeenCalledWith(
+        expect.stringContaining('/dashboard/admin?error='),
+      );
     });
   });
 });

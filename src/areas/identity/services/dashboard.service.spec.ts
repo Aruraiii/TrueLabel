@@ -16,11 +16,15 @@ describe('DashboardService (Unit Tests)', () => {
   beforeEach(async () => {
     userRepo = {
       find: jest.fn().mockResolvedValue([
-        { id: 1, name: 'Consumer A', role: 'consumer' },
-        { id: 2, name: 'Brand B', role: 'manufacturer' },
-        { id: 3, name: 'Inspector C', role: 'inspector' },
-        { id: 4, name: 'Admin D', role: 'admin' },
+        { id: 1, name: 'Consumer A', email: 'consumer@test.com', role: 'consumer', isVerified: true, createdAt: new Date('2026-01-01') },
+        { id: 2, name: 'Brand B', email: 'brand@test.com', role: 'manufacturer', isVerified: true, createdAt: new Date('2026-01-02') },
+        { id: 3, name: 'Inspector C', email: 'inspector@test.com', role: 'inspector', isVerified: false, createdAt: new Date('2026-01-03') },
+        { id: 4, name: 'Admin D', email: 'admin@test.com', role: 'admin', isVerified: true, createdAt: new Date('2026-01-04') },
       ]),
+      findOne: jest.fn(),
+      create: jest.fn((dto) => ({ id: 5, ...dto })),
+      save: jest.fn((entity) => Promise.resolve({ id: entity.id || 5, ...entity })),
+      delete: jest.fn().mockResolvedValue({ affected: 1 }),
     };
 
     catalogService = {
@@ -130,6 +134,123 @@ describe('DashboardService (Unit Tests)', () => {
       expect(data.roleBreakdown.admin).toBe(1);
       expect(data.totalProducts).toBe(15);
       expect(data.docStats.total).toBe(10);
+      expect(data.userTypesCount).toBe(4);
+      expect(data.userTypes).toHaveLength(4);
+      expect(data.users[0].status).toBeDefined();
+    });
+
+    it('should support pagination, sorting and role filtering', async () => {
+      const paged = await service.getAdminDashboardData({
+        page: 1,
+        limit: 2,
+        sort: 'name',
+        order: 'ASC',
+      });
+
+      expect(paged.page).toBe(1);
+      expect(paged.limit).toBe(2);
+      expect(paged.totalPages).toBe(2);
+      expect(paged.total).toBe(4);
+      expect(paged.users).toHaveLength(2);
+      // 'Admin D' should come first in ASC name order
+      expect(paged.users[0].name).toBe('Admin D');
+
+      const filtered = await service.getAdminDashboardData({
+        role: 'consumer',
+      });
+      expect(filtered.users).toHaveLength(1);
+      expect(filtered.users[0].role).toBe('consumer');
+
+      const searched = await service.getAdminDashboardData({
+        search: 'inspector',
+      });
+      expect(searched.users).toHaveLength(1);
+      expect(searched.users[0].name).toBe('Inspector C');
+      expect(searched.users[0].status).toBe('unverified');
+    });
+  });
+
+  describe('createAdminUser', () => {
+    it('should create and persist a new user account with hashed password', async () => {
+      userRepo.findOne.mockResolvedValue(null);
+
+      const result = await service.createAdminUser({
+        name: 'New Officer',
+        email: 'officer@truelabel.org',
+        role: 'inspector',
+        password: 'securePassword123',
+        isVerified: true,
+      });
+
+      expect(userRepo.findOne).toHaveBeenCalledWith({ where: { email: 'officer@truelabel.org' } });
+      expect(userRepo.create).toHaveBeenCalled();
+      expect(userRepo.save).toHaveBeenCalled();
+      expect(result.name).toBe('New Officer');
+    });
+
+    it('should throw ConflictException if email is already taken', async () => {
+      userRepo.findOne.mockResolvedValue({ id: 99, email: 'taken@test.com' });
+
+      await expect(
+        service.createAdminUser({
+          name: 'Duplicate Guy',
+          email: 'taken@test.com',
+          role: 'consumer',
+        }),
+      ).rejects.toThrow('already exists');
+    });
+  });
+
+  describe('updateAdminUser', () => {
+    it('should update user fields and verification status', async () => {
+      const mockUser = {
+        id: 2,
+        name: 'Old Name',
+        email: 'old@test.com',
+        role: 'consumer',
+        isVerified: false,
+      };
+      userRepo.findOne.mockResolvedValue(mockUser);
+
+      const result = await service.updateAdminUser(2, {
+        name: 'Updated Name',
+        role: 'manufacturer',
+        isVerified: true,
+      });
+
+      expect(result.name).toBe('Updated Name');
+      expect(result.role).toBe('manufacturer');
+      expect(result.isVerified).toBe(true);
+      expect(userRepo.save).toHaveBeenCalled();
+    });
+
+    it('should throw NotFoundException if user does not exist', async () => {
+      userRepo.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.updateAdminUser(999, { name: 'Nonexistent' }),
+      ).rejects.toThrow('not found');
+    });
+  });
+
+  describe('deleteAdminUser', () => {
+    it('should delete user when target is not current admin', async () => {
+      userRepo.findOne.mockResolvedValue({ id: 2, name: 'Brand B' });
+
+      const result = await service.deleteAdminUser(2, 4);
+
+      expect(result.success).toBe(true);
+      expect(userRepo.delete).toHaveBeenCalledWith(2);
+    });
+
+    it('should prevent deleting own administrative account', async () => {
+      await expect(service.deleteAdminUser(4, 4)).rejects.toThrow('cannot delete your own');
+    });
+
+    it('should throw NotFoundException if target user is not found', async () => {
+      userRepo.findOne.mockResolvedValue(null);
+
+      await expect(service.deleteAdminUser(999, 4)).rejects.toThrow('not found');
     });
   });
 });

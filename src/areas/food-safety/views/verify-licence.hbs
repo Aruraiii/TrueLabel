@@ -43,16 +43,7 @@
 
     <!-- Sample Verification Demo Tests -->
     <div class="pt-3 border-t border-slate-100">
-      <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">
-        Sample Registry Records for Instant Testing:
-      </div>
-      <div class="flex flex-wrap gap-2">
-        {{#each sampleLicences}}
-          <a href="/safety/licence/verify?licenceNumber={{urlEncode this.licenceNumber}}" class="text-xs px-2.5 py-1 rounded {{#if (eq this.status 'valid')}}bg-slate-100 hover:bg-emerald-50 hover:text-emerald-800 text-slate-700{{else}}bg-rose-50 hover:bg-rose-100 text-rose-800 border-rose-200{{/if}} font-mono font-medium transition-colors border border-slate-200">
-            {{this.licenceNumber}} ({{this.status}}{{#if this.category}} · {{this.category}}{{/if}})
-          </a>
-        {{/each}}
-      </div>
+      {{> _sample_licence_chips}}
     </div>
   </div>
 
@@ -169,15 +160,13 @@
     </div>
   {{/if}}
 
-  <!-- Mandatory Regulatory Disclaimer -->
-  <div class="p-4 rounded-lg bg-slate-100 border border-slate-200 text-xs text-slate-600 flex items-start gap-3">
-    <svg class="w-5 h-5 text-slate-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
-    <div>
-      <div class="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Official Food Safety & Accreditation Disclaimer</div>
-      <div>
-        The manufacturer licence verification service queries active and archived records from BSTI, BFSA, and partner food regulatory databases. This verification confirms registration status and does not supersede local health department notifications or sudden recall advisories.
-      </div>
+  <!-- Regulatory Notice -->
+  <div class="text-xs text-slate-500 flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3.5 rounded-lg bg-slate-50 border border-slate-200">
+    <div class="flex items-center gap-2">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 flex-shrink-0"></span>
+      <span>Licence registry cross-references authentic records from BSTI, BFSA, and accredited partner bodies.</span>
     </div>
+    <a href="/about" class="text-slate-700 hover:text-slate-900 font-semibold underline flex-shrink-0">Verification rules</a>
   </div>
 
 </div>
