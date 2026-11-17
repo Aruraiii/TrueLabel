@@ -70,6 +70,20 @@ describe('PreferenceController (Unit Tests)', () => {
       expect(result.standardDiets).toContain('Vegan');
       expect(service.findOrCreate).toHaveBeenCalledWith(5);
     });
+
+    it('should redirect non-consumer roles to their role dashboard', async () => {
+      const req: any = {
+        session: {
+          user: { id: 10, name: 'PRAN', email: 'pran@test.com', role: 'manufacturer' },
+        },
+      };
+      const res: any = { redirect: jest.fn() };
+
+      await controller.getProfile(req, undefined, res);
+
+      expect(res.redirect).toHaveBeenCalledWith('/dashboard/manufacturer');
+      expect(service.findOrCreate).not.toHaveBeenCalled();
+    });
   });
 
   describe('updateProfile', () => {

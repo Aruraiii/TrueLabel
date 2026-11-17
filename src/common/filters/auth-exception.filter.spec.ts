@@ -96,6 +96,25 @@ describe('AuthExceptionFilter (Unit Tests)', () => {
         }),
       );
     });
+
+    it('should format array of validation error messages into a readable string on BadRequestException', () => {
+      const { mockHost, mockResponse } = createMockHost(true, '/catalog/manage/create');
+      const exception = new BadRequestException({
+        message: ['Serving size must be a valid number', 'Barcode is required'],
+      });
+
+      filter.catch(exception, mockHost);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.render).toHaveBeenCalledWith(
+        'shared/views/not-found',
+        expect.objectContaining({
+          title: 'Invalid Request — TrueLabel',
+          statusCode: 400,
+          message: 'Serving size must be a valid number. Barcode is required',
+        }),
+      );
+    });
   });
 
   describe('JSON Requests', () => {

@@ -27,12 +27,25 @@ export class PreferenceController {
 
   /**
    * Render User Dietary & Allergen Profile Form
+   * Personal health profile is strictly for Consumers (and Admin override).
    */
   @Get('profile')
   @UseGuards(AuthenticatedGuard)
   @Render('areas/personal-food/views/profile')
-  async getProfile(@Req() req: Request, @Query('saved') saved?: string) {
-    const userId = req.session.user.id;
+  async getProfile(
+    @Req() req: Request,
+    @Query('saved') saved?: string,
+    @Res({ passthrough: true }) res?: Response,
+  ) {
+    const user = req.session.user;
+    if (user.role !== 'consumer' && user.role !== 'admin') {
+      if (res && res.redirect) {
+        res.redirect(`/dashboard/${user.role}`);
+        return;
+      }
+    }
+
+    const userId = user.id;
     const profile = await this.preferenceService.findOrCreate(userId);
 
     return {
@@ -42,7 +55,7 @@ export class PreferenceController {
       standardAllergens: STANDARD_ALLERGENS,
       standardDiets: STANDARD_DIETS,
       saved: saved === 'true',
-      user: req.session.user,
+      user,
     };
   }
 

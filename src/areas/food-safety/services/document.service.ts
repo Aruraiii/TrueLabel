@@ -247,6 +247,17 @@ export class DocumentService {
   }
 
   /**
+   * Check whether a manufacturer has at least one Inspector-approved safety document (Feature F06)
+   * Used as a gate before a manufacturer can list food products.
+   */
+  async hasApprovedDocument(manufacturerId: number): Promise<boolean> {
+    const count = await this.documentRepo.count({
+      where: { manufacturerId, status: 'approved' },
+    });
+    return count > 0;
+  }
+
+  /**
    * Get dynamic sample manufacturer licences for verification links (Feature F06)
    */
   async getSampleLicences(limit: number = 6): Promise<ManufacturerLicence[]> {

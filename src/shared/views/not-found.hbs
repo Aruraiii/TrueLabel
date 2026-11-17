@@ -5,11 +5,13 @@
     </svg>
   </div>
 
-  <span class="inline-block px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200 mb-2">
-    HTTP 404 · Page Not Found
+  <span class="inline-block px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wider {{#if (eq statusCode 400)}}bg-rose-50 text-rose-800 border border-rose-200{{else}}bg-amber-50 text-amber-800 border border-amber-200{{/if}} mb-2">
+    HTTP {{#if statusCode}}{{statusCode}}{{else}}404{{/if}} · {{#if (eq statusCode 400)}}Invalid Request{{else}}Page Not Found{{/if}}
   </span>
 
-  <h1 class="text-2xl font-black text-slate-900 tracking-tight">Resource Not Located</h1>
+  <h1 class="text-2xl font-black text-slate-900 tracking-tight">
+    {{#if (eq statusCode 400)}}Invalid Request Data{{else}}Resource Not Located{{/if}}
+  </h1>
   <p class="text-sm text-slate-600 mt-2 mb-6">
     {{#if message}}
       {{message}}

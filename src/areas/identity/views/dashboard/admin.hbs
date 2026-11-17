@@ -1,0 +1,134 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+  <!-- Header: Platform Command Center -->
+  <div class="bg-white border border-slate-200 rounded-xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div class="space-y-1">
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-900 text-white">
+          System governance
+        </span>
+        <span class="text-xs text-slate-500 font-mono">Root control</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Platform command center</h1>
+      <p class="text-sm text-slate-500 max-w-2xl">
+        System-wide oversight: user role governance, catalog transparency records, and regulatory audit trail integrity.
+      </p>
+    </div>
+    
+    <div class="flex flex-wrap items-center gap-2.5">
+      <a
+        href="/catalog/manage/create"
+        class="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold transition-colors shadow-sm"
+      >
+        Add food product
+      </a>
+      <a
+        href="/safety/documents"
+        class="px-4 py-2.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold transition-colors"
+      >
+        Safety registry
+      </a>
+    </div>
+  </div>
+
+  <!-- Connected Metric Strip (No floating cards) -->
+  <div class="grid grid-cols-2 md:grid-cols-4 bg-white border border-slate-200 rounded-xl divide-y md:divide-y-0 md:divide-x divide-slate-100 overflow-hidden">
+    <div class="p-5">
+      <span class="text-xs font-medium text-slate-500 block">Total accounts</span>
+      <div class="text-2xl sm:text-3xl font-black text-slate-900 font-mono mt-1">{{totalUsers}}</div>
+      <span class="text-[11px] text-slate-400 block mt-0.5">
+        {{roleBreakdown.consumer}} consumers, {{roleBreakdown.manufacturer}} manufacturers
+      </span>
+    </div>
+    <div class="p-5">
+      <span class="text-xs font-medium text-slate-500 block">Regulatory staff</span>
+      <div class="text-2xl sm:text-3xl font-black text-amber-800 font-mono mt-1">{{roleBreakdown.inspector}}</div>
+      <span class="text-[11px] text-slate-400 block mt-0.5">
+        {{roleBreakdown.inspector}} inspectors, {{roleBreakdown.admin}} administrators
+      </span>
+    </div>
+    <div class="p-5">
+      <span class="text-xs font-medium text-slate-500 block">Catalog formulations</span>
+      <div class="text-2xl sm:text-3xl font-black text-emerald-800 font-mono mt-1">{{totalProducts}}</div>
+      <span class="text-[11px] text-slate-400 block mt-0.5">Active packaged foods</span>
+    </div>
+    <div class="p-5">
+      <span class="text-xs font-medium text-slate-500 block">Accreditation filings</span>
+      <div class="text-2xl sm:text-3xl font-black text-slate-800 font-mono mt-1">{{docStats.total}}</div>
+      <span class="text-[11px] text-slate-400 block mt-0.5">{{docStats.approved}} verified standards</span>
+    </div>
+  </div>
+
+  <!-- Registered Users Directory Table -->
+  <div class="bg-white border border-slate-200 rounded-xl overflow-hidden">
+    <div class="p-6 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <h2 class="text-base font-bold text-slate-900">User accounts and role assignments</h2>
+        <p class="text-xs text-slate-500 mt-0.5">Directory of registered consumer, enterprise, inspector, and administrative identities</p>
+      </div>
+      <span class="text-xs font-mono font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-md self-start sm:self-auto">
+        {{users.length}} accounts registered
+      </span>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs">
+        <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold text-[11px]">
+          <tr>
+            <th class="px-6 py-3.5">User ID</th>
+            <th class="px-6 py-3.5">Full name or company</th>
+            <th class="px-6 py-3.5">Email address</th>
+            <th class="px-6 py-3.5">Role</th>
+            <th class="px-6 py-3.5">Status</th>
+            <th class="px-6 py-3.5 text-right">Registration date</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 font-normal">
+          {{#each users}}
+            <tr class="hover:bg-slate-50/60 transition-colors">
+              <td class="px-6 py-4 font-mono font-semibold text-slate-500">
+                #{{this.id}}
+              </td>
+              <td class="px-6 py-4 font-bold text-slate-900">
+                {{this.name}}
+              </td>
+              <td class="px-6 py-4 font-mono text-slate-600">
+                {{this.email}}
+              </td>
+              <td class="px-6 py-4">
+                <span class="inline-block px-2.5 py-0.5 rounded text-[11px] font-semibold {{#if (eq this.role 'consumer')}}bg-blue-50 text-blue-800 border border-blue-200{{else}}{{#if (eq this.role 'manufacturer')}}bg-emerald-50 text-emerald-800 border border-emerald-200{{else}}{{#if (eq this.role 'inspector')}}bg-amber-50 text-amber-800 border border-amber-200{{else}}bg-slate-900 text-white{{/if}}{{/if}}{{/if}}">
+                  {{this.role}}
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <span class="inline-block px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
+                  {{this.status}}
+                </span>
+              </td>
+              <td class="px-6 py-4 text-right font-mono text-slate-500">
+                {{this.createdAt}}
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+              </td>
+              <td class="px-6 py-4">
+                {{#if this.isVerified}}
+                  <span class="text-emerald-700 font-bold text-xs">✓ Active</span>
+                {{else}}
+                  <span class="text-slate-400 text-xs">Unverified</span>
+                {{/if}}
+              </td>
+              <td class="px-6 py-4 text-right font-mono text-slate-400">
+                {{this.createdAt}}
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

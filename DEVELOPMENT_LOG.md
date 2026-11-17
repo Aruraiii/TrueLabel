@@ -553,3 +553,118 @@
   - Tested `npm run seed`: Successfully executed standalone seeding and closed context.
   - `npm test`: 15 passed test suites, 128 unit tests passing (100%).
   - `npm run build`: Compiled with exit code 0.
+
+---
+
+### Entry 027 | 2026-11-17 13:49:00 +06:00 | Food Registration Routing, Form Validation & Test Hardening (F01 & F06)
+- **Action**: Resolved food registration routing and upload failures, fixed HTML form serialization incompatibilities in DTOs, eliminated 400-to-404 error masking, and created a dedicated test suite with full test coverage.
+- **Architectural Enhancements**:
+  1. **DTO Transformation Hardening (`CreateFoodProductDto`)**:
+     - Added `@Type(() => Number)` on `servingSize` so string values from HTML `<input type="number">` convert cleanly to numbers.
+     - Added `@Transform()` on `dietaryTags` to safely split comma-separated strings (e.g. `"Vegan, Halal"`) into string arrays, converting empty strings to `[]`.
+     - Added `@Type(() => Number)` on `amountPer100g`, `amountPerServing`, and `dailyValuePercentage` in `CreateNutritionFactDto`.
+  2. **Controller Routing & Server-Rendered MVC Error Handling (`FoodCatalogController`)**:
+     - Maintained route order placing `@Get('manage/create')` and `@Post('manage/create')` before parameterized `@Get('product/:id')`.
+     - Added alias `@Post('manage')` mapping seamlessly to `handleCreate`.
+     - Configured custom `exceptionFactory` on `ValidationPipe` for human-readable error messages.
+     - When unapproved manufacturers attempt submission or duplicate barcode conflicts arise, re-renders `create.hbs` preserving user inputs (`productData`) and showing clear alerts.
+  3. **Exception Filter Separation (`AuthExceptionFilter` & `not-found.hbs`)**:
+     - Decoupled 400 Bad Request from 404 Not Found so validation errors no longer display "HTTP 404 · Page Not Found".
+     - Extracted nested validation message arrays so detailed constraint failures are displayed to users.
+  4. **Form View Preservation (`create.hbs`)**:
+     - Bound `productData` to input fields so users do not lose their typed input when a validation or licensing error occurs.
+  5. **Comprehensive Unit Test Suite**:
+     - Created `src/areas/food-catalog/models/dto/create-food-product.dto.spec.ts` testing string-to-number transformation, comma-separated tags, empty tags, and validation rejections.
+     - Updated `food-catalog.controller.spec.ts` testing F06 accreditation gating, duplicate barcode handling, and alias routing.
+     - Updated `auth-exception.filter.spec.ts` asserting clean separation and display of 400 Bad Request messages.
+- **Verification**:
+  - `npm test`: 16 passed test suites, 141 unit tests passing (100%).
+  - `npm run build`: Compiled with exit code 0.
+
+---
+
+### Entry 028 | 2026-11-17 14:07:00 +06:00 | Nutrition Facts Form Inputs & Role-Dedicated Dashboards (F01, F06, F16)
+- **Action**: Added FDA/EU Nutrition Facts and Declared Ingredients inputs to food creation and editing forms, clarified that dietary profiles are restricted to Consumers, and built dedicated user dashboards for all 4 platform roles (Consumer, Manufacturer, Inspector, Admin).
+- **Architectural Enhancements**:
+  1. **Nutrition Facts & Ingredients Form Integration (`create.hbs` & `edit.hbs`)**:
+     - Added **Section 3: Statutory Nutrition Facts Panel (per 100g / 100ml)** collecting Energy (kcal), Total Fat, Saturated Fat, Carbohydrates, Sugars, Dietary Fiber, Protein, and Salt/Sodium.
+     - Added **Section 4: Declared Ingredients & Additives** textarea with automatic allergen (Milk, Gluten, Peanuts, Tree Nuts, Soy, Celery) and E-number parsing.
+     - Updated `FoodCatalogController.handleCreate` & `handleEdit` to convert form inputs into typed `dto.nutritionFacts` and `dto.ingredients`.
+     - Updated `CatalogService.update()` to persist edited nutrition facts and ingredients.
+     - Added `CatalogService.findByManufacturer(manufacturerId)` to query a manufacturer's catalog listings.
+  2. **Role Boundaries & Dietary Profile Restriction (`PreferenceController`)**:
+     - Clarified that corporate manufacturers and inspectors do not possess biological health profiles.
+     - Updated `PreferenceController.getProfile()` to restrict profile setup to Consumers (`@Roles('consumer')`), automatically redirecting non-consumers to their dedicated role dashboard.
+  3. **Role-Dedicated Dashboards (`identity` Area)**:
+     - Created `DashboardService` (`src/areas/identity/services/dashboard.service.ts`) aggregating role-tailored datasets.
+     - Created `DashboardController` (`src/areas/identity/controllers/dashboard.controller.ts`) with central `GET /dashboard` dispatcher and role endpoints:
+       * `/dashboard/consumer`: Health & Allergen shield, macro goals, and recent catalog conflict matches.
+       * `/dashboard/manufacturer`: Corporate licence status, accreditation health counters, and registered products table with Transparency Scores and actions.
+       * `/dashboard/inspector`: Real-time pending document inspection queue with one-click review actions, recent audit decisions, and licence verification tools.
+       * `/dashboard/admin`: Platform vital counters, user directory with role badges, and platform oversight links.
+     - Built 4 responsive Handlebars views in `src/areas/identity/views/dashboard/`: `consumer.hbs`, `manufacturer.hbs`, `inspector.hbs`, and `admin.hbs`.
+  4. **Navbar & Navigation Updates (`navbar.hbs`)**:
+     - Added primary "Dashboard" link in desktop and mobile navigation for authenticated users.
+     - Integrated "My Dashboard" into the user avatar dropdown menu.
+  5. **Unit Testing & Verification**:
+     - Created `dashboard.service.spec.ts` testing data aggregation across all 4 roles.
+     - Created `dashboard.controller.spec.ts` testing central dispatcher redirects and role view rendering.
+     - Updated `preference.controller.spec.ts` testing non-consumer redirect behavior.
+     - Updated `food-catalog.controller.spec.ts` testing nutrition facts and ingredients mapping.
+- **Verification**:
+  - `npm test`: 18 passed test suites, 155 unit tests passing (100% green).
+  - `npm run build`: Compiled with exit code 0.
+
+
+---
+
+### Entry 029 | 2026-11-17 14:15:00 +06:00 | Strict Role Gating for Dietary Profile Evaluation & Allergen Warnings (F16)
+- **Problem Identification**: When logged into a non-consumer account (such as Manufacturer `BRAC University`), navigating to a food details page (`/catalog/product/:id`) displayed consumer health evaluation banners ("Nutritional Ceiling Warning", "CLEAR FOR YOUR DIETARY PROFILE", and "My Profile" links) if any preference record existed or if evaluated against session user ID.
+- **Root Cause**:
+  1. `FoodCatalogController.getProductDetail` and `getCatalog` loaded `userProfile` and triggered `evaluateProductConflict` whenever `req.session?.user` was truthy, without asserting `req.session.user.role === 'consumer'`.
+  2. `src/areas/food-catalog/views/detail.hbs` wrapped Feature F16 within generic `{{#if user}}` instead of checking `{{#if (eq user.role 'consumer')}}`.
+- **Architectural Enhancements**:
+  1. **Controller Layer (`food-catalog.controller.ts`)**:
+     - Restricted `userProfile` loading and `evaluateProductConflict` execution in both `getCatalog()` and `getProductDetail()` strictly to `req.session.user.role === 'consumer'`.
+     - Non-consumer sessions (manufacturers, inspectors, admins, guests) receive `userProfile: null` and `conflictEvaluation: null`.
+  2. **View Layer (`detail.hbs`)**:
+     - Updated Feature F16 container conditional from `{{#if user}}` to `{{#if (eq user.role 'consumer')}}`.
+     - Preserved public food safety declared allergen notices (`{{#if allergens.length}}`) for all roles, while isolating personalized health ceiling alerts, profile conflict matches, and profile editing links exclusively to Consumers.
+  3. **Unit Test Coverage (`food-catalog.controller.spec.ts`)**:
+     - Added test verifying `getCatalog` does not query `preferenceService` or evaluate conflicts for manufacturers.
+     - Added test verifying `getCatalog` queries `preferenceService` and computes conflicts for consumers.
+     - Added test verifying `getProductDetail` returns `conflictEvaluation: null` and does not call `preferenceService` for manufacturers.
+     - Added test verifying `getProductDetail` evaluates personal dietary conflicts for consumers.
+- **Verification**:
+  - `npm test`: 18 passed test suites, 158 unit tests passing (100% green).
+  - `npm run build`: Compiled with exit code 0.
+---
+
+### Entry 030 | 2026-11-17 14:29:00 +06:00 | Mandatory Frontend Design Protocol & Comprehensive UI Refinement
+- **Directives Enacted**:
+  1. Updated `PROJECT_RULES.md` (Sections 0 and 1.4) establishing that all frontend development across TrueLabel must strictly follow the `frontend-design` skill (`.agents/skills/frontend-design/SKILL.md`).
+  2. Banned generic AI frontend defaults: uniform SaaS-card grids, repetitive ALL-CAPS tracked eyebrows, middle-dot chains (`A · B · C`), trailing `&rarr;` button appendages, and decorative gradient washes.
+  3. Grounded the entire visual system in TrueLabel's authentic subject matter: regulatory food safety dossiers, public health transparency, clinical nutritional science, and laboratory accreditation.
+- **Surfaces Refined with `frontend-design`**:
+  1. **Manufacturer Dashboard (`src/areas/identity/views/dashboard/manufacturer.hbs`)**:
+     - Converted into an authentic Corporate Compliance Ledger.
+     - Asymmetric split between corporate trade licence credentials and compliance accreditation health counters.
+     - Formulations table formatted with clear typography, sentence-case headers, and clean action links.
+  2. **Inspector Dashboard (`src/areas/identity/views/dashboard/inspector.hbs`)**:
+     - Reshaped into an official Regulatory Audit Docket.
+     - Connected 4-metric audit telemetry bar replacing loose floating cards.
+     - High-density review queue table with direct, clear inspection actions (Approve / Reject) and laboratory file inspection links.
+  3. **Consumer Dashboard (`src/areas/identity/views/dashboard/consumer.hbs`)**:
+     - Formatted as a protective Personal Health Shield console.
+     - Structured panels for Active Allergens, Dietary Rules, and Daily Macro Ceilings with sentence-case typography and reassuring status pills.
+  4. **Admin Dashboard (`src/areas/identity/views/dashboard/admin.hbs`)**:
+     - Reshaped into a clean Platform Command Center with unified system oversight metrics and user directory ledger.
+  5. **Product Detail View (`src/areas/food-catalog/views/detail.hbs`)**:
+     - Removed tracked uppercase headings; introduced editorial product dossier hero with clear brand, category, quality score seal, and consumer-gated conflict shield.
+  6. **Food Registration & Edit Forms (`create.hbs` & `edit.hbs`)**:
+     - Redesigned into structured regulatory filing fieldsets with sentence-case labels and clean statutory nutrition panel inputs.
+  7. **Catalog Discovery Grid (`src/areas/food-catalog/views/index.hbs`)**:
+     - Replaced tracked-out cards with cohesive catalog inspection cards in sentence case.
+- **Verification**:
+  - `npm test`: 18 passed test suites, 158 unit tests passing (100% green).
+  - `npm run build`: Compiled with exit code 0.
