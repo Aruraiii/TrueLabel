@@ -34,9 +34,21 @@ export class AuthExceptionFilter implements ExceptionFilter {
       }
 
       if (status === 404 || status === 400) {
+        let errMessage = exception.message || 'The requested resource could not be found.';
+        const exceptionResponse = exception.getResponse ? exception.getResponse() : null;
+        if (exceptionResponse && typeof exceptionResponse === 'object') {
+          const respObj = exceptionResponse as any;
+          if (Array.isArray(respObj.message)) {
+            errMessage = respObj.message.join('. ');
+          } else if (typeof respObj.message === 'string') {
+            errMessage = respObj.message;
+          }
+        }
+
         return response.status(status).render('shared/views/not-found', {
           title: status === 404 ? 'Page Not Found — TrueLabel' : 'Invalid Request — TrueLabel',
-          message: exception.message || 'The requested resource could not be found.',
+          statusCode: status,
+          message: errMessage,
           path: request.url,
           user: request.session?.user || null,
         });

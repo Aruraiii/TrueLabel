@@ -2,11 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { FoodCatalogController } from './food-catalog.controller';
 import { CatalogService } from '../services/catalog.service';
 import { PreferenceService } from '../../personal-food/services/preference.service';
+import { DocumentService } from '../../food-safety/services/document.service';
 
 describe('FoodCatalogController (Unit Tests)', () => {
   let controller: FoodCatalogController;
   let catalogService: jest.Mocked<Partial<CatalogService>>;
   let preferenceService: jest.Mocked<Partial<PreferenceService>>;
+  let documentService: jest.Mocked<Partial<DocumentService>>;
 
   const mockProduct = {
     id: 1,
@@ -50,6 +52,10 @@ describe('FoodCatalogController (Unit Tests)', () => {
       }),
     };
 
+    documentService = {
+      hasApprovedDocument: jest.fn().mockResolvedValue(true),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [FoodCatalogController],
       providers: [
@@ -60,6 +66,10 @@ describe('FoodCatalogController (Unit Tests)', () => {
         {
           provide: PreferenceService,
           useValue: preferenceService,
+        },
+        {
+          provide: DocumentService,
+          useValue: documentService,
         },
       ],
     }).compile();
@@ -153,6 +163,91 @@ describe('FoodCatalogController (Unit Tests)', () => {
 
       const result = await controller.getEditForm(1, mockReq);
       expect(result.product.id).toBe(1);
+    });
+  });
+
+  describe('getCreateForm & handleCreate (F06 Safety Accreditation Gating)', () => {
+    it('should block a manufacturer without approved safety document from create form', async () => {
+      (documentService.hasApprovedDocument as jest.Mock).mockResolvedValue(false);
+      const mockReq = { session: { user: { id: 25, role: 'manufacturer' } } } as any;
+
+      const result = await controller.getCreateForm(mockReq);
+      expect(result.licenceBlocked).toBe(true);
+      expect(result.error).toContain('not yet approved');
+    });
+
+    it('should allow a manufacturer with approved safety document to open create form', async () => {
+      (documentService.hasApprovedDocument as jest.Mock).mockResolvedValue(true);
+      const mockReq = { session: { user: { id: 25, role: 'manufacturer' } } } as any;
+
+      const result = await controller.getCreateForm(mockReq);
+      expect(result.licenceBlocked).toBeUndefined();
+      expect(result.categories).toBeDefined();
+    });
+
+    it('should allow an admin to open create form without safety document check', async () => {
+      const mockReq = { session: { user: { id: 1, role: 'admin' } } } as any;
+
+      const result = await controller.getCreateForm(mockReq);
+      expect(documentService.hasApprovedDocument).not.toHaveBeenCalled();
+      expect(result.categories).toBeDefined();
+    });
+
+    it('should reject food registration if manufacturer has no approved documents', async () => {
+      (documentService.hasApprovedDocument as jest.Mock).mockResolvedValue(false);
+      const mockReq = { session: { user: { id: 25, role: 'manufacturer' } } } as any;
+      const mockRes = { redirect: jest.fn(), render: jest.fn(), status: jest.fn().mockReturnThis() } as any;
+
+      await controller.handleCreate({ name: 'Test', barcode: '123' } as any, mockReq, mockRes);
+      expect(mockRes.status).toHaveBeenCalledWith(403);
+      expect(mockRes.render).toHaveBeenCalledWith(
+        'areas/food-catalog/views/create',
+        expect.objectContaining({
+          licenceBlocked: true,
+          error: expect.stringContaining('not yet approved'),
+        }),
+      );
+    });
+
+    it('should successfully register product and redirect when manufacturer is approved', async () => {
+      (documentService.hasApprovedDocument as jest.Mock).mockResolvedValue(true);
+      (catalogService.create as jest.Mock).mockResolvedValue({ id: 42 } as any);
+      const mockReq = { session: { user: { id: 25, role: 'manufacturer' } } } as any;
+      const mockRes = { redirect: jest.fn(), render: jest.fn(), status: jest.fn().mockReturnThis() } as any;
+
+      await controller.handleCreate({ name: 'Test', barcode: '123' } as any, mockReq, mockRes);
+      expect(mockRes.redirect).toHaveBeenCalledWith('/catalog/product/42');
+    });
+
+    it('should render create view with error when service throws a ConflictException for duplicate barcode', async () => {
+      (documentService.hasApprovedDocument as jest.Mock).mockResolvedValue(true);
+      (catalogService.create as jest.Mock).mockRejectedValue(
+        new Error('A food product with barcode "123" already exists in the catalog'),
+      );
+      const mockReq = { session: { user: { id: 25, role: 'manufacturer' } } } as any;
+      const mockRes = { redirect: jest.fn(), render: jest.fn(), status: jest.fn().mockReturnThis() } as any;
+
+      const dto = { name: 'Duplicate Item', barcode: '123' } as any;
+      await controller.handleCreate(dto, mockReq, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(400);
+      expect(mockRes.render).toHaveBeenCalledWith(
+        'areas/food-catalog/views/create',
+        expect.objectContaining({
+          error: expect.stringContaining('already exists'),
+          productData: dto,
+        }),
+      );
+    });
+
+    it('should route handleCreateAlias to handleCreate seamlessly', async () => {
+      (documentService.hasApprovedDocument as jest.Mock).mockResolvedValue(true);
+      (catalogService.create as jest.Mock).mockResolvedValue({ id: 99 } as any);
+      const mockReq = { session: { user: { id: 25, role: 'manufacturer' } } } as any;
+      const mockRes = { redirect: jest.fn(), render: jest.fn(), status: jest.fn().mockReturnThis() } as any;
+
+      await controller.handleCreateAlias({ name: 'Alias Test', barcode: '555' } as any, mockReq, mockRes);
+      expect(mockRes.redirect).toHaveBeenCalledWith('/catalog/product/99');
     });
   });
 });

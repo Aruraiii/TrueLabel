@@ -553,3 +553,31 @@
   - Tested `npm run seed`: Successfully executed standalone seeding and closed context.
   - `npm test`: 15 passed test suites, 128 unit tests passing (100%).
   - `npm run build`: Compiled with exit code 0.
+
+---
+
+### Entry 027 | 2026-11-17 13:49:00 +06:00 | Food Registration Routing, Form Validation & Test Hardening (F01 & F06)
+- **Action**: Resolved food registration routing and upload failures, fixed HTML form serialization incompatibilities in DTOs, eliminated 400-to-404 error masking, and created a dedicated test suite with full test coverage.
+- **Architectural Enhancements**:
+  1. **DTO Transformation Hardening (`CreateFoodProductDto`)**:
+     - Added `@Type(() => Number)` on `servingSize` so string values from HTML `<input type="number">` convert cleanly to numbers.
+     - Added `@Transform()` on `dietaryTags` to safely split comma-separated strings (e.g. `"Vegan, Halal"`) into string arrays, converting empty strings to `[]`.
+     - Added `@Type(() => Number)` on `amountPer100g`, `amountPerServing`, and `dailyValuePercentage` in `CreateNutritionFactDto`.
+  2. **Controller Routing & Server-Rendered MVC Error Handling (`FoodCatalogController`)**:
+     - Maintained route order placing `@Get('manage/create')` and `@Post('manage/create')` before parameterized `@Get('product/:id')`.
+     - Added alias `@Post('manage')` mapping seamlessly to `handleCreate`.
+     - Configured custom `exceptionFactory` on `ValidationPipe` for human-readable error messages.
+     - When unapproved manufacturers attempt submission or duplicate barcode conflicts arise, re-renders `create.hbs` preserving user inputs (`productData`) and showing clear alerts.
+  3. **Exception Filter Separation (`AuthExceptionFilter` & `not-found.hbs`)**:
+     - Decoupled 400 Bad Request from 404 Not Found so validation errors no longer display "HTTP 404 · Page Not Found".
+     - Extracted nested validation message arrays so detailed constraint failures are displayed to users.
+  4. **Form View Preservation (`create.hbs`)**:
+     - Bound `productData` to input fields so users do not lose their typed input when a validation or licensing error occurs.
+  5. **Comprehensive Unit Test Suite**:
+     - Created `src/areas/food-catalog/models/dto/create-food-product.dto.spec.ts` testing string-to-number transformation, comma-separated tags, empty tags, and validation rejections.
+     - Updated `food-catalog.controller.spec.ts` testing F06 accreditation gating, duplicate barcode handling, and alias routing.
+     - Updated `auth-exception.filter.spec.ts` asserting clean separation and display of 400 Bad Request messages.
+- **Verification**:
+  - `npm test`: 16 passed test suites, 141 unit tests passing (100%).
+  - `npm run build`: Compiled with exit code 0.
+

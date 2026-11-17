@@ -13,10 +13,12 @@ import {
   ValidationPipe,
   ParseIntPipe,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { CatalogService } from '../services/catalog.service';
 import { PreferenceService } from '../../personal-food/services/preference.service';
+import { DocumentService } from '../../food-safety/services/document.service';
 import { CreateFoodProductDto } from '../models/dto/create-food-product.dto';
 import { SearchFoodProductDto } from '../models/dto/search-food-product.dto';
 import { AuthenticatedGuard } from '../../../common/guards/authenticated.guard';
@@ -28,6 +30,7 @@ export class FoodCatalogController {
   constructor(
     private readonly catalogService: CatalogService,
     private readonly preferenceService: PreferenceService,
+    private readonly documentService: DocumentService,
   ) {}
 
   /**
@@ -71,6 +74,142 @@ export class FoodCatalogController {
       user: req.session?.user || null,
       userProfile,
     };
+  }
+
+  /**
+   * Manufacturer View: Product Creation Form
+   * F06 Gate: Manufacturer must have at least one approved safety document.
+   */
+  @Get('manage/create')
+  @UseGuards(AuthenticatedGuard, RolesGuard)
+  @Roles('manufacturer', 'admin')
+  @Render('areas/food-catalog/views/create')
+  async getCreateForm(
+    @Req() req: Request,
+    @Query('barcode') barcode?: string,
+  ) {
+    const user = req.session?.user;
+
+    // Admins bypass the licence gate
+    if (user?.role === 'manufacturer') {
+      const isApproved = await this.documentService.hasApprovedDocument(user.id);
+      if (!isApproved) {
+        return {
+          title: 'Submit Food to Catalog — TrueLabel',
+          activeNav: 'catalog',
+          user,
+          licenceBlocked: true,
+          error:
+            'Your account is not yet approved. Please submit a safety document and wait for an Inspector to approve it before listing food products.',
+          categories: [],
+          dietaryTags: [],
+          barcode: '',
+        };
+      }
+    }
+
+    const filterOptions = await this.catalogService.getFilterOptions();
+    return {
+      title: 'Submit Food to Catalog — TrueLabel',
+      activeNav: 'catalog',
+      categories: filterOptions.categories,
+      dietaryTags: filterOptions.dietaryTags,
+      barcode: barcode ? barcode.trim() : '',
+      user,
+    };
+  }
+
+  /**
+   * Process Product Creation Form
+   * F06 Gate: Manufacturer must have at least one approved safety document.
+   */
+  @Post('manage/create')
+  @UseGuards(AuthenticatedGuard, RolesGuard)
+  @Roles('manufacturer', 'admin')
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      exceptionFactory: (errors) => {
+        const messages = errors
+          .map((e) => Object.values(e.constraints || {}).join(', '))
+          .filter(Boolean);
+        return new BadRequestException(
+          messages.length > 0 ? messages.join('. ') : 'Validation failed for food product submission',
+        );
+      },
+    }),
+  )
+  async handleCreate(
+    @Body() dto: CreateFoodProductDto,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      const user = req.session.user;
+
+      // Admins bypass the licence gate
+      if (user?.role === 'manufacturer') {
+        const isApproved = await this.documentService.hasApprovedDocument(user.id);
+        if (!isApproved) {
+          const filterOptions = await this.catalogService.getFilterOptions();
+          return res.status(403).render('areas/food-catalog/views/create', {
+            title: 'Submit Food to Catalog — TrueLabel',
+            activeNav: 'catalog',
+            user,
+            licenceBlocked: true,
+            error:
+              'Your account is not yet approved. Please submit a safety document and wait for an Inspector to approve it before listing food products.',
+            categories: filterOptions.categories,
+            dietaryTags: filterOptions.dietaryTags,
+            barcode: dto.barcode || '',
+            productData: dto,
+          });
+        }
+      }
+
+      const product = await this.catalogService.create(dto, user.id);
+      return res.redirect(`/catalog/product/${product.id}`);
+    } catch (err) {
+      const filterOptions = await this.catalogService.getFilterOptions();
+      return res.status(400).render('areas/food-catalog/views/create', {
+        title: 'Submit Food to Catalog — TrueLabel',
+        activeNav: 'catalog',
+        error: err.message || 'Failed to register product',
+        productData: dto,
+        categories: filterOptions.categories,
+        dietaryTags: filterOptions.dietaryTags,
+        user: req.session?.user,
+      });
+    }
+  }
+
+  /**
+   * Alias: POST /catalog/manage -> maps to handleCreate
+   */
+  @Post('manage')
+  @UseGuards(AuthenticatedGuard, RolesGuard)
+  @Roles('manufacturer', 'admin')
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      exceptionFactory: (errors) => {
+        const messages = errors
+          .map((e) => Object.values(e.constraints || {}).join(', '))
+          .filter(Boolean);
+        return new BadRequestException(
+          messages.length > 0 ? messages.join('. ') : 'Validation failed for food product submission',
+        );
+      },
+    }),
+  )
+  async handleCreateAlias(
+    @Body() dto: CreateFoodProductDto,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.handleCreate(dto, req, res);
   }
 
   /**
@@ -131,57 +270,6 @@ export class FoodCatalogController {
           req.session?.user?.id === product.manufacturerId),
       user: req.session?.user || null,
     };
-  }
-
-  /**
-   * Manufacturer View: Product Creation Form
-   */
-  @Get('manage/create')
-  @UseGuards(AuthenticatedGuard, RolesGuard)
-  @Roles('manufacturer', 'admin')
-  @Render('areas/food-catalog/views/create')
-  async getCreateForm(
-    @Req() req: Request,
-    @Query('barcode') barcode?: string,
-  ) {
-    const filterOptions = await this.catalogService.getFilterOptions();
-    return {
-      title: 'Submit Food to Catalog — TrueLabel',
-      activeNav: 'catalog',
-      categories: filterOptions.categories,
-      dietaryTags: filterOptions.dietaryTags,
-      barcode: barcode ? barcode.trim() : '',
-      user: req.session?.user,
-    };
-  }
-
-  /**
-   * Process Product Creation Form
-   */
-  @Post('manage/create')
-  @UseGuards(AuthenticatedGuard, RolesGuard)
-  @Roles('manufacturer', 'admin')
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
-  async handleCreate(
-    @Body() dto: CreateFoodProductDto,
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
-    try {
-      const manufacturerId = req.session.user.id;
-      const product = await this.catalogService.create(dto, manufacturerId);
-      return res.redirect(`/catalog/product/${product.id}`);
-    } catch (err) {
-      const filterOptions = await this.catalogService.getFilterOptions();
-      return res.render('areas/food-catalog/views/create', {
-        title: 'Submit Food to Catalog — TrueLabel',
-        error: err.message || 'Failed to register product',
-        productData: dto,
-        categories: filterOptions.categories,
-        dietaryTags: filterOptions.dietaryTags,
-        user: req.session?.user,
-      });
-    }
   }
 
   /**
