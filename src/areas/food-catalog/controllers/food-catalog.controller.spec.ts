@@ -92,6 +92,42 @@ describe('FoodCatalogController (Unit Tests)', () => {
       expect(result.products).toHaveLength(1);
       expect(result.total).toBe(1);
       expect(result.title).toContain('Food Catalog');
+      expect(result.userProfile).toBeNull();
+      expect(result.products[0].userConflict).toBeNull();
+    });
+
+    it('should not evaluate dietary profile for manufacturers in catalog discovery', async () => {
+      (catalogService.searchAndFilter as jest.Mock).mockResolvedValue({
+        items: [mockProduct],
+        total: 1,
+        page: 1,
+        totalPages: 1,
+      });
+
+      const mockReq = { session: { user: { id: 10, role: 'manufacturer' } } } as any;
+      const result = await controller.getCatalog({}, mockReq);
+
+      expect(preferenceService.findByUserId).not.toHaveBeenCalled();
+      expect(result.userProfile).toBeNull();
+      expect(result.products[0].userConflict).toBeNull();
+    });
+
+    it('should evaluate dietary profile for consumers in catalog discovery', async () => {
+      (catalogService.searchAndFilter as jest.Mock).mockResolvedValue({
+        items: [mockProduct],
+        total: 1,
+        page: 1,
+        totalPages: 1,
+      });
+      (preferenceService.findByUserId as jest.Mock).mockResolvedValue({ id: 1, allergies: [] });
+
+      const mockReq = { session: { user: { id: 5, role: 'consumer' } } } as any;
+      const result = await controller.getCatalog({}, mockReq);
+
+      expect(preferenceService.findByUserId).toHaveBeenCalledWith(5);
+      expect(preferenceService.evaluateProductConflict).toHaveBeenCalled();
+      expect(result.userProfile).toBeDefined();
+      expect(result.products[0].userConflict).toBeDefined();
     });
   });
 
@@ -121,7 +157,7 @@ describe('FoodCatalogController (Unit Tests)', () => {
   });
 
   describe('getProductDetail', () => {
-    it('should return product details with allergen and additive groupings', async () => {
+    it('should return product details with allergen and additive groupings and null conflictEvaluation for manufacturers', async () => {
       const productWithIngr = {
         ...mockProduct,
         ingredients: [
@@ -138,6 +174,22 @@ describe('FoodCatalogController (Unit Tests)', () => {
       expect(result.allergens).toHaveLength(1);
       expect(result.additives).toHaveLength(1);
       expect(result.isOwner).toBe(true);
+      expect(result.conflictEvaluation).toBeNull();
+      expect(result.userProfile).toBeNull();
+      expect(preferenceService.findByUserId).not.toHaveBeenCalled();
+    });
+
+    it('should evaluate personal dietary conflict for consumer users on product detail', async () => {
+      (catalogService.findById as jest.Mock).mockResolvedValue(mockProduct as any);
+      (preferenceService.findByUserId as jest.Mock).mockResolvedValue({ id: 5, allergies: ['Peanut'] });
+
+      const mockReq = { session: { user: { id: 5, role: 'consumer' } } } as any;
+      const result = await controller.getProductDetail(1, mockReq);
+
+      expect(result.conflictEvaluation).toBeDefined();
+      expect(result.userProfile).toBeDefined();
+      expect(preferenceService.findByUserId).toHaveBeenCalledWith(5);
+      expect(preferenceService.evaluateProductConflict).toHaveBeenCalled();
     });
   });
 

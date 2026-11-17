@@ -44,7 +44,7 @@ export class FoodCatalogController {
     const filterOptions = await this.catalogService.getFilterOptions();
 
     let userProfile = null;
-    if (req.session?.user) {
+    if (req.session?.user && req.session.user.role === 'consumer') {
       userProfile = await this.preferenceService.findByUserId(req.session.user.id);
     }
 
@@ -255,10 +255,10 @@ export class FoodCatalogController {
     const allergens = product.ingredients?.filter((i) => i.isAllergen) || [];
     const additives = product.ingredients?.filter((i) => i.additiveCode) || [];
 
-    // Personal Allergen & Dietary Conflict Evaluation (Feature F16)
+    // Personal Allergen & Dietary Conflict Evaluation (Feature F16 - Consumer only)
     let conflictEvaluation = null;
     let userProfile = null;
-    if (req.session?.user) {
+    if (req.session?.user && req.session.user.role === 'consumer') {
       userProfile = await this.preferenceService.findByUserId(req.session.user.id);
       conflictEvaluation = this.preferenceService.evaluateProductConflict(
         userProfile,
